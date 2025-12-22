@@ -1,42 +1,115 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/home/HeroSection';
-import { CategoryFilter } from '@/components/home/CategoryFilter';
-import { ToolCard } from '@/components/home/ToolCard';
 import { AdSpace } from '@/components/home/AdSpace';
 import { useLanguage } from '@/lib/i18n';
 import { allTools } from '@/components/home/ToolsGrid';
+import { 
+  Image, 
+  FileText, 
+  Type, 
+  Palette, 
+  Calculator, 
+  QrCode,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
 
 const Index = () => {
   const { t, isRTL } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter tools based on category and search query
-  const filteredTools = useMemo(() => {
-    let tools = selectedCategory === 'all' 
-      ? allTools 
-      : allTools.filter(tool => tool.category === selectedCategory);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
+  const getToolName = (nameKey: string) => {
+    const keys = nameKey.split('.');
+    let value: any = t;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || nameKey;
+  };
+
+  // Category configurations with icons and colors
+  const categories = [
+    { 
+      id: 'image', 
+      name: t.categories.image, 
+      icon: Image,
+      colorClass: 'category-card-cyan',
+      iconBg: 'bg-[hsl(180,100%,50%/0.15)]',
+      iconColor: 'text-[hsl(180,100%,50%)]',
+      linkHover: 'hover:text-[hsl(180,100%,50%)]'
+    },
+    { 
+      id: 'pdf', 
+      name: t.categories.pdf, 
+      icon: FileText,
+      colorClass: 'category-card-pink',
+      iconBg: 'bg-[hsl(330,100%,60%/0.15)]',
+      iconColor: 'text-[hsl(330,100%,60%)]',
+      linkHover: 'hover:text-[hsl(330,100%,60%)]'
+    },
+    { 
+      id: 'text', 
+      name: t.categories.text, 
+      icon: Type,
+      colorClass: 'category-card-green',
+      iconBg: 'bg-[hsl(145,80%,50%/0.15)]',
+      iconColor: 'text-[hsl(145,80%,50%)]',
+      linkHover: 'hover:text-[hsl(145,80%,50%)]'
+    },
+    { 
+      id: 'color', 
+      name: t.categories.color, 
+      icon: Palette,
+      colorClass: 'category-card-purple',
+      iconBg: 'bg-[hsl(280,100%,60%/0.15)]',
+      iconColor: 'text-[hsl(280,100%,60%)]',
+      linkHover: 'hover:text-[hsl(280,100%,60%)]'
+    },
+    { 
+      id: 'calculator', 
+      name: t.categories.calculator, 
+      icon: Calculator,
+      colorClass: 'category-card-orange',
+      iconBg: 'bg-[hsl(25,100%,55%/0.15)]',
+      iconColor: 'text-[hsl(25,100%,55%)]',
+      linkHover: 'hover:text-[hsl(25,100%,55%)]'
+    },
+    { 
+      id: 'qr', 
+      name: t.categories.qr, 
+      icon: QrCode,
+      colorClass: 'category-card-yellow',
+      iconBg: 'bg-[hsl(55,100%,50%/0.15)]',
+      iconColor: 'text-[hsl(55,100%,50%)]',
+      linkHover: 'hover:text-[hsl(55,100%,50%)]'
+    },
+  ];
+
+  // Filter tools based on search
+  const getFilteredToolsForCategory = (categoryId: string) => {
+    let tools = allTools.filter(tool => tool.category === categoryId);
+    
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       tools = tools.filter(tool => {
         const toolKey = tool.nameKey.split('.')[1];
         const toolTrans = t.tools[toolKey as keyof typeof t.tools];
         const translatedName = toolTrans?.name?.toLowerCase() || '';
-        const translatedDesc = toolTrans?.description?.toLowerCase() || '';
-        
-        return translatedName.includes(query) || translatedDesc.includes(query) || tool.id.includes(query);
+        return translatedName.includes(query) || tool.id.includes(query);
       });
     }
-
+    
     return tools;
-  }, [selectedCategory, searchQuery, t]);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
   };
+
+  const Arrow = isRTL ? ChevronLeft : ChevronRight;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -49,24 +122,54 @@ const Index = () => {
           <AdSpace type="horizontal" />
         </div>
 
+        {/* Category Blocks */}
         <section className="py-8">
           <div className="container mx-auto px-4">
-            <div className="mb-8">
-              <CategoryFilter selected={selectedCategory} onChange={setSelectedCategory} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map((category) => {
+                const IconComponent = category.icon;
+                const tools = getFilteredToolsForCategory(category.id);
+                
+                if (searchQuery && tools.length === 0) return null;
+                
+                return (
+                  <div 
+                    key={category.id} 
+                    className={`category-card ${category.colorClass} p-6 rounded-2xl`}
+                  >
+                    {/* Category Header */}
+                    <div className="flex items-center gap-4 mb-5">
+                      <div className={`w-12 h-12 rounded-xl ${category.iconBg} flex items-center justify-center`}>
+                        <IconComponent className={`w-6 h-6 ${category.iconColor}`} />
+                      </div>
+                      <h2 className={`text-xl font-bold ${category.iconColor}`}>
+                        {category.name}
+                      </h2>
+                    </div>
+                    
+                    {/* Tools List */}
+                    <div className="space-y-1">
+                      {tools.map((tool) => {
+                        const ToolIcon = tool.icon;
+                        return (
+                          <Link
+                            key={tool.id}
+                            to={tool.href}
+                            className={`flex items-center gap-3 py-2.5 px-3 rounded-xl transition-all duration-300 hover:bg-muted/50 group ${category.linkHover}`}
+                          >
+                            <ToolIcon className={`w-4 h-4 ${category.iconColor} opacity-60 group-hover:opacity-100 transition-opacity`} />
+                            <span className="text-foreground group-hover:translate-x-1 transition-transform font-medium">
+                              {getToolName(tool.nameKey)}
+                            </span>
+                            <Arrow className={`w-4 h-4 ${isRTL ? 'mr-auto' : 'ml-auto'} opacity-0 group-hover:opacity-100 transition-opacity ${category.iconColor}`} />
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            
-            {/* Tools Grid */}
-            {filteredTools.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {filteredTools.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">{t.common.noResults}</p>
-              </div>
-            )}
           </div>
         </section>
 
