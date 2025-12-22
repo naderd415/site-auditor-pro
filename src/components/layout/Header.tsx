@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n';
-import { Menu, X, Search, Globe, Layers } from 'lucide-react';
+import { Menu, X, Search, Globe, Layers, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,9 +10,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export function Header() {
-  const { t, language, setLanguage, isRTL } = useLanguage();
+interface HeaderProps {
+  onSearch?: (query: string) => void;
+}
+
+export function Header({ onSearch }: HeaderProps) {
+  const { t, language, setLanguage, isRTL, isDark, toggleTheme } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
 
   const navLinks = [
@@ -23,6 +28,11 @@ export function Header() {
   ];
 
   const isActive = (href: string) => location.pathname === href;
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch?.(searchQuery);
+  };
 
   return (
     <header className="sticky top-0 z-50">
@@ -52,16 +62,32 @@ export function Header() {
           </div>
 
           {/* Search & Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Search - Desktop */}
-            <div className="hidden lg:flex items-center relative">
+            <form onSubmit={handleSearch} className="hidden lg:flex items-center relative">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  onSearch?.(e.target.value);
+                }}
                 placeholder={t.hero.searchPlaceholder}
                 className="w-48 bg-muted/50 border border-border rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-all"
               />
-              <Search className="absolute right-3 w-4 h-4 text-muted-foreground" />
-            </div>
+              <Search className="absolute end-3 w-4 h-4 text-muted-foreground" />
+            </form>
+
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="text-muted-foreground hover:text-foreground"
+              title={isDark ? t.common.lightMode : t.common.darkMode}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
 
             {/* Language Selector */}
             <DropdownMenu>
@@ -99,6 +125,23 @@ export function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 pt-4 border-t border-border">
+            {/* Mobile Search */}
+            <form onSubmit={handleSearch} className="mb-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    onSearch?.(e.target.value);
+                  }}
+                  placeholder={t.hero.searchPlaceholder}
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                />
+                <Search className="absolute end-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              </div>
+            </form>
+
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
