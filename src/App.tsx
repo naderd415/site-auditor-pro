@@ -19,12 +19,25 @@ import QRScanner from "./pages/tools/QRScanner";
 import ImageConverter from "./pages/tools/ImageConverter";
 import ImageCompressor from "./pages/tools/ImageCompressor";
 import ImageResizer from "./pages/tools/ImageResizer";
+import ImageCropper from "./pages/tools/ImageCropper";
+import ImageToBase64 from "./pages/tools/ImageToBase64";
 import TextCounter from "./pages/tools/TextCounter";
 import TextFormatter from "./pages/tools/TextFormatter";
+import TextDiff from "./pages/tools/TextDiff";
+import LoremGenerator from "./pages/tools/LoremGenerator";
+import SlugGenerator from "./pages/tools/SlugGenerator";
 import ColorPicker from "./pages/tools/ColorPicker";
+import ColorConverter from "./pages/tools/ColorConverter";
+import ColorPalette from "./pages/tools/ColorPalette";
+import ContrastChecker from "./pages/tools/ContrastChecker";
+import GradientGenerator from "./pages/tools/GradientGenerator";
 import PercentageCalculator from "./pages/tools/PercentageCalculator";
 import AgeCalculator from "./pages/tools/AgeCalculator";
 import BMICalculator from "./pages/tools/BMICalculator";
+import UnitConverter from "./pages/tools/UnitConverter";
+import TipCalculator from "./pages/tools/TipCalculator";
+import PDFMerge from "./pages/tools/PDFMerge";
+import PDFSplit from "./pages/tools/PDFSplit";
 
 const queryClient = new QueryClient();
 
@@ -44,18 +57,41 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               
-              {/* Tool Routes */}
-              <Route path="/tools/qr-generator" element={<QRGenerator />} />
-              <Route path="/tools/qr-scanner" element={<QRScanner />} />
+              {/* Image Tools */}
               <Route path="/tools/image-converter" element={<ImageConverter />} />
               <Route path="/tools/image-compressor" element={<ImageCompressor />} />
               <Route path="/tools/image-resizer" element={<ImageResizer />} />
+              <Route path="/tools/image-cropper" element={<ImageCropper />} />
+              <Route path="/tools/image-to-base64" element={<ImageToBase64 />} />
+              
+              {/* PDF Tools */}
+              <Route path="/tools/pdf-merge" element={<PDFMerge />} />
+              <Route path="/tools/pdf-split" element={<PDFSplit />} />
+              
+              {/* Text Tools */}
               <Route path="/tools/text-counter" element={<TextCounter />} />
               <Route path="/tools/text-formatter" element={<TextFormatter />} />
+              <Route path="/tools/text-diff" element={<TextDiff />} />
+              <Route path="/tools/lorem-generator" element={<LoremGenerator />} />
+              <Route path="/tools/slug-generator" element={<SlugGenerator />} />
+              
+              {/* Color Tools */}
               <Route path="/tools/color-picker" element={<ColorPicker />} />
+              <Route path="/tools/color-converter" element={<ColorConverter />} />
+              <Route path="/tools/color-palette" element={<ColorPalette />} />
+              <Route path="/tools/contrast-checker" element={<ContrastChecker />} />
+              <Route path="/tools/gradient-generator" element={<GradientGenerator />} />
+              
+              {/* Calculator Tools */}
               <Route path="/tools/percentage-calculator" element={<PercentageCalculator />} />
               <Route path="/tools/age-calculator" element={<AgeCalculator />} />
               <Route path="/tools/bmi-calculator" element={<BMICalculator />} />
+              <Route path="/tools/unit-converter" element={<UnitConverter />} />
+              <Route path="/tools/tip-calculator" element={<TipCalculator />} />
+              
+              {/* QR Tools */}
+              <Route path="/tools/qr-generator" element={<QRGenerator />} />
+              <Route path="/tools/qr-scanner" element={<QRScanner />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
