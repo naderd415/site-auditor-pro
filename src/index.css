@@ -283,7 +283,7 @@
     border: 1px solid hsl(220 25% 20%);
   }
 
-  /* Space stars overlay on hover */
+  /* Space stars overlay on hover - yellow/green space colors */
   .tool-card::before {
     content: '';
     position: absolute;
@@ -292,11 +292,14 @@
     right: 0;
     bottom: 0;
     background-image: 
-      radial-gradient(1px 1px at 10% 20%, hsl(180 100% 80% / 0), transparent),
-      radial-gradient(1px 1px at 30% 50%, hsl(280 100% 80% / 0), transparent),
-      radial-gradient(1.5px 1.5px at 60% 30%, hsl(180 100% 80% / 0), transparent),
-      radial-gradient(1px 1px at 80% 70%, hsl(145 100% 80% / 0), transparent),
-      radial-gradient(1.5px 1.5px at 90% 20%, hsl(280 100% 80% / 0), transparent);
+      radial-gradient(2px 2px at 10% 20%, hsl(55 100% 70% / 0), transparent),
+      radial-gradient(1.5px 1.5px at 25% 60%, hsl(145 100% 65% / 0), transparent),
+      radial-gradient(2px 2px at 45% 15%, hsl(50 100% 80% / 0), transparent),
+      radial-gradient(1.5px 1.5px at 65% 45%, hsl(140 100% 70% / 0), transparent),
+      radial-gradient(2px 2px at 85% 25%, hsl(55 100% 75% / 0), transparent),
+      radial-gradient(1px 1px at 30% 35%, hsl(160 100% 60% / 0), transparent),
+      radial-gradient(1.5px 1.5px at 75% 70%, hsl(45 100% 70% / 0), transparent),
+      radial-gradient(1px 1px at 50% 80%, hsl(130 100% 65% / 0), transparent);
     transition: all 0.5s ease;
     pointer-events: none;
     z-index: 1;
@@ -305,36 +308,39 @@
 
   .tool-card:hover::before {
     background-image: 
-      radial-gradient(1px 1px at 10% 20%, hsl(180 100% 80% / 0.8), transparent),
-      radial-gradient(1px 1px at 30% 50%, hsl(280 100% 80% / 0.6), transparent),
-      radial-gradient(1.5px 1.5px at 60% 30%, hsl(180 100% 80% / 0.9), transparent),
-      radial-gradient(1px 1px at 80% 70%, hsl(145 100% 80% / 0.7), transparent),
-      radial-gradient(1.5px 1.5px at 90% 20%, hsl(280 100% 80% / 0.8), transparent);
+      radial-gradient(2px 2px at 10% 20%, hsl(55 100% 70% / 0.9), transparent),
+      radial-gradient(1.5px 1.5px at 25% 60%, hsl(145 100% 65% / 0.8), transparent),
+      radial-gradient(2px 2px at 45% 15%, hsl(50 100% 80% / 1), transparent),
+      radial-gradient(1.5px 1.5px at 65% 45%, hsl(140 100% 70% / 0.85), transparent),
+      radial-gradient(2px 2px at 85% 25%, hsl(55 100% 75% / 0.9), transparent),
+      radial-gradient(1px 1px at 30% 35%, hsl(160 100% 60% / 0.7), transparent),
+      radial-gradient(1.5px 1.5px at 75% 70%, hsl(45 100% 70% / 0.85), transparent),
+      radial-gradient(1px 1px at 50% 80%, hsl(130 100% 65% / 0.75), transparent);
     animation: twinkle-card 2s ease-in-out infinite;
     opacity: 1;
   }
 
   @keyframes twinkle-card {
-    0%, 100% { opacity: 0.6; }
+    0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
   }
 
   .tool-card:hover {
     @apply -translate-y-2;
-    border-color: hsl(180 100% 50% / 0.6);
+    border-color: hsl(50 100% 55% / 0.6);
     box-shadow: 
-      0 0 40px hsl(180 100% 50% / 0.25),
-      0 0 80px hsl(280 100% 60% / 0.15),
+      0 0 40px hsl(55 100% 50% / 0.35),
+      0 0 80px hsl(145 100% 50% / 0.2),
       0 20px 40px hsl(220 30% 6% / 0.4),
-      inset 0 0 30px hsl(180 100% 50% / 0.05);
+      inset 0 0 30px hsl(50 100% 50% / 0.08);
   }
 
   .dark .tool-card:hover {
     box-shadow: 
-      0 0 50px hsl(180 100% 50% / 0.35),
-      0 0 100px hsl(280 100% 60% / 0.2),
+      0 0 50px hsl(55 100% 55% / 0.4),
+      0 0 100px hsl(145 100% 50% / 0.25),
       0 25px 50px hsl(220 30% 2% / 0.5),
-      inset 0 0 40px hsl(180 100% 50% / 0.08);
+      inset 0 0 40px hsl(50 100% 55% / 0.1);
   }
 
   /* Tool icon container */

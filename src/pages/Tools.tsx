@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CategoryFilter } from '@/components/home/CategoryFilter';
-import { ToolCard } from '@/components/home/ToolCard';
 import { AdSpace } from '@/components/home/AdSpace';
 import { useLanguage } from '@/lib/i18n';
 import { allTools } from '@/components/home/ToolsGrid';
+import { ChevronRight } from 'lucide-react';
 
 const Tools = () => {
   const { t, isRTL } = useLanguage();
@@ -37,6 +38,15 @@ const Tools = () => {
     setSearchQuery(query);
   };
 
+  const getToolName = (nameKey: string) => {
+    const keys = nameKey.split('.');
+    let value: any = t;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || nameKey;
+  };
+
   // Group tools by category
   const toolsByCategory = useMemo(() => {
     const categories = ['image', 'pdf', 'text', 'color', 'calculator', 'qr'];
@@ -46,6 +56,15 @@ const Tools = () => {
       tools: allTools.filter(tool => tool.category === cat),
     }));
   }, [t]);
+
+  const categoryColors: Record<string, string> = {
+    image: 'text-[hsl(180,100%,50%)]',
+    pdf: 'text-[hsl(330,100%,60%)]',
+    text: 'text-[hsl(145,80%,50%)]',
+    color: 'text-[hsl(280,100%,60%)]',
+    calculator: 'text-[hsl(25,100%,55%)]',
+    qr: 'text-[hsl(55,100%,55%)]',
+  };
 
   return (
     <>
@@ -87,39 +106,148 @@ const Tools = () => {
             <AdSpace type="horizontal" />
           </div>
 
-          {/* Tools Grid */}
+          {/* Tools List */}
           <section className="py-8">
             <div className="container mx-auto px-4">
-              {selectedCategory === 'all' ? (
-                // Show by category
-                <div className="space-y-12">
-                  {toolsByCategory.map((category) => (
-                    <div key={category.id}>
-                      <h2 className="text-2xl font-bold text-foreground mb-6">
-                        {category.name}
-                      </h2>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                        {category.tools.map((tool) => (
-                          <ToolCard key={tool.id} tool={tool} />
-                        ))}
+              <div className="max-w-5xl mx-auto">
+                {selectedCategory === 'all' ? (
+                  // Show by category
+                  <div className="space-y-8">
+                    {toolsByCategory.map((category) => (
+                      <div key={category.id} className="glass-card p-6 rounded-2xl">
+                        <h2 className={`text-xl font-bold mb-4 ${categoryColors[category.id]}`}>
+                          {category.name}
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
+                          {category.tools.map((tool) => {
+                            const IconComponent = tool.icon;
+                            return (
+                              <Link
+                                key={tool.id}
+                                to={tool.href}
+                                className="flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-300 hover:bg-muted/50 group"
+                              >
+                                <IconComponent className={`w-5 h-5 flex-shrink-0 ${categoryColors[tool.category]}`} />
+                                <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                  {getToolName(tool.nameKey)}
+                                </span>
+                                <ChevronRight className={`w-4 h-4 text-muted-foreground ${isRTL ? 'mr-auto rotate-180' : 'ml-auto'} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                              </Link>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                // Show filtered
-                filteredTools.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {filteredTools.map((tool) => (
-                      <ToolCard key={tool.id} tool={tool} />
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground text-lg">{t.common.noResults}</p>
-                  </div>
-                )
-              )}
+                  // Show filtered
+                  filteredTools.length > 0 ? (
+                    <div className="glass-card p-6 rounded-2xl">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
+                        {filteredTools.map((tool) => {
+                          const IconComponent = tool.icon;
+                          return (
+                            <Link
+                              key={tool.id}
+                              to={tool.href}
+                              className="flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-300 hover:bg-muted/50 group"
+                            >
+                              <IconComponent className={`w-5 h-5 flex-shrink-0 ${categoryColors[tool.category]}`} />
+                              <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                {getToolName(tool.nameKey)}
+                              </span>
+                              <ChevronRight className={`w-4 h-4 text-muted-foreground ${isRTL ? 'mr-auto rotate-180' : 'ml-auto'} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground text-lg">{t.common.noResults}</p>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </section>
+
+          <div className="container mx-auto px-4 my-12">
+            <AdSpace type="horizontal" />
+          </div>
+
+          {/* Article Section */}
+          <section className="py-12">
+            <div className="container mx-auto px-4">
+              <article className="max-w-4xl mx-auto glass-card p-8 md:p-12 rounded-2xl prose prose-lg dark:prose-invert">
+                <h2 className="text-3xl font-bold text-foreground mb-6">
+                  {isRTL ? 'دليلك الشامل للأدوات المجانية عبر الإنترنت' : 'Your Complete Guide to Free Online Tools'}
+                </h2>
+                
+                {isRTL ? (
+                  <>
+                    <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                      في عالم اليوم الرقمي، أصبحت الأدوات عبر الإنترنت ضرورة للجميع سواء كنت مصمماً، مطوراً، طالباً، أو محترفاً في أي مجال. نقدم لك في BestToolsHub مجموعة متكاملة من الأدوات التي تغطي جميع احتياجاتك.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">أدوات الصور</h3>
+                    <p className="text-muted-foreground mb-4">
+                      تحويل الصور بين التنسيقات المختلفة (PNG, JPG, WebP)، ضغط الصور لتقليل حجمها، تغيير أبعاد الصور، قص الصور، وتحويل الصور إلى Base64 للاستخدام في الويب.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">أدوات PDF</h3>
+                    <p className="text-muted-foreground mb-4">
+                      دمج ملفات PDF متعددة في ملف واحد، تقسيم ملف PDF إلى صفحات منفصلة، ضغط ملفات PDF، وتحويل PDF إلى صور والعكس.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">أدوات النصوص</h3>
+                    <p className="text-muted-foreground mb-4">
+                      عداد الكلمات والحروف، تنسيق النصوص (أحرف كبيرة/صغيرة)، مقارنة النصوص، مولد النص العشوائي Lorem Ipsum، ومولد الروابط الصديقة للـ SEO.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">أدوات الألوان</h3>
+                    <p className="text-muted-foreground mb-4">
+                      منتقي الألوان، محول صيغ الألوان (HEX, RGB, HSL)، مولد التدرجات اللونية، ومولد لوحات الألوان المتناسقة.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">الآلات الحاسبة</h3>
+                    <p className="text-muted-foreground">
+                      حاسبة النسب المئوية، حاسبة العمر، حاسبة مؤشر كتلة الجسم BMI، ومحول الوحدات للمسافات والأوزان ودرجات الحرارة.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                      In today's digital world, online tools have become essential for everyone - whether you're a designer, developer, student, or professional in any field. At BestToolsHub, we provide a comprehensive set of tools that cover all your needs.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">Image Tools</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Convert images between different formats (PNG, JPG, WebP), compress images to reduce file size, resize images, crop images, and convert images to Base64 for web use.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">PDF Tools</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Merge multiple PDF files into one, split PDF files into separate pages, compress PDF files, and convert PDF to images and vice versa.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">Text Tools</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Word and character counter, text formatting (uppercase/lowercase), text comparison, Lorem Ipsum generator, and SEO-friendly slug generator.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">Color Tools</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Color picker, color format converter (HEX, RGB, HSL), gradient generator, and harmonious color palette generator.
+                    </p>
+
+                    <h3 className="text-xl font-bold text-foreground mt-8 mb-4">Calculators</h3>
+                    <p className="text-muted-foreground">
+                      Percentage calculator, age calculator, BMI calculator, and unit converter for distances, weights, and temperatures.
+                    </p>
+                  </>
+                )}
+              </article>
             </div>
           </section>
 
