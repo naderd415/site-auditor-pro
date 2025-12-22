@@ -124,7 +124,7 @@ const Index = () => {
         {/* Category Blocks */}
         <section className="py-8">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
               {categories.map((category) => {
                 const IconComponent = category.icon;
                 const tools = getFilteredToolsForCategory(category.id);
@@ -134,38 +134,30 @@ const Index = () => {
                 return (
                   <div 
                     key={category.id} 
-                    className={`category-card ${category.colorClass} p-5 rounded-xl`}
+                    className={`category-card ${category.colorClass} p-4 rounded-xl`}
                   >
                     {/* Category Header */}
-                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border/50">
-                      <IconComponent className={`w-5 h-5 ${category.textColor} ${category.darkTextColor}`} />
-                      <h2 className={`text-lg font-bold ${category.textColor} ${category.darkTextColor}`}>
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/30">
+                      <IconComponent className={`w-4 h-4 ${category.textColor} ${category.darkTextColor}`} />
+                      <h2 className={`text-sm font-bold ${category.textColor} ${category.darkTextColor}`}>
                         {category.name}
                       </h2>
-                      <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
-                        {tools.length}
-                      </span>
                     </div>
                     
                     {/* Tools List */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       {tools.map((tool) => (
                         <Link
                           key={tool.id}
                           to={tool.href}
-                          className="block p-3 rounded-lg transition-all duration-300 hover:bg-muted/60 group"
+                          className="block py-1.5 px-2 rounded-md transition-all duration-200 hover:bg-muted/50 group"
                         >
-                          <div className="flex items-start gap-3">
-                            <tool.icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${category.textColor} ${category.darkTextColor} opacity-70 group-hover:opacity-100`} />
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-foreground group-hover:text-primary transition-colors text-sm">
-                                {getToolName(tool.nameKey)}
-                              </h3>
-                              <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                                {getToolDescription(tool.descriptionKey)}
-                              </p>
-                            </div>
-                          </div>
+                          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors text-xs">
+                            {getToolName(tool.nameKey)}
+                          </h3>
+                          <p className="text-[10px] text-muted-foreground line-clamp-1">
+                            {getToolDescription(tool.descriptionKey)}
+                          </p>
                         </Link>
                       ))}
                     </div>
