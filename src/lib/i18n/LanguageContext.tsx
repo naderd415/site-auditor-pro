@@ -6,6 +6,7 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
   t: Translation;
   dir: 'rtl' | 'ltr';
+  isRTL: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -42,6 +43,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLanguage,
     t: translations[language],
     dir,
+    isRTL: dir === 'rtl',
   };
 
   return (

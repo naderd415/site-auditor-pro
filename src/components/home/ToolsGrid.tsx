@@ -1,0 +1,100 @@
+import { useLanguage } from '@/lib/i18n';
+import { ToolCard, Tool } from './ToolCard';
+import {
+  Image,
+  FileImage,
+  Minimize2,
+  Crop,
+  Eraser,
+  Binary,
+  FilePlus,
+  Scissors,
+  FileDown,
+  ImageIcon,
+  FileText,
+  AlignLeft,
+  TextCursor,
+  GitCompare,
+  Type,
+  Link2,
+  Palette,
+  Pipette,
+  SwatchBook,
+  Blend,
+  Contrast,
+  Percent,
+  Calendar,
+  Activity,
+  Ruler,
+  Calculator,
+  QrCode,
+  ScanLine,
+} from 'lucide-react';
+
+// All tools data
+export const allTools: Tool[] = [
+  // Image Tools
+  { id: 'image-converter', nameKey: 'tools.imageConverter.name', descriptionKey: 'tools.imageConverter.description', icon: Image, category: 'image', href: '/tools/image-converter', color: 'cyan' },
+  { id: 'image-compressor', nameKey: 'tools.imageCompressor.name', descriptionKey: 'tools.imageCompressor.description', icon: FileImage, category: 'image', href: '/tools/image-compressor', color: 'cyan' },
+  { id: 'image-resizer', nameKey: 'tools.imageResizer.name', descriptionKey: 'tools.imageResizer.description', icon: Minimize2, category: 'image', href: '/tools/image-resizer', color: 'cyan' },
+  { id: 'image-cropper', nameKey: 'tools.imageCropper.name', descriptionKey: 'tools.imageCropper.description', icon: Crop, category: 'image', href: '/tools/image-cropper', color: 'cyan' },
+  { id: 'background-remover', nameKey: 'tools.backgroundRemover.name', descriptionKey: 'tools.backgroundRemover.description', icon: Eraser, category: 'image', href: '/tools/background-remover', color: 'cyan' },
+  { id: 'image-to-base64', nameKey: 'tools.imageToBase64.name', descriptionKey: 'tools.imageToBase64.description', icon: Binary, category: 'image', href: '/tools/image-to-base64', color: 'cyan' },
+  
+  // PDF Tools
+  { id: 'pdf-merge', nameKey: 'tools.pdfMerge.name', descriptionKey: 'tools.pdfMerge.description', icon: FilePlus, category: 'pdf', href: '/tools/pdf-merge', color: 'pink' },
+  { id: 'pdf-split', nameKey: 'tools.pdfSplit.name', descriptionKey: 'tools.pdfSplit.description', icon: Scissors, category: 'pdf', href: '/tools/pdf-split', color: 'pink' },
+  { id: 'pdf-compress', nameKey: 'tools.pdfCompress.name', descriptionKey: 'tools.pdfCompress.description', icon: FileDown, category: 'pdf', href: '/tools/pdf-compress', color: 'pink' },
+  { id: 'pdf-to-image', nameKey: 'tools.pdfToImage.name', descriptionKey: 'tools.pdfToImage.description', icon: ImageIcon, category: 'pdf', href: '/tools/pdf-to-image', color: 'pink' },
+  { id: 'image-to-pdf', nameKey: 'tools.imageToPdf.name', descriptionKey: 'tools.imageToPdf.description', icon: FileText, category: 'pdf', href: '/tools/image-to-pdf', color: 'pink' },
+  
+  // Text Tools
+  { id: 'text-counter', nameKey: 'tools.textCounter.name', descriptionKey: 'tools.textCounter.description', icon: AlignLeft, category: 'text', href: '/tools/text-counter', color: 'green' },
+  { id: 'text-formatter', nameKey: 'tools.textFormatter.name', descriptionKey: 'tools.textFormatter.description', icon: TextCursor, category: 'text', href: '/tools/text-formatter', color: 'green' },
+  { id: 'text-diff', nameKey: 'tools.textDiff.name', descriptionKey: 'tools.textDiff.description', icon: GitCompare, category: 'text', href: '/tools/text-diff', color: 'green' },
+  { id: 'lorem-generator', nameKey: 'tools.loremGenerator.name', descriptionKey: 'tools.loremGenerator.description', icon: Type, category: 'text', href: '/tools/lorem-generator', color: 'green' },
+  { id: 'slug-generator', nameKey: 'tools.slugGenerator.name', descriptionKey: 'tools.slugGenerator.description', icon: Link2, category: 'text', href: '/tools/slug-generator', color: 'green' },
+  
+  // Color Tools
+  { id: 'color-picker', nameKey: 'tools.colorPicker.name', descriptionKey: 'tools.colorPicker.description', icon: Pipette, category: 'color', href: '/tools/color-picker', color: 'purple' },
+  { id: 'color-palette', nameKey: 'tools.colorPalette.name', descriptionKey: 'tools.colorPalette.description', icon: SwatchBook, category: 'color', href: '/tools/color-palette', color: 'purple' },
+  { id: 'color-converter', nameKey: 'tools.colorConverter.name', descriptionKey: 'tools.colorConverter.description', icon: Palette, category: 'color', href: '/tools/color-converter', color: 'purple' },
+  { id: 'gradient-generator', nameKey: 'tools.gradientGenerator.name', descriptionKey: 'tools.gradientGenerator.description', icon: Blend, category: 'color', href: '/tools/gradient-generator', color: 'purple' },
+  { id: 'contrast-checker', nameKey: 'tools.contrastChecker.name', descriptionKey: 'tools.contrastChecker.description', icon: Contrast, category: 'color', href: '/tools/contrast-checker', color: 'purple' },
+  
+  // Calculator Tools
+  { id: 'percentage-calculator', nameKey: 'tools.percentageCalculator.name', descriptionKey: 'tools.percentageCalculator.description', icon: Percent, category: 'calculator', href: '/tools/percentage-calculator', color: 'orange' },
+  { id: 'age-calculator', nameKey: 'tools.ageCalculator.name', descriptionKey: 'tools.ageCalculator.description', icon: Calendar, category: 'calculator', href: '/tools/age-calculator', color: 'orange' },
+  { id: 'bmi-calculator', nameKey: 'tools.bmiCalculator.name', descriptionKey: 'tools.bmiCalculator.description', icon: Activity, category: 'calculator', href: '/tools/bmi-calculator', color: 'orange' },
+  { id: 'unit-converter', nameKey: 'tools.unitConverter.name', descriptionKey: 'tools.unitConverter.description', icon: Ruler, category: 'calculator', href: '/tools/unit-converter', color: 'orange' },
+  { id: 'tip-calculator', nameKey: 'tools.tipCalculator.name', descriptionKey: 'tools.tipCalculator.description', icon: Calculator, category: 'calculator', href: '/tools/tip-calculator', color: 'orange' },
+  
+  // QR Tools
+  { id: 'qr-generator', nameKey: 'tools.qrGenerator.name', descriptionKey: 'tools.qrGenerator.description', icon: QrCode, category: 'qr', href: '/tools/qr-generator', color: 'yellow' },
+  { id: 'qr-scanner', nameKey: 'tools.qrScanner.name', descriptionKey: 'tools.qrScanner.description', icon: ScanLine, category: 'qr', href: '/tools/qr-scanner', color: 'yellow' },
+];
+
+interface ToolsGridProps {
+  category?: 'all' | 'image' | 'pdf' | 'text' | 'color' | 'calculator' | 'qr';
+  limit?: number;
+}
+
+export function ToolsGrid({ category = 'all', limit }: ToolsGridProps) {
+  const { t } = useLanguage();
+
+  let filteredTools = category === 'all' 
+    ? allTools 
+    : allTools.filter(tool => tool.category === category);
+
+  if (limit) {
+    filteredTools = filteredTools.slice(0, limit);
+  }
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {filteredTools.map((tool) => (
+        <ToolCard key={tool.id} tool={tool} />
+      ))}
+    </div>
+  );
+}
