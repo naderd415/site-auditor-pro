@@ -60,13 +60,13 @@ export function ToolCard({ tool }: ToolCardProps) {
 
   return (
     <Link to={tool.href} className="tool-card block group">
-      <div className={colors.icon}>
+      <div className={`${colors.icon} relative z-10`}>
         <IconComponent className={`w-7 h-7 ${colors.text}`} />
       </div>
-      <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+      <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors relative z-10">
         {getToolText(tool.nameKey)}
       </h3>
-      <p className="text-sm text-muted-foreground line-clamp-2">
+      <p className="text-sm text-muted-foreground line-clamp-2 relative z-10">
         {getToolText(tool.descriptionKey)}
       </p>
     </Link>

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { Menu, X, Search, Globe, Layers, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +20,7 @@ export function Header({ onSearch }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const isVisible = useScrollDirection();
 
   const navLinks = [
     { href: '/', label: t.nav.home },
@@ -34,8 +36,17 @@ export function Header({ onSearch }: HeaderProps) {
     onSearch?.(searchQuery);
   };
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
+
   return (
-    <header className="sticky top-0 z-50">
+    <header 
+      className={`sticky top-0 z-50 transition-transform duration-300 ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
       <nav className="glass-card mx-4 mt-4 rounded-2xl border-none px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -124,7 +135,7 @@ export function Header({ onSearch }: HeaderProps) {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-border">
+          <div className="md:hidden mt-4 pt-4 border-t border-border animate-fade-in">
             {/* Mobile Search */}
             <form onSubmit={handleSearch} className="mb-4">
               <div className="relative">
