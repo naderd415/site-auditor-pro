@@ -150,12 +150,12 @@ const Index = () => {
                         <Link
                           key={tool.id}
                           to={tool.href}
-                          className="block py-1.5 px-2 rounded-md transition-all duration-200 hover:bg-muted/50 group"
+                          className="tool-item block py-1.5 px-2 rounded-md transition-all duration-200 group relative overflow-hidden"
                         >
-                          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors text-xs">
+                          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors text-xs relative z-10">
                             {getToolName(tool.nameKey)}
                           </h3>
-                          <p className="text-[10px] text-muted-foreground line-clamp-1">
+                          <p className="text-[10px] text-muted-foreground line-clamp-1 relative z-10">
                             {getToolDescription(tool.descriptionKey)}
                           </p>
                         </Link>

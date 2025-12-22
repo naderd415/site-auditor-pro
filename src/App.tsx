@@ -38,6 +38,10 @@ import UnitConverter from "./pages/tools/UnitConverter";
 import TipCalculator from "./pages/tools/TipCalculator";
 import PDFMerge from "./pages/tools/PDFMerge";
 import PDFSplit from "./pages/tools/PDFSplit";
+import PDFCompress from "./pages/tools/PDFCompress";
+import PDFToImage from "./pages/tools/PDFToImage";
+import ImageToPDF from "./pages/tools/ImageToPDF";
+import BackgroundRemover from "./pages/tools/BackgroundRemover";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +71,12 @@ const App = () => (
               {/* PDF Tools */}
               <Route path="/tools/pdf-merge" element={<PDFMerge />} />
               <Route path="/tools/pdf-split" element={<PDFSplit />} />
+              <Route path="/tools/pdf-compress" element={<PDFCompress />} />
+              <Route path="/tools/pdf-to-image" element={<PDFToImage />} />
+              <Route path="/tools/image-to-pdf" element={<ImageToPDF />} />
+              
+              {/* Image Tools - Background Remover */}
+              <Route path="/tools/background-remover" element={<BackgroundRemover />} />
               
               {/* Text Tools */}
               <Route path="/tools/text-counter" element={<TextCounter />} />
