@@ -5,18 +5,16 @@ import { useLanguage } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   Download, Copy, Link2, Wifi, Mail, Phone, MessageSquare, 
-  FileText, Sparkles, Palette, Settings2, Upload,
-  ChevronLeft, ChevronRight, X
+  FileText, Sparkles, Upload, X
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { qrCategories, getRandomTemplate, getAllTemplates, type QRTemplate } from '@/lib/qr/templates';
+import { qrCategories, getRandomTemplate, type QRTemplate } from '@/lib/qr/templates';
 
 type QRType = 'url' | 'text' | 'wifi' | 'email' | 'phone' | 'sms';
 type QRPattern = 'squares' | 'dots' | 'rounded' | 'classy' | 'classy-rounded' | 'extra-rounded' | 'diamond' | 'star' | 'heart' | 'hexagon';
@@ -73,22 +71,102 @@ const hslToHex = (h: number, s: number, l: number): string => {
   return `#${f(0)}${f(8)}${f(4)}`;
 };
 
+// Color Picker Component
+const ColorPicker = ({ 
+  color, 
+  onChange, 
+  label 
+}: { 
+  color: string; 
+  onChange: (color: string) => void; 
+  label: string;
+}) => {
+  const hsl = hexToHSL(color);
+  
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className="w-10 h-10 rounded-lg border-2 border-border shadow-sm hover:scale-105 transition-transform"
+          style={{ backgroundColor: color }}
+          title={label}
+        />
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-3" align="start">
+        <div className="space-y-3">
+          <p className="text-sm font-medium">{label}</p>
+          
+          {/* Saturation/Lightness Box */}
+          <div 
+            className="w-full h-32 rounded-lg relative cursor-crosshair"
+            style={{
+              background: `linear-gradient(to bottom, white, transparent, black), 
+                           linear-gradient(to right, gray, hsl(${hsl.h}, 100%, 50%))`
+            }}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+              const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+              const newS = Math.round(x * 100);
+              const newL = Math.round((1 - y) * 100);
+              onChange(hslToHex(hsl.h, newS, newL));
+            }}
+          >
+            <div 
+              className="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ 
+                left: `${hsl.s}%`, 
+                top: `${100 - hsl.l}%`,
+                backgroundColor: color
+              }}
+            />
+          </div>
+          
+          {/* Hue Slider */}
+          <div 
+            className="w-full h-4 rounded-full cursor-pointer relative"
+            style={{
+              background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)'
+            }}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+              const newH = Math.round(x * 360);
+              onChange(hslToHex(newH, hsl.s, hsl.l));
+            }}
+          >
+            <div 
+              className="absolute w-4 h-4 border-2 border-white rounded-full shadow-lg -translate-x-1/2 top-0 pointer-events-none"
+              style={{ 
+                left: `${(hsl.h / 360) * 100}%`,
+                backgroundColor: `hsl(${hsl.h}, 100%, 50%)`
+              }}
+            />
+          </div>
+          
+          {/* Hex Input */}
+          <Input
+            value={color}
+            onChange={(e) => onChange(e.target.value)}
+            className="font-mono text-sm"
+            placeholder="#000000"
+          />
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 const QRGenerator = () => {
   const { t, isRTL } = useLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   
   const [qrType, setQrType] = useState<QRType>('url');
-  const [activeTab, setActiveTab] = useState('content');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedTemplate, setSelectedTemplate] = useState<QRTemplate | null>(null);
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [showGradientPicker, setShowGradientPicker] = useState(false);
   
-  const [history, setHistory] = useState<QRSettings[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
-  
-  const [urlInput, setUrlInput] = useState('https://');
+  // Input states
+  const [urlInput, setUrlInput] = useState('https://example.com');
   const [textInput, setTextInput] = useState('');
   const [wifiSSID, setWifiSSID] = useState('');
   const [wifiPassword, setWifiPassword] = useState('');
@@ -114,12 +192,9 @@ const QRGenerator = () => {
     logo: null,
   });
 
-  const [darkHSL, setDarkHSL] = useState(hexToHSL('#000000'));
-  const [gradientHSL, setGradientHSL] = useState(hexToHSL('#667eea'));
-
   const getQRData = useCallback((): string => {
     switch (qrType) {
-      case 'url': return urlInput && urlInput !== 'https://' ? urlInput : '';
+      case 'url': return urlInput || '';
       case 'text': return textInput;
       case 'wifi': return wifiSSID ? `WIFI:T:${wifiEncryption};S:${wifiSSID};P:${wifiPassword};;` : '';
       case 'email': return emailTo ? `mailto:${emailTo}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}` : '';
@@ -152,6 +227,7 @@ const QRGenerator = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
+      // Apply pattern
       if (settings.pattern !== 'squares') {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixelData = imageData.data;
@@ -261,6 +337,7 @@ const QRGenerator = () => {
         ctx.drawImage(tempCanvas, 0, 0);
       }
 
+      // Apply gradient
       if (settings.gradient) {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixelData = imageData.data;
@@ -292,6 +369,7 @@ const QRGenerator = () => {
         ctx.putImageData(imageData, 0, 0);
       }
 
+      // Add logo
       if (settings.logo) {
         const logo = new Image();
         logo.onload = () => {
@@ -314,57 +392,18 @@ const QRGenerator = () => {
     if (getQRData()) generateQR();
   }, [getQRData, settings, generateQR]);
 
-  const saveToHistory = (newSettings: QRSettings) => {
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push({ ...newSettings });
-    if (newHistory.length > 50) newHistory.shift();
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  };
-
-  const undo = () => {
-    if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setSettings(history[historyIndex - 1]);
-    }
-  };
-
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setSettings(history[historyIndex + 1]);
-    }
-  };
-
   const updateSettings = (newSettings: Partial<QRSettings>) => {
-    const updated = { ...settings, ...newSettings };
-    setSettings(updated);
-    saveToHistory(updated);
-  };
-
-  const updateDarkColorFromHSL = (h: number, s: number, l: number) => {
-    setDarkHSL({ h, s, l });
-    updateSettings({ darkColor: hslToHex(h, s, l) });
-  };
-
-  const updateGradientColorFromHSL = (h: number, s: number, l: number) => {
-    setGradientHSL({ h, s, l });
-    updateSettings({ gradientColor: hslToHex(h, s, l) });
+    setSettings(prev => ({ ...prev, ...newSettings }));
   };
 
   const applyTemplate = (template: QRTemplate) => {
-    setSelectedTemplate(template);
-    setDarkHSL(hexToHSL(template.primaryColor));
-    if (template.secondaryColor) setGradientHSL(hexToHSL(template.secondaryColor));
-    
     updateSettings({
       darkColor: template.primaryColor,
       gradient: template.gradient || false,
       gradientColor: template.secondaryColor || template.primaryColor,
       pattern: template.pattern || 'squares',
     });
-    
-    toast.success(isRTL ? `تم تطبيق قالب ${template.nameAr}` : `Applied ${template.name} template`);
+    toast.success(isRTL ? `تم تطبيق ${template.nameAr}` : `Applied ${template.name}`);
   };
 
   const luckyPick = () => {
@@ -451,353 +490,354 @@ const QRGenerator = () => {
     { id: 'sms', label: 'SMS', icon: MessageSquare },
   ];
 
-  const patterns: { id: QRPattern; label: string; labelAr: string }[] = [
-    { id: 'squares', label: 'Squares', labelAr: 'مربعات' },
-    { id: 'dots', label: 'Dots', labelAr: 'نقاط' },
-    { id: 'rounded', label: 'Rounded', labelAr: 'مدور' },
-    { id: 'classy', label: 'Classy', labelAr: 'أنيق' },
-    { id: 'classy-rounded', label: 'Classy+', labelAr: 'أنيق+' },
-    { id: 'extra-rounded', label: 'Circle', labelAr: 'دائري' },
-    { id: 'diamond', label: 'Diamond', labelAr: 'ماسي' },
-    { id: 'star', label: 'Star', labelAr: 'نجمة' },
-    { id: 'heart', label: 'Heart', labelAr: 'قلب' },
-    { id: 'hexagon', label: 'Hexagon', labelAr: 'سداسي' },
+  const patterns: { id: QRPattern; label: string }[] = [
+    { id: 'squares', label: '▪️' },
+    { id: 'dots', label: '●' },
+    { id: 'rounded', label: '▢' },
+    { id: 'classy', label: '◆' },
+    { id: 'classy-rounded', label: '◇' },
+    { id: 'extra-rounded', label: '○' },
+    { id: 'diamond', label: '◈' },
+    { id: 'star', label: '★' },
+    { id: 'heart', label: '♥' },
+    { id: 'hexagon', label: '⬡' },
   ];
 
-  const filteredTemplates = selectedCategory === 'all' 
-    ? getAllTemplates() 
-    : qrCategories.find(c => c.id === selectedCategory)?.templates || [];
+  const filteredCategories = selectedCategory === 'all' 
+    ? qrCategories 
+    : qrCategories.filter(c => c.id === selectedCategory);
 
-  const hasData = !!getQRData();
+  const articleContent = isRTL 
+    ? `مولد رموز QR المجاني هو أداة قوية لإنشاء رموز QR مخصصة بأنماط وألوان متعددة.
 
-  const ColorPickerPopup = ({ 
-    hsl, 
-    onHSLChange, 
-    open, 
-    onOpenChange,
-    color 
-  }: { 
-    hsl: { h: number; s: number; l: number }; 
-    onHSLChange: (h: number, s: number, l: number) => void;
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    color: string;
-  }) => (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <button
-          className="w-10 h-10 rounded-lg border-2 border-border shadow-sm hover:scale-105 transition-transform"
-          style={{ backgroundColor: color }}
-        />
-      </PopoverTrigger>
-      <PopoverContent className="w-64 p-3" align="start">
-        <div className="space-y-3">
-          <div 
-            className="w-full h-32 rounded-lg cursor-crosshair relative overflow-hidden"
-            style={{
-              background: `linear-gradient(to bottom, white, transparent, black), 
-                          linear-gradient(to right, #ccc, hsl(${hsl.h}, 100%, 50%))`,
-            }}
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-              const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-              onHSLChange(hsl.h, Math.round(x * 100), Math.round((1 - y) * 100));
-            }}
-          >
-            <div 
-              className="absolute w-4 h-4 border-2 border-white rounded-full shadow-md -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-              style={{ left: `${hsl.s}%`, top: `${100 - hsl.l}%`, backgroundColor: color }}
-            />
-          </div>
-          <div 
-            className="h-4 rounded-full cursor-pointer relative"
-            style={{ background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)' }}
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-              onHSLChange(Math.round(x * 360), hsl.s, hsl.l);
-            }}
-          >
-            <div 
-              className="absolute w-4 h-4 bg-white border-2 border-gray-400 rounded-full shadow -translate-x-1/2 pointer-events-none top-0"
-              style={{ left: `${(hsl.h / 360) * 100}%` }}
-            />
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
+يمكنك إنشاء رموز QR للروابط والنصوص وشبكات WiFi والبريد الإلكتروني وأرقام الهواتف والرسائل النصية.
+
+اختر من بين أكثر من 200 قالب جاهز أو خصص الألوان والأنماط حسب ذوقك.`
+    : `Our free QR Code Generator is a powerful tool for creating customized QR codes with various patterns and colors.
+
+You can generate QR codes for URLs, text, WiFi networks, email, phone numbers, and SMS messages.
+
+Choose from over 200 ready-made templates or customize colors and patterns to your liking.`;
 
   return (
     <ToolPageLayout
-      title={t.tools.qrGenerator.name}
-      description={t.tools.qrGenerator.description}
-      article={t.tools.qrGenerator.article}
-      keywords="QR code, QR generator, create QR, WiFi QR, URL QR, مولد QR, رمز QR"
+      title={isRTL ? 'مولد QR Code' : 'QR Code Generator'}
+      description={isRTL ? 'أنشئ رموز QR مخصصة بأنماط وألوان متعددة' : 'Create customized QR codes with various patterns and colors'}
+      article={articleContent}
+      keywords={isRTL ? 'مولد qr, رمز qr, باركود, كيو ار كود' : 'qr generator, qr code, barcode, qr maker'}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[320px,1fr] gap-6">
-        {/* Left: QR Preview - Fixed */}
-        <div className="lg:sticky lg:top-24 lg:h-fit space-y-4">
-          <div className="glass-card p-4 rounded-2xl">
+      <div className={`flex flex-col lg:flex-row gap-6 ${isRTL ? 'lg:flex-row-reverse' : ''}`}>
+        
+        {/* Left Side - QR Preview */}
+        <div className="lg:w-1/3 lg:sticky lg:top-24 lg:self-start">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-lg">
+            {/* QR Display */}
             <div 
-              className="relative rounded-xl p-3 flex items-center justify-center mx-auto border border-border"
-              style={{
-                background: settings.transparentBg 
-                  ? 'repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 12px 12px'
-                  : settings.lightColor,
-                aspectRatio: '1',
+              className="flex items-center justify-center rounded-xl p-4 mb-4"
+              style={{ 
+                backgroundColor: settings.transparentBg ? 'transparent' : settings.lightColor,
+                backgroundImage: settings.transparentBg ? 'repeating-conic-gradient(#e5e5e5 0% 25%, transparent 0% 50%) 50% / 16px 16px' : 'none'
               }}
             >
-              <canvas
-                ref={canvasRef}
-                className="max-w-full max-h-full"
-                style={{ display: hasData ? 'block' : 'none' }}
+              <canvas 
+                ref={canvasRef} 
+                className="max-w-full h-auto"
+                style={{ width: '200px', height: '200px' }}
               />
-              {!hasData && (
-                <p className="text-muted-foreground text-center px-4 text-sm">
-                  {isRTL ? 'أدخل البيانات لإنشاء QR' : 'Enter data to generate QR'}
-                </p>
-              )}
             </div>
 
-            {hasData && (
-              <div className="flex gap-2 mt-3 flex-wrap justify-center">
-                <Button onClick={() => downloadQR('png')} size="sm" variant="outline">
-                  <Download className="w-3 h-3 me-1" /> PNG
-                </Button>
-                <Button onClick={() => downloadQR('svg')} size="sm" variant="outline">
-                  <Download className="w-3 h-3 me-1" /> SVG
-                </Button>
-                <Button onClick={copyToClipboard} size="sm" variant="outline">
-                  <Copy className="w-3 h-3 me-1" /> {isRTL ? 'نسخ' : 'Copy'}
-                </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-2 mb-4">
+              <Button onClick={() => downloadQR('png')} className="flex-1" size="sm">
+                <Download className="w-4 h-4 mr-1" /> PNG
+              </Button>
+              <Button onClick={() => downloadQR('svg')} variant="outline" className="flex-1" size="sm">
+                SVG
+              </Button>
+              <Button onClick={() => downloadQR('jpg')} variant="outline" className="flex-1" size="sm">
+                JPG
+              </Button>
+            </div>
+            
+            <Button onClick={copyToClipboard} variant="secondary" className="w-full" size="sm">
+              <Copy className="w-4 h-4 mr-2" />
+              {isRTL ? 'نسخ' : 'Copy'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Side - Settings */}
+        <div className="lg:w-2/3 space-y-4">
+          
+          {/* Content Type */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <h3 className="font-medium mb-3 text-sm">{isRTL ? 'نوع المحتوى' : 'Content Type'}</h3>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {qrTypes.map(type => (
+                <button
+                  key={type.id}
+                  onClick={() => setQrType(type.id as QRType)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                    qrType === type.id 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted hover:bg-muted/80'
+                  }`}
+                >
+                  <type.icon className="w-4 h-4" />
+                  {type.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Input Fields */}
+            {qrType === 'url' && (
+              <Input
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="https://example.com"
+              />
+            )}
+            {qrType === 'text' && (
+              <Textarea
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                placeholder={isRTL ? 'أدخل النص...' : 'Enter text...'}
+                rows={3}
+              />
+            )}
+            {qrType === 'wifi' && (
+              <div className="space-y-2">
+                <Input placeholder="SSID" value={wifiSSID} onChange={(e) => setWifiSSID(e.target.value)} />
+                <Input placeholder={isRTL ? 'كلمة المرور' : 'Password'} type="password" value={wifiPassword} onChange={(e) => setWifiPassword(e.target.value)} />
+              </div>
+            )}
+            {qrType === 'email' && (
+              <div className="space-y-2">
+                <Input placeholder={isRTL ? 'البريد الإلكتروني' : 'Email'} value={emailTo} onChange={(e) => setEmailTo(e.target.value)} />
+                <Input placeholder={isRTL ? 'الموضوع' : 'Subject'} value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
+              </div>
+            )}
+            {qrType === 'phone' && (
+              <Input placeholder={isRTL ? 'رقم الهاتف' : 'Phone number'} value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+            )}
+            {qrType === 'sms' && (
+              <div className="space-y-2">
+                <Input placeholder={isRTL ? 'رقم الهاتف' : 'Phone number'} value={smsNumber} onChange={(e) => setSmsNumber(e.target.value)} />
+                <Input placeholder={isRTL ? 'الرسالة' : 'Message'} value={smsMessage} onChange={(e) => setSmsMessage(e.target.value)} />
               </div>
             )}
           </div>
 
-          {/* Quick Settings */}
-          <div className="glass-card p-4 rounded-2xl space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{isRTL ? 'الألوان' : 'Colors'}</span>
-              <div className="flex items-center gap-2">
-                <ColorPickerPopup 
-                  hsl={darkHSL} 
-                  onHSLChange={updateDarkColorFromHSL}
-                  open={showColorPicker}
-                  onOpenChange={setShowColorPicker}
-                  color={settings.darkColor}
-                />
-                {settings.gradient && (
-                  <ColorPickerPopup 
-                    hsl={gradientHSL} 
-                    onHSLChange={updateGradientColorFromHSL}
-                    open={showGradientPicker}
-                    onOpenChange={setShowGradientPicker}
-                    color={settings.gradientColor}
-                  />
-                )}
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm">{isRTL ? 'تدرج' : 'Gradient'}</span>
-              <Switch checked={settings.gradient} onCheckedChange={(gradient) => updateSettings({ gradient })} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm">{isRTL ? 'شفاف' : 'Transparent'}</span>
-              <Switch checked={settings.transparentBg} onCheckedChange={(transparentBg) => updateSettings({ transparentBg })} />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>{isRTL ? 'الجودة' : 'Quality'}</span>
-                <span className="text-muted-foreground">{settings.quality}px</span>
-              </div>
-              <Slider
-                value={[settings.quality]}
-                onValueChange={([quality]) => updateSettings({ quality })}
-                min={200}
-                max={1000}
-                step={50}
-              />
+          {/* Patterns */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <h3 className="font-medium mb-3 text-sm">{isRTL ? 'النمط' : 'Pattern'}</h3>
+            <div className="flex flex-wrap gap-2">
+              {patterns.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => updateSettings({ pattern: p.id })}
+                  className={`w-10 h-10 rounded-lg text-lg flex items-center justify-center transition-all ${
+                    settings.pattern === p.id 
+                      ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2' 
+                      : 'bg-muted hover:bg-muted/80'
+                  }`}
+                  title={p.id}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
           </div>
-        </div>
 
-        {/* Right: Controls */}
-        <div className="glass-card p-5 rounded-2xl">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="content" className="flex items-center gap-1">
-                <FileText className="w-4 h-4" />
-                <span className="hidden sm:inline">{isRTL ? 'المحتوى' : 'Content'}</span>
-              </TabsTrigger>
-              <TabsTrigger value="templates" className="flex items-center gap-1">
-                <Palette className="w-4 h-4" />
-                <span className="hidden sm:inline">{isRTL ? 'القوالب' : 'Templates'}</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-1">
-                <Settings2 className="w-4 h-4" />
-                <span className="hidden sm:inline">{isRTL ? 'الإعدادات' : 'Settings'}</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="content" className="space-y-4">
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                {qrTypes.map((type) => (
-                  <button
-                    key={type.id}
-                    onClick={() => setQrType(type.id as QRType)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${
-                      qrType === type.id
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border bg-muted/50 hover:border-primary/50'
-                    }`}
-                  >
-                    <type.icon className="w-4 h-4" />
-                    <span className="text-xs">{type.label}</span>
-                  </button>
-                ))}
+          {/* Colors */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <h3 className="font-medium mb-3 text-sm">{isRTL ? 'الألوان' : 'Colors'}</h3>
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">{isRTL ? 'أساسي' : 'Primary'}</span>
+                <ColorPicker 
+                  color={settings.darkColor} 
+                  onChange={(c) => updateSettings({ darkColor: c })}
+                  label={isRTL ? 'اللون الأساسي' : 'Primary Color'}
+                />
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">{isRTL ? 'خلفية' : 'Background'}</span>
+                <ColorPicker 
+                  color={settings.lightColor} 
+                  onChange={(c) => updateSettings({ lightColor: c })}
+                  label={isRTL ? 'لون الخلفية' : 'Background Color'}
+                />
               </div>
 
-              <div className="space-y-3">
-                {qrType === 'url' && (
-                  <Input value={urlInput} onChange={(e) => setUrlInput(e.target.value)} placeholder="https://example.com" dir="ltr" />
-                )}
-                {qrType === 'text' && (
-                  <Textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder={isRTL ? 'أدخل النص...' : 'Enter text...'} rows={3} />
-                )}
-                {qrType === 'wifi' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Input value={wifiSSID} onChange={(e) => setWifiSSID(e.target.value)} placeholder={isRTL ? 'اسم الشبكة' : 'Network name'} dir="ltr" />
-                    <Input type="password" value={wifiPassword} onChange={(e) => setWifiPassword(e.target.value)} placeholder={isRTL ? 'كلمة المرور' : 'Password'} dir="ltr" />
-                    <div className="flex gap-1 sm:col-span-2">
-                      {['WPA', 'WEP', 'nopass'].map((enc) => (
-                        <button key={enc} onClick={() => setWifiEncryption(enc as any)} className={`flex-1 px-3 py-1.5 rounded-lg text-sm ${wifiEncryption === enc ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                          {enc === 'nopass' ? (isRTL ? 'بدون' : 'None') : enc}
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={settings.transparentBg}
+                  onCheckedChange={(c) => updateSettings({ transparentBg: c })}
+                />
+                <span className="text-xs">{isRTL ? 'شفاف' : 'Transparent'}</span>
+              </div>
+            </div>
+
+            {/* Gradient */}
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm">{isRTL ? 'تدرج' : 'Gradient'}</span>
+                <Switch
+                  checked={settings.gradient}
+                  onCheckedChange={(c) => updateSettings({ gradient: c })}
+                />
+              </div>
+              {settings.gradient && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{isRTL ? 'لون التدرج' : 'Gradient'}</span>
+                  <ColorPicker 
+                    color={settings.gradientColor} 
+                    onChange={(c) => updateSettings({ gradientColor: c })}
+                    label={isRTL ? 'لون التدرج' : 'Gradient Color'}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Quality & Size */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <h3 className="font-medium mb-3 text-sm">{isRTL ? 'الجودة والحجم' : 'Quality & Size'}</h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-xs mb-2">
+                  <span>{isRTL ? 'الجودة' : 'Quality'}</span>
+                  <span>{settings.quality}px</span>
+                </div>
+                <Slider
+                  value={[settings.quality]}
+                  onValueChange={([v]) => updateSettings({ quality: v })}
+                  min={200}
+                  max={1000}
+                  step={100}
+                />
+              </div>
+              <div>
+                <div className="flex justify-between text-xs mb-2">
+                  <span>{isRTL ? 'الهامش' : 'Margin'}</span>
+                  <span>{settings.margin}</span>
+                </div>
+                <Slider
+                  value={[settings.margin]}
+                  onValueChange={([v]) => updateSettings({ margin: v })}
+                  min={0}
+                  max={6}
+                  step={1}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Logo */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <h3 className="font-medium mb-3 text-sm">{isRTL ? 'الشعار' : 'Logo'}</h3>
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                ref={logoInputRef}
+                onChange={handleLogoUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => logoInputRef.current?.click()}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {isRTL ? 'رفع شعار' : 'Upload Logo'}
+              </Button>
+              {settings.logo && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => updateSettings({ logo: null })}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Templates */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-sm">{isRTL ? 'القوالب' : 'Templates'}</h3>
+              <Button onClick={luckyPick} variant="ghost" size="sm">
+                <Sparkles className="w-4 h-4 mr-1" />
+                {isRTL ? 'عشوائي' : 'Random'}
+              </Button>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-all ${
+                  selectedCategory === 'all' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted hover:bg-muted/80'
+                }`}
+              >
+                {isRTL ? 'الكل' : 'All'}
+              </button>
+              {qrCategories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-all ${
+                    selectedCategory === cat.id 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted hover:bg-muted/80'
+                  }`}
+                >
+                  {cat.icon} {isRTL ? cat.nameAr : cat.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Templates Grid */}
+            <ScrollArea className="h-48">
+              <div className="space-y-4">
+                {filteredCategories.map(category => (
+                  <div key={category.id}>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      {category.icon} {isRTL ? category.nameAr : category.name}
+                    </p>
+                    <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
+                      {category.templates.map(template => (
+                        <button
+                          key={template.id}
+                          onClick={() => applyTemplate(template)}
+                          className="w-8 h-8 rounded-lg border border-border hover:scale-110 transition-transform relative overflow-hidden"
+                          style={{
+                            background: template.gradient && template.secondaryColor
+                              ? `linear-gradient(135deg, ${template.primaryColor}, ${template.secondaryColor})`
+                              : template.primaryColor
+                          }}
+                          title={isRTL ? template.nameAr : template.name}
+                        >
+                          {template.pattern && template.pattern !== 'squares' && (
+                            <span className="absolute inset-0 flex items-center justify-center text-white/50 text-xs">
+                              {patterns.find(p => p.id === template.pattern)?.label}
+                            </span>
+                          )}
                         </button>
                       ))}
                     </div>
                   </div>
-                )}
-                {qrType === 'email' && (
-                  <div className="space-y-2">
-                    <Input type="email" value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder="example@email.com" dir="ltr" />
-                    <Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder={isRTL ? 'الموضوع' : 'Subject'} />
-                    <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} placeholder={isRTL ? 'الرسالة' : 'Message'} rows={2} />
-                  </div>
-                )}
-                {qrType === 'phone' && (
-                  <Input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+1234567890" dir="ltr" />
-                )}
-                {qrType === 'sms' && (
-                  <div className="space-y-2">
-                    <Input type="tel" value={smsNumber} onChange={(e) => setSmsNumber(e.target.value)} placeholder="+1234567890" dir="ltr" />
-                    <Textarea value={smsMessage} onChange={(e) => setSmsMessage(e.target.value)} placeholder={isRTL ? 'الرسالة' : 'Message'} rows={2} />
-                  </div>
-                )}
+                ))}
               </div>
-            </TabsContent>
+            </ScrollArea>
+          </div>
 
-            <TabsContent value="templates" className="space-y-4">
-              <div className="flex gap-2">
-                <Button onClick={luckyPick} className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                  <Sparkles className="w-4 h-4 me-2" /> {isRTL ? '🎲 ضربة حظ' : '🎲 Lucky Pick'}
-                </Button>
-                <Button onClick={undo} variant="outline" size="icon" disabled={historyIndex <= 0}><ChevronLeft className="w-4 h-4" /></Button>
-                <Button onClick={redo} variant="outline" size="icon" disabled={historyIndex >= history.length - 1}><ChevronRight className="w-4 h-4" /></Button>
-              </div>
-
-              <ScrollArea className="w-full">
-                <div className="flex gap-2 pb-2">
-                  <button onClick={() => setSelectedCategory('all')} className={`px-3 py-1 rounded-full text-xs whitespace-nowrap ${selectedCategory === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                    {isRTL ? 'الكل' : 'All'}
-                  </button>
-                  {qrCategories.map((cat) => (
-                    <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-3 py-1 rounded-full text-xs whitespace-nowrap flex items-center gap-1 ${selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                      <span>{cat.icon}</span>
-                      <span>{isRTL ? cat.nameAr : cat.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
-
-              <ScrollArea className="h-[250px]">
-                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2 p-1">
-                  {filteredTemplates.map((template) => {
-                    const patternIcon = template.pattern === 'dots' ? '●' : template.pattern === 'rounded' ? '▢' : template.pattern === 'diamond' ? '◆' : template.pattern === 'star' ? '★' : template.pattern === 'heart' ? '♥' : '';
-                    return (
-                      <button
-                        key={template.id}
-                        onClick={() => applyTemplate(template)}
-                        className={`aspect-square rounded-lg border-2 transition-transform hover:scale-110 relative overflow-hidden ${
-                          selectedTemplate?.id === template.id ? 'border-primary ring-2 ring-primary/50' : 'border-transparent'
-                        }`}
-                        style={{ background: template.gradient && template.secondaryColor ? `linear-gradient(135deg, ${template.primaryColor}, ${template.secondaryColor})` : template.primaryColor }}
-                        title={isRTL ? template.nameAr : template.name}
-                      >
-                        {patternIcon && <span className="absolute bottom-0.5 right-0.5 text-[8px] opacity-70 text-white drop-shadow">{patternIcon}</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
-            </TabsContent>
-
-            <TabsContent value="settings" className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">{isRTL ? 'نمط الـ QR' : 'QR Pattern'}</label>
-                <div className="grid grid-cols-5 gap-2">
-                  {patterns.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => updateSettings({ pattern: p.id })}
-                      className={`flex flex-col items-center gap-0.5 p-2 rounded-lg border transition-all ${
-                        settings.pattern === p.id ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-muted/50 hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="w-5 h-5 flex items-center justify-center text-[10px]">
-                        {p.id === 'squares' && <div className="w-4 h-4 bg-current" />}
-                        {p.id === 'dots' && <div className="w-4 h-4 bg-current rounded-full" />}
-                        {p.id === 'rounded' && <div className="w-4 h-4 bg-current rounded-md" />}
-                        {p.id === 'classy' && <div className="w-4 h-4 bg-current rounded-tl-full rounded-br-full" />}
-                        {p.id === 'classy-rounded' && <div className="w-4 h-4 bg-current rounded-tl-xl rounded-br-xl" />}
-                        {p.id === 'extra-rounded' && <div className="w-5 h-5 bg-current rounded-full" />}
-                        {p.id === 'diamond' && <div className="w-3.5 h-3.5 bg-current rotate-45" />}
-                        {p.id === 'star' && '★'}
-                        {p.id === 'heart' && '♥'}
-                        {p.id === 'hexagon' && '⬡'}
-                      </div>
-                      <span className="text-[9px]">{isRTL ? p.labelAr : p.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">{isRTL ? 'إضافة لوجو' : 'Add Logo'}</label>
-                <div className="flex gap-2">
-                  <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                  <Button variant="outline" onClick={() => logoInputRef.current?.click()} className="flex-1">
-                    <Upload className="w-4 h-4 me-2" />
-                    {settings.logo ? (isRTL ? 'تغيير' : 'Change') : (isRTL ? 'رفع لوجو' : 'Upload')}
-                  </Button>
-                  {settings.logo && (
-                    <Button variant="destructive" size="icon" onClick={() => updateSettings({ logo: null })}>
-                      <X className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-                {settings.logo && (
-                  <div className="mt-2 flex justify-center">
-                    <img src={settings.logo} alt="Logo" className="h-12 w-12 object-contain rounded" />
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
         </div>
       </div>
     </ToolPageLayout>
