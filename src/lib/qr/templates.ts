@@ -1,4 +1,4 @@
-// QR Code Templates - 100+ templates organized by categories
+// QR Code Templates - 200+ templates organized by categories
 
 export interface QRTemplate {
   id: string;
@@ -19,12 +19,6 @@ export interface QRCategory {
   templates: QRTemplate[];
 }
 
-// Generate gradient colors
-const generateGradientPair = (h1: number, h2: number, s: number = 70, l: number = 50) => ({
-  primary: `hsl(${h1}, ${s}%, ${l}%)`,
-  secondary: `hsl(${h2}, ${s}%, ${l}%)`,
-});
-
 export const qrCategories: QRCategory[] = [
   {
     id: 'sports',
@@ -42,6 +36,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'sports-8', name: 'Cycling Purple', nameAr: 'بنفسجي دراجات', primaryColor: '#8e44ad', secondaryColor: '#3498db', gradient: true, category: 'sports' },
       { id: 'sports-9', name: 'Gym Metal', nameAr: 'رمادي رياضي', primaryColor: '#2c3e50', secondaryColor: '#34495e', gradient: true, category: 'sports' },
       { id: 'sports-10', name: 'Olympic Gold', nameAr: 'ذهبي أولمبي', primaryColor: '#d4af37', secondaryColor: '#f4d03f', gradient: true, category: 'sports' },
+      { id: 'sports-11', name: 'Rugby Brown', nameAr: 'بني رجبي', primaryColor: '#8B4513', category: 'sports' },
+      { id: 'sports-12', name: 'Hockey Ice', nameAr: 'جليد هوكي', primaryColor: '#87CEEB', secondaryColor: '#4169E1', gradient: true, category: 'sports' },
+      { id: 'sports-13', name: 'Volleyball Sand', nameAr: 'رملي كرة طائرة', primaryColor: '#F4A460', category: 'sports' },
+      { id: 'sports-14', name: 'Cricket Green', nameAr: 'أخضر كريكيت', primaryColor: '#228B22', secondaryColor: '#32CD32', gradient: true, category: 'sports' },
+      { id: 'sports-15', name: 'Surfing Wave', nameAr: 'موجة تصفح', primaryColor: '#00CED1', secondaryColor: '#20B2AA', gradient: true, category: 'sports' },
+      { id: 'sports-16', name: 'Skiing White', nameAr: 'أبيض تزلج', primaryColor: '#E0E0E0', secondaryColor: '#B0C4DE', gradient: true, category: 'sports' },
+      { id: 'sports-17', name: 'Wrestling Bronze', nameAr: 'برونزي مصارعة', primaryColor: '#CD7F32', category: 'sports' },
+      { id: 'sports-18', name: 'Archery Target', nameAr: 'هدف رماية', primaryColor: '#DC143C', secondaryColor: '#FFD700', gradient: true, category: 'sports' },
+      { id: 'sports-19', name: 'Fencing Silver', nameAr: 'فضي مبارزة', primaryColor: '#C0C0C0', category: 'sports' },
+      { id: 'sports-20', name: 'Marathon Runner', nameAr: 'عداء ماراثون', primaryColor: '#FF4500', secondaryColor: '#FF6347', gradient: true, category: 'sports' },
     ]
   },
   {
@@ -60,6 +64,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'love-8', name: 'Lavender Dreams', nameAr: 'لافندر حالم', primaryColor: '#a29bfe', secondaryColor: '#fd79a8', gradient: true, category: 'love' },
       { id: 'love-9', name: 'Cherry Blossom', nameAr: 'زهر الكرز', primaryColor: '#fab1a0', secondaryColor: '#ff7675', gradient: true, category: 'love' },
       { id: 'love-10', name: 'Sunset Love', nameAr: 'غروب الحب', primaryColor: '#ff6348', secondaryColor: '#ff4757', gradient: true, category: 'love' },
+      { id: 'love-11', name: 'Heartbeat', nameAr: 'نبض القلب', primaryColor: '#FF1493', secondaryColor: '#DC143C', gradient: true, category: 'love' },
+      { id: 'love-12', name: 'Eternal Rose', nameAr: 'وردة أبدية', primaryColor: '#C71585', category: 'love' },
+      { id: 'love-13', name: 'Cupid Arrow', nameAr: 'سهم كيوبيد', primaryColor: '#FF69B4', secondaryColor: '#FFB6C1', gradient: true, category: 'love' },
+      { id: 'love-14', name: 'Moonlight', nameAr: 'ضوء القمر', primaryColor: '#E6E6FA', secondaryColor: '#DDA0DD', gradient: true, category: 'love' },
+      { id: 'love-15', name: 'First Kiss', nameAr: 'القبلة الأولى', primaryColor: '#DB7093', category: 'love' },
+      { id: 'love-16', name: 'True Love', nameAr: 'حب حقيقي', primaryColor: '#8B0000', secondaryColor: '#FF0000', gradient: true, category: 'love' },
+      { id: 'love-17', name: 'Wedding Bells', nameAr: 'أجراس الزفاف', primaryColor: '#FFFAF0', secondaryColor: '#FFE4E1', gradient: true, category: 'love' },
+      { id: 'love-18', name: 'Passion Fruit', nameAr: 'فاكهة العاطفة', primaryColor: '#8B008B', secondaryColor: '#FF1493', gradient: true, category: 'love' },
+      { id: 'love-19', name: 'Love Letter', nameAr: 'رسالة حب', primaryColor: '#FFC0CB', category: 'love' },
+      { id: 'love-20', name: 'Forever Yours', nameAr: 'لك للأبد', primaryColor: '#FF6347', secondaryColor: '#FF4500', gradient: true, category: 'love' },
     ]
   },
   {
@@ -78,6 +92,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'food-8', name: 'Honey Gold', nameAr: 'ذهبي عسل', primaryColor: '#f9ca24', secondaryColor: '#f0932b', gradient: true, category: 'food' },
       { id: 'food-9', name: 'Avocado', nameAr: 'أفوكادو', primaryColor: '#6ab04c', secondaryColor: '#badc58', gradient: true, category: 'food' },
       { id: 'food-10', name: 'Wine Red', nameAr: 'أحمر نبيذي', primaryColor: '#722f37', secondaryColor: '#8b0000', gradient: true, category: 'food' },
+      { id: 'food-11', name: 'Lemon Fresh', nameAr: 'ليمون منعش', primaryColor: '#FFF44F', secondaryColor: '#ADFF2F', gradient: true, category: 'food' },
+      { id: 'food-12', name: 'Blueberry', nameAr: 'توت أزرق', primaryColor: '#4169E1', category: 'food' },
+      { id: 'food-13', name: 'Caramel', nameAr: 'كراميل', primaryColor: '#FFD700', secondaryColor: '#D2691E', gradient: true, category: 'food' },
+      { id: 'food-14', name: 'Vanilla Cream', nameAr: 'كريمة الفانيليا', primaryColor: '#FFFACD', category: 'food' },
+      { id: 'food-15', name: 'Watermelon', nameAr: 'بطيخ', primaryColor: '#FF6B6B', secondaryColor: '#4ECB71', gradient: true, category: 'food' },
+      { id: 'food-16', name: 'Mango Tango', nameAr: 'مانجو', primaryColor: '#FF8C00', secondaryColor: '#FFD700', gradient: true, category: 'food' },
+      { id: 'food-17', name: 'Grape Vine', nameAr: 'كرمة العنب', primaryColor: '#6B238E', secondaryColor: '#9400D3', gradient: true, category: 'food' },
+      { id: 'food-18', name: 'Coconut', nameAr: 'جوز الهند', primaryColor: '#FFFAFA', secondaryColor: '#8B4513', gradient: true, category: 'food' },
+      { id: 'food-19', name: 'Matcha Green', nameAr: 'ماتشا', primaryColor: '#7CFC00', secondaryColor: '#228B22', gradient: true, category: 'food' },
+      { id: 'food-20', name: 'Espresso', nameAr: 'إسبريسو', primaryColor: '#3C1414', secondaryColor: '#5C4033', gradient: true, category: 'food' },
     ]
   },
   {
@@ -96,6 +120,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'tech-8', name: 'Binary Black', nameAr: 'أسود ثنائي', primaryColor: '#1a1a2e', secondaryColor: '#16213e', gradient: true, category: 'technology' },
       { id: 'tech-9', name: 'Cloud Blue', nameAr: 'أزرق سحابي', primaryColor: '#74b9ff', secondaryColor: '#0984e3', gradient: true, category: 'technology' },
       { id: 'tech-10', name: 'Robot Silver', nameAr: 'فضي روبوتي', primaryColor: '#636e72', secondaryColor: '#b2bec3', gradient: true, category: 'technology' },
+      { id: 'tech-11', name: 'Quantum', nameAr: 'كمي', primaryColor: '#8A2BE2', secondaryColor: '#00FFFF', gradient: true, category: 'technology' },
+      { id: 'tech-12', name: 'Blockchain', nameAr: 'بلوكتشين', primaryColor: '#F7931A', secondaryColor: '#4A4A4A', gradient: true, category: 'technology' },
+      { id: 'tech-13', name: 'VR Reality', nameAr: 'واقع افتراضي', primaryColor: '#7B68EE', secondaryColor: '#00CED1', gradient: true, category: 'technology' },
+      { id: 'tech-14', name: '5G Network', nameAr: 'شبكة 5G', primaryColor: '#00BFFF', secondaryColor: '#1E90FF', gradient: true, category: 'technology' },
+      { id: 'tech-15', name: 'Cyberpunk', nameAr: 'سايبربانك', primaryColor: '#FF00FF', secondaryColor: '#00FFFF', gradient: true, category: 'technology' },
+      { id: 'tech-16', name: 'Terminal', nameAr: 'تيرمنال', primaryColor: '#00FF00', category: 'technology' },
+      { id: 'tech-17', name: 'Silicon', nameAr: 'سيليكون', primaryColor: '#708090', secondaryColor: '#2F4F4F', gradient: true, category: 'technology' },
+      { id: 'tech-18', name: 'Laser Red', nameAr: 'ليزر أحمر', primaryColor: '#FF0000', secondaryColor: '#8B0000', gradient: true, category: 'technology' },
+      { id: 'tech-19', name: 'Digital Ocean', nameAr: 'محيط رقمي', primaryColor: '#0080FF', secondaryColor: '#00BFFF', gradient: true, category: 'technology' },
+      { id: 'tech-20', name: 'Neural Net', nameAr: 'شبكة عصبية', primaryColor: '#9370DB', secondaryColor: '#6A5ACD', gradient: true, category: 'technology' },
     ]
   },
   {
@@ -114,6 +148,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'social-8', name: 'Snapchat', nameAr: 'سناب شات', primaryColor: '#fffc00', secondaryColor: '#ffd700', gradient: true, category: 'social' },
       { id: 'social-9', name: 'Pinterest', nameAr: 'بنترست', primaryColor: '#e60023', category: 'social' },
       { id: 'social-10', name: 'Discord', nameAr: 'ديسكورد', primaryColor: '#5865f2', secondaryColor: '#7289da', gradient: true, category: 'social' },
+      { id: 'social-11', name: 'Telegram', nameAr: 'تيليجرام', primaryColor: '#0088cc', category: 'social' },
+      { id: 'social-12', name: 'Reddit', nameAr: 'ريديت', primaryColor: '#ff4500', category: 'social' },
+      { id: 'social-13', name: 'Twitch', nameAr: 'تويتش', primaryColor: '#9146ff', category: 'social' },
+      { id: 'social-14', name: 'Spotify', nameAr: 'سبوتيفاي', primaryColor: '#1db954', category: 'social' },
+      { id: 'social-15', name: 'X Black', nameAr: 'إكس أسود', primaryColor: '#000000', category: 'social' },
+      { id: 'social-16', name: 'Threads', nameAr: 'ثريدز', primaryColor: '#000000', secondaryColor: '#666666', gradient: true, category: 'social' },
+      { id: 'social-17', name: 'BeReal', nameAr: 'بي ريل', primaryColor: '#000000', secondaryColor: '#FFFFFF', gradient: true, category: 'social' },
+      { id: 'social-18', name: 'Clubhouse', nameAr: 'كلوب هاوس', primaryColor: '#F2E8CF', secondaryColor: '#8B5A2B', gradient: true, category: 'social' },
+      { id: 'social-19', name: 'Medium', nameAr: 'ميديوم', primaryColor: '#000000', category: 'social' },
+      { id: 'social-20', name: 'Dribbble', nameAr: 'دريبل', primaryColor: '#ea4c89', category: 'social' },
     ]
   },
   {
@@ -132,6 +176,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'business-8', name: 'Burgundy', nameAr: 'بورغندي', primaryColor: '#800020', secondaryColor: '#a52a2a', gradient: true, category: 'business' },
       { id: 'business-9', name: 'Forest Green', nameAr: 'أخضر غابي', primaryColor: '#1d4e4a', category: 'business' },
       { id: 'business-10', name: 'Platinum', nameAr: 'بلاتيني', primaryColor: '#e5e4e2', secondaryColor: '#c0c0c0', gradient: true, category: 'business' },
+      { id: 'business-11', name: 'Startup Orange', nameAr: 'برتقالي ستارتب', primaryColor: '#FF6600', secondaryColor: '#FF9933', gradient: true, category: 'business' },
+      { id: 'business-12', name: 'Finance Green', nameAr: 'أخضر مالي', primaryColor: '#006400', secondaryColor: '#228B22', gradient: true, category: 'business' },
+      { id: 'business-13', name: 'Lawyer Brown', nameAr: 'بني قانوني', primaryColor: '#8B4513', secondaryColor: '#A0522D', gradient: true, category: 'business' },
+      { id: 'business-14', name: 'Medical Blue', nameAr: 'أزرق طبي', primaryColor: '#4169E1', secondaryColor: '#00CED1', gradient: true, category: 'business' },
+      { id: 'business-15', name: 'Real Estate', nameAr: 'عقارات', primaryColor: '#2E8B57', secondaryColor: '#90EE90', gradient: true, category: 'business' },
+      { id: 'business-16', name: 'Consulting Gray', nameAr: 'رمادي استشاري', primaryColor: '#696969', category: 'business' },
+      { id: 'business-17', name: 'Banking Blue', nameAr: 'أزرق مصرفي', primaryColor: '#00008B', secondaryColor: '#4169E1', gradient: true, category: 'business' },
+      { id: 'business-18', name: 'Insurance Safe', nameAr: 'تأمين آمن', primaryColor: '#006994', category: 'business' },
+      { id: 'business-19', name: 'Tech Startup', nameAr: 'شركة تقنية', primaryColor: '#7C3AED', secondaryColor: '#A855F7', gradient: true, category: 'business' },
+      { id: 'business-20', name: 'Luxury Black', nameAr: 'أسود فاخر', primaryColor: '#000000', secondaryColor: '#1C1C1C', gradient: true, category: 'business' },
     ]
   },
   {
@@ -150,6 +204,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'nature-8', name: 'Mountain Gray', nameAr: 'رمادي جبلي', primaryColor: '#708090', secondaryColor: '#778899', gradient: true, category: 'nature' },
       { id: 'nature-9', name: 'Flower Pink', nameAr: 'وردي زهري', primaryColor: '#ffb6c1', secondaryColor: '#ff69b4', gradient: true, category: 'nature' },
       { id: 'nature-10', name: 'Leaf Green', nameAr: 'أخضر ورقي', primaryColor: '#90ee90', secondaryColor: '#32cd32', gradient: true, category: 'nature' },
+      { id: 'nature-11', name: 'Aurora', nameAr: 'شفق قطبي', primaryColor: '#00FF7F', secondaryColor: '#9400D3', gradient: true, category: 'nature' },
+      { id: 'nature-12', name: 'Volcano', nameAr: 'بركان', primaryColor: '#8B0000', secondaryColor: '#FF4500', gradient: true, category: 'nature' },
+      { id: 'nature-13', name: 'Coral Reef', nameAr: 'شعاب مرجانية', primaryColor: '#FF7F50', secondaryColor: '#20B2AA', gradient: true, category: 'nature' },
+      { id: 'nature-14', name: 'Rainforest', nameAr: 'غابة مطيرة', primaryColor: '#006400', secondaryColor: '#228B22', gradient: true, category: 'nature' },
+      { id: 'nature-15', name: 'Arctic Ice', nameAr: 'جليد قطبي', primaryColor: '#E0FFFF', secondaryColor: '#87CEEB', gradient: true, category: 'nature' },
+      { id: 'nature-16', name: 'Autumn Leaves', nameAr: 'أوراق الخريف', primaryColor: '#D2691E', secondaryColor: '#8B4513', gradient: true, category: 'nature' },
+      { id: 'nature-17', name: 'Spring Bloom', nameAr: 'ازدهار الربيع', primaryColor: '#98FB98', secondaryColor: '#FFB6C1', gradient: true, category: 'nature' },
+      { id: 'nature-18', name: 'Thunder Storm', nameAr: 'عاصفة رعدية', primaryColor: '#4B0082', secondaryColor: '#00BFFF', gradient: true, category: 'nature' },
+      { id: 'nature-19', name: 'Savanna', nameAr: 'سافانا', primaryColor: '#DAA520', secondaryColor: '#8B4513', gradient: true, category: 'nature' },
+      { id: 'nature-20', name: 'Deep Sea', nameAr: 'أعماق البحر', primaryColor: '#000080', secondaryColor: '#191970', gradient: true, category: 'nature' },
     ]
   },
   {
@@ -168,6 +232,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'art-8', name: 'Vintage Sepia', nameAr: 'بني قديم', primaryColor: '#704214', secondaryColor: '#a0522d', gradient: true, category: 'art' },
       { id: 'art-9', name: 'Neon Glow', nameAr: 'توهج نيون', primaryColor: '#39ff14', secondaryColor: '#ff073a', gradient: true, category: 'art' },
       { id: 'art-10', name: 'Watercolor', nameAr: 'ألوان مائية', primaryColor: '#a8d8ea', secondaryColor: '#aa96da', gradient: true, category: 'art' },
+      { id: 'art-11', name: 'Impressionist', nameAr: 'انطباعي', primaryColor: '#4169E1', secondaryColor: '#FFD700', gradient: true, category: 'art' },
+      { id: 'art-12', name: 'Art Deco', nameAr: 'آرت ديكو', primaryColor: '#C9B037', secondaryColor: '#000000', gradient: true, category: 'art' },
+      { id: 'art-13', name: 'Surrealist', nameAr: 'سريالي', primaryColor: '#8B008B', secondaryColor: '#00CED1', gradient: true, category: 'art' },
+      { id: 'art-14', name: 'Cubist', nameAr: 'تكعيبي', primaryColor: '#8B4513', secondaryColor: '#2F4F4F', gradient: true, category: 'art' },
+      { id: 'art-15', name: 'Renaissance', nameAr: 'عصر النهضة', primaryColor: '#8B0000', secondaryColor: '#FFD700', gradient: true, category: 'art' },
+      { id: 'art-16', name: 'Gothic', nameAr: 'قوطي', primaryColor: '#1C1C1C', secondaryColor: '#8B0000', gradient: true, category: 'art' },
+      { id: 'art-17', name: 'Modern Art', nameAr: 'فن حديث', primaryColor: '#FF6347', secondaryColor: '#00FA9A', gradient: true, category: 'art' },
+      { id: 'art-18', name: 'Minimalist', nameAr: 'بساطة', primaryColor: '#FFFFFF', secondaryColor: '#F5F5F5', gradient: true, category: 'art' },
+      { id: 'art-19', name: 'Street Art', nameAr: 'فن الشارع', primaryColor: '#FF1493', secondaryColor: '#00FF00', gradient: true, category: 'art' },
+      { id: 'art-20', name: 'Digital Art', nameAr: 'فن رقمي', primaryColor: '#7B68EE', secondaryColor: '#00CED1', gradient: true, category: 'art' },
     ]
   },
   {
@@ -186,6 +260,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'music-8', name: 'Blues Indigo', nameAr: 'نيلي بلوز', primaryColor: '#4b0082', secondaryColor: '#0000cd', gradient: true, category: 'music' },
       { id: 'music-9', name: 'Pop Pink', nameAr: 'وردي بوب', primaryColor: '#ff69b4', secondaryColor: '#ff1493', gradient: true, category: 'music' },
       { id: 'music-10', name: 'Vinyl Black', nameAr: 'أسود فينيل', primaryColor: '#1c1c1c', secondaryColor: '#383838', gradient: true, category: 'music' },
+      { id: 'music-11', name: 'Country Brown', nameAr: 'بني كانتري', primaryColor: '#8B4513', secondaryColor: '#D2691E', gradient: true, category: 'music' },
+      { id: 'music-12', name: 'Metal Silver', nameAr: 'فضي ميتال', primaryColor: '#C0C0C0', secondaryColor: '#4B0082', gradient: true, category: 'music' },
+      { id: 'music-13', name: 'Soul Purple', nameAr: 'بنفسجي سول', primaryColor: '#800080', secondaryColor: '#DA70D6', gradient: true, category: 'music' },
+      { id: 'music-14', name: 'Funk Orange', nameAr: 'برتقالي فانك', primaryColor: '#FF8C00', secondaryColor: '#FF4500', gradient: true, category: 'music' },
+      { id: 'music-15', name: 'Techno Dark', nameAr: 'تكنو داكن', primaryColor: '#1C1C1C', secondaryColor: '#00BFFF', gradient: true, category: 'music' },
+      { id: 'music-16', name: 'Opera Red', nameAr: 'أحمر أوبرا', primaryColor: '#8B0000', secondaryColor: '#DAA520', gradient: true, category: 'music' },
+      { id: 'music-17', name: 'Acoustic Wood', nameAr: 'خشبي أكوستيك', primaryColor: '#DEB887', secondaryColor: '#8B4513', gradient: true, category: 'music' },
+      { id: 'music-18', name: 'Synthwave', nameAr: 'سينث ويف', primaryColor: '#FF00FF', secondaryColor: '#00FFFF', gradient: true, category: 'music' },
+      { id: 'music-19', name: 'Indie Yellow', nameAr: 'أصفر إندي', primaryColor: '#FFD700', secondaryColor: '#FFA500', gradient: true, category: 'music' },
+      { id: 'music-20', name: 'Gospel White', nameAr: 'أبيض جوسبل', primaryColor: '#FFFAFA', secondaryColor: '#DAA520', gradient: true, category: 'music' },
     ]
   },
   {
@@ -204,6 +288,16 @@ export const qrCategories: QRCategory[] = [
       { id: 'events-8', name: 'Halloween Orange', nameAr: 'برتقالي هالوين', primaryColor: '#ff6600', secondaryColor: '#1a1a1a', gradient: true, category: 'events' },
       { id: 'events-9', name: 'New Year Sparkle', nameAr: 'بريق رأس السنة', primaryColor: '#c0c0c0', secondaryColor: '#ffd700', gradient: true, category: 'events' },
       { id: 'events-10', name: 'Ramadan Gold', nameAr: 'ذهبي رمضان', primaryColor: '#d4af37', secondaryColor: '#228b22', gradient: true, category: 'events' },
+      { id: 'events-11', name: 'Easter Pastel', nameAr: 'باستيل عيد الفصح', primaryColor: '#FFB6C1', secondaryColor: '#98FB98', gradient: true, category: 'events' },
+      { id: 'events-12', name: 'Valentines Day', nameAr: 'عيد الحب', primaryColor: '#FF1493', secondaryColor: '#DC143C', gradient: true, category: 'events' },
+      { id: 'events-13', name: 'Thanksgiving', nameAr: 'عيد الشكر', primaryColor: '#CD853F', secondaryColor: '#8B4513', gradient: true, category: 'events' },
+      { id: 'events-14', name: 'Diwali', nameAr: 'ديوالي', primaryColor: '#FF8C00', secondaryColor: '#FFD700', gradient: true, category: 'events' },
+      { id: 'events-15', name: 'Eid Mubarak', nameAr: 'عيد مبارك', primaryColor: '#006400', secondaryColor: '#FFD700', gradient: true, category: 'events' },
+      { id: 'events-16', name: 'Baby Shower', nameAr: 'حفلة مولود', primaryColor: '#ADD8E6', secondaryColor: '#FFB6C1', gradient: true, category: 'events' },
+      { id: 'events-17', name: 'Anniversary', nameAr: 'ذكرى سنوية', primaryColor: '#C0C0C0', secondaryColor: '#FFD700', gradient: true, category: 'events' },
+      { id: 'events-18', name: 'Retirement', nameAr: 'تقاعد', primaryColor: '#4169E1', secondaryColor: '#FFD700', gradient: true, category: 'events' },
+      { id: 'events-19', name: 'Housewarming', nameAr: 'منزل جديد', primaryColor: '#8B4513', secondaryColor: '#228B22', gradient: true, category: 'events' },
+      { id: 'events-20', name: 'Engagement', nameAr: 'خطوبة', primaryColor: '#FFD700', secondaryColor: '#FF69B4', gradient: true, category: 'events' },
     ]
   },
 ];
