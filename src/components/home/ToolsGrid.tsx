@@ -29,6 +29,13 @@ import {
   Calculator,
   QrCode,
   ScanLine,
+  RotateCw,
+  PenTool,
+  Droplets,
+  Lock,
+  Hash,
+  FileCode,
+  FileOutput,
 } from 'lucide-react';
 
 // All tools data
@@ -47,6 +54,13 @@ export const allTools: Tool[] = [
   { id: 'pdf-compress', nameKey: 'tools.pdfCompress.name', descriptionKey: 'tools.pdfCompress.description', icon: FileDown, category: 'pdf', href: '/tools/pdf-compress', color: 'pink' },
   { id: 'pdf-to-image', nameKey: 'tools.pdfToImage.name', descriptionKey: 'tools.pdfToImage.description', icon: ImageIcon, category: 'pdf', href: '/tools/pdf-to-image', color: 'pink' },
   { id: 'image-to-pdf', nameKey: 'tools.imageToPdf.name', descriptionKey: 'tools.imageToPdf.description', icon: FileText, category: 'pdf', href: '/tools/image-to-pdf', color: 'pink' },
+  { id: 'pdf-rotate', nameKey: 'tools.pdfRotate.name', descriptionKey: 'tools.pdfRotate.description', icon: RotateCw, category: 'pdf', href: '/tools/pdf-rotate', color: 'pink' },
+  { id: 'pdf-sign', nameKey: 'tools.pdfSign.name', descriptionKey: 'tools.pdfSign.description', icon: PenTool, category: 'pdf', href: '/tools/pdf-sign', color: 'pink' },
+  { id: 'pdf-watermark', nameKey: 'tools.pdfWatermark.name', descriptionKey: 'tools.pdfWatermark.description', icon: Droplets, category: 'pdf', href: '/tools/pdf-watermark', color: 'pink' },
+  { id: 'pdf-protect', nameKey: 'tools.pdfProtect.name', descriptionKey: 'tools.pdfProtect.description', icon: Lock, category: 'pdf', href: '/tools/pdf-protect', color: 'pink' },
+  { id: 'pdf-page-numbers', nameKey: 'tools.pdfPageNumbers.name', descriptionKey: 'tools.pdfPageNumbers.description', icon: Hash, category: 'pdf', href: '/tools/pdf-page-numbers', color: 'pink' },
+  { id: 'pdf-to-html', nameKey: 'tools.pdfToHtml.name', descriptionKey: 'tools.pdfToHtml.description', icon: FileCode, category: 'pdf', href: '/tools/pdf-to-html', color: 'pink' },
+  { id: 'pdf-to-word', nameKey: 'tools.pdfToWord.name', descriptionKey: 'tools.pdfToWord.description', icon: FileOutput, category: 'pdf', href: '/tools/pdf-to-word', color: 'pink' },
   
   // Text Tools
   { id: 'text-counter', nameKey: 'tools.textCounter.name', descriptionKey: 'tools.textCounter.description', icon: AlignLeft, category: 'text', href: '/tools/text-counter', color: 'green' },

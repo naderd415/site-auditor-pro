@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -26,9 +26,16 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
+  Lock,
+  LogOut
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
+import { toast } from 'sonner';
+
+// تحذير أمني: هذه الحماية للعرض فقط وليست آمنة للإنتاج
+// للإنتاج الحقيقي، يجب استخدام نظام مصادقة خلفي مثل Supabase Auth
+const ADMIN_PASSWORD_HASH = 'a3f5b2c8d1e9f4a6b7c8d9e0f1a2b3c4'; // Hash وهمي للعرض
 
 interface StatCardProps {
   title: string;
@@ -89,35 +96,83 @@ const ActivityItem = ({ action, time, status }: ActivityItemProps) => (
 
 const Admin = () => {
   const { isRTL } = useLanguage();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // التحقق من حالة تسجيل الدخول عند التحميل
+  useEffect(() => {
+    const authToken = sessionStorage.getItem('admin_auth');
+    if (authToken) {
+      // التحقق من صلاحية الجلسة (تنتهي بعد ساعة)
+      const tokenData = JSON.parse(authToken);
+      if (tokenData.expiry > Date.now()) {
+        setIsAuthenticated(true);
+      } else {
+        sessionStorage.removeItem('admin_auth');
+      }
+    }
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // محاكاة تأخير الشبكة
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // تحذير: هذه كلمة مرور للعرض فقط
+    // للإنتاج الحقيقي، استخدم نظام مصادقة خلفي
+    if (password === 'Na@01024926212') {
+      const authToken = {
+        authenticated: true,
+        expiry: Date.now() + (60 * 60 * 1000) // ساعة واحدة
+      };
+      sessionStorage.setItem('admin_auth', JSON.stringify(authToken));
+      setIsAuthenticated(true);
+      toast.success(isRTL ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
+    } else {
+      toast.error(isRTL ? 'كلمة المرور غير صحيحة' : 'Invalid password');
+    }
+
+    setIsLoading(false);
+    setPassword('');
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('admin_auth');
+    setIsAuthenticated(false);
+    toast.success(isRTL ? 'تم تسجيل الخروج' : 'Logged out successfully');
+  };
 
   const stats = [
     {
       title: isRTL ? 'إجمالي الزيارات' : 'Total Visits',
       value: '45,231',
-      change: '+12.5% من الشهر الماضي',
+      change: isRTL ? '+12.5% من الشهر الماضي' : '+12.5% from last month',
       changeType: 'positive' as const,
       icon: <Eye className="w-6 h-6" />
     },
     {
       title: isRTL ? 'الأدوات المستخدمة' : 'Tools Used',
       value: '12,847',
-      change: '+8.2% من الشهر الماضي',
+      change: isRTL ? '+8.2% من الشهر الماضي' : '+8.2% from last month',
       changeType: 'positive' as const,
       icon: <FileText className="w-6 h-6" />
     },
     {
       title: isRTL ? 'المستخدمون النشطون' : 'Active Users',
       value: '3,721',
-      change: '+23.1% من الشهر الماضي',
+      change: isRTL ? '+23.1% من الشهر الماضي' : '+23.1% from last month',
       changeType: 'positive' as const,
       icon: <Users className="w-6 h-6" />
     },
     {
       title: isRTL ? 'معدل الارتداد' : 'Bounce Rate',
       value: '24.3%',
-      change: '-5.4% من الشهر الماضي',
+      change: isRTL ? '-5.4% من الشهر الماضي' : '-5.4% from last month',
       changeType: 'positive' as const,
       icon: <BarChart3 className="w-6 h-6" />
     }
@@ -138,12 +193,88 @@ const Admin = () => {
     { name: 'Background Remover', views: 4521, status: 'active' },
     { name: 'Color Picker', views: 3892, status: 'active' },
     { name: 'Text Counter', views: 3201, status: 'active' },
+    { name: 'PDF Rotate', views: 2890, status: 'active' },
+    { name: 'PDF to Word', views: 2654, status: 'active' },
+    { name: 'PDF Watermark', views: 2341, status: 'active' },
+    { name: 'PDF Protect', views: 2100, status: 'active' },
   ];
+
+  // صفحة تسجيل الدخول
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Helmet>
+          <title>{isRTL ? 'تسجيل الدخول | لوحة التحكم' : 'Login | Admin Dashboard'}</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <div className="glass-card p-8 rounded-2xl">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Lock className="w-8 h-8 text-primary" />
+                </div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'لوحة التحكم' : 'Admin Dashboard'}
+                </h1>
+                <p className="text-muted-foreground mt-2">
+                  {isRTL ? 'أدخل كلمة المرور للمتابعة' : 'Enter password to continue'}
+                </p>
+              </div>
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <Label htmlFor="password">
+                    {isRTL ? 'كلمة المرور' : 'Password'}
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="mt-2"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      {isRTL ? 'جاري التحقق...' : 'Verifying...'}
+                    </span>
+                  ) : (
+                    <>
+                      <Shield className="w-4 h-4 me-2" />
+                      {isRTL ? 'دخول' : 'Login'}
+                    </>
+                  )}
+                </Button>
+              </form>
+
+              <p className="text-xs text-muted-foreground text-center mt-6">
+                {isRTL 
+                  ? 'هذه المنطقة مخصصة للمسؤولين فقط'
+                  : 'This area is for administrators only'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Helmet>
-        <title>{isRTL ? 'لوحة التحكم | ToolVerse' : 'Admin Dashboard | ToolVerse'}</title>
+        <title>{isRTL ? 'لوحة التحكم | BestToolsHub' : 'Admin Dashboard | BestToolsHub'}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -171,9 +302,13 @@ const Admin = () => {
                   className="ps-10 w-64"
                 />
               </div>
-              <Button className="gap-2">
+              <Button variant="outline" className="gap-2">
                 <Bell className="w-4 h-4" />
                 <span className="hidden sm:inline">{isRTL ? 'الإشعارات' : 'Notifications'}</span>
+              </Button>
+              <Button variant="destructive" onClick={handleLogout} className="gap-2">
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">{isRTL ? 'خروج' : 'Logout'}</span>
               </Button>
             </div>
           </div>
@@ -407,36 +542,26 @@ const Admin = () => {
                   {isRTL ? 'إعدادات المظهر' : 'Appearance Settings'}
                 </h2>
                 
-                <div className="grid gap-6">
-                  <div className="space-y-2">
-                    <Label>{isRTL ? 'اللون الرئيسي' : 'Primary Color'}</Label>
-                    <div className="flex gap-3">
-                      {['#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b'].map((color) => (
+                <div className="space-y-6">
+                  <div>
+                    <Label>{isRTL ? 'اللون الأساسي' : 'Primary Color'}</Label>
+                    <div className="flex gap-3 mt-2">
+                      {['#00bcd4', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316'].map((color) => (
                         <button
                           key={color}
-                          className="w-10 h-10 rounded-lg border-2 border-transparent hover:border-foreground/50 transition-colors"
+                          className="w-10 h-10 rounded-lg border-2 border-border hover:border-primary transition-colors"
                           style={{ backgroundColor: color }}
                         />
                       ))}
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label>{isRTL ? 'شعار الموقع' : 'Site Logo'}</Label>
-                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                      <Button variant="outline">
-                        {isRTL ? 'رفع شعار جديد' : 'Upload New Logo'}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>{isRTL ? 'الخط الافتراضي' : 'Default Font'}</Label>
-                    <select className="w-full p-2 border border-border rounded-lg bg-background text-foreground">
-                      <option>Inter</option>
+                  <div>
+                    <Label>{isRTL ? 'الخط' : 'Font Family'}</Label>
+                    <select className="w-full mt-2 p-3 bg-muted rounded-lg border border-border">
                       <option>Cairo</option>
+                      <option>Inter</option>
                       <option>Roboto</option>
-                      <option>Open Sans</option>
                     </select>
                   </div>
                 </div>
@@ -450,114 +575,83 @@ const Admin = () => {
                   {isRTL ? 'إعدادات SEO' : 'SEO Settings'}
                 </h2>
                 
-                <div className="grid gap-6">
-                  <div className="space-y-2">
+                <div className="space-y-6">
+                  <div>
                     <Label>{isRTL ? 'عنوان الموقع' : 'Site Title'}</Label>
-                    <Input defaultValue="ToolVerse - أدوات مجانية عبر الإنترنت" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>{isRTL ? 'وصف الموقع' : 'Site Description'}</Label>
-                    <textarea 
-                      className="w-full p-3 border border-border rounded-lg bg-background text-foreground min-h-[100px]"
-                      defaultValue="مجموعة شاملة من الأدوات المجانية عبر الإنترنت - تحويل الصور، PDF، الألوان، والمزيد"
+                    <Input 
+                      className="mt-2" 
+                      defaultValue="BestToolsHub - أفضل الأدوات المجانية"
                     />
                   </div>
                   
-                  <div className="space-y-2">
+                  <div>
+                    <Label>{isRTL ? 'وصف الموقع' : 'Site Description'}</Label>
+                    <textarea 
+                      className="w-full mt-2 p-3 bg-muted rounded-lg border border-border min-h-[100px]"
+                      defaultValue="مجموعة شاملة من الأدوات المجانية لتحويل الصور، ملفات PDF، النصوص والمزيد - كل شيء يعمل مباشرة من متصفحك"
+                    />
+                  </div>
+                  
+                  <div>
                     <Label>{isRTL ? 'الكلمات المفتاحية' : 'Keywords'}</Label>
-                    <Input defaultValue="أدوات مجانية, تحويل PDF, تحويل الصور, QR code" />
+                    <Input 
+                      className="mt-2" 
+                      defaultValue="أدوات مجانية, محول صور, PDF, QR code, ألوان"
+                    />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label>Google Analytics ID</Label>
-                    <Input placeholder="UA-XXXXXXXXX-X" />
-                  </div>
-                  
-                  <Button className="w-fit">
-                    {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
-                  </Button>
+                  <Button>{isRTL ? 'حفظ التغييرات' : 'Save Changes'}</Button>
                 </div>
               </div>
             </TabsContent>
 
             {/* Settings Tab */}
             <TabsContent value="settings" className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="glass-card rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-6">
-                    {isRTL ? 'إعدادات عامة' : 'General Settings'}
-                  </h2>
-                  
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>{isRTL ? 'اسم الموقع' : 'Site Name'}</Label>
-                      <Input defaultValue="ToolVerse" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label>{isRTL ? 'البريد الإلكتروني' : 'Email'}</Label>
-                      <Input defaultValue="admin@toolverse.com" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label>{isRTL ? 'اللغة الافتراضية' : 'Default Language'}</Label>
-                      <select className="w-full p-2 border border-border rounded-lg bg-background text-foreground">
-                        <option value="ar">العربية</option>
-                        <option value="en">English</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+              <div className="glass-card rounded-2xl p-6">
+                <h2 className="text-xl font-bold text-foreground mb-6">
+                  {isRTL ? 'الإعدادات العامة' : 'General Settings'}
+                </h2>
                 
-                <div className="glass-card rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-6">
-                    {isRTL ? 'الأمان' : 'Security'}
-                  </h2>
+                <div className="space-y-6">
+                  <div>
+                    <Label>{isRTL ? 'اسم الموقع' : 'Site Name'}</Label>
+                    <Input className="mt-2" defaultValue="BestToolsHub" />
+                  </div>
                   
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div>
+                    <Label>{isRTL ? 'البريد الإلكتروني' : 'Contact Email'}</Label>
+                    <Input className="mt-2" defaultValue="contact@besttoolshub.com" />
+                  </div>
+                  
+                  <div>
+                    <Label>{isRTL ? 'اللغة الافتراضية' : 'Default Language'}</Label>
+                    <select className="w-full mt-2 p-3 bg-muted rounded-lg border border-border">
+                      <option value="ar">العربية</option>
+                      <option value="en">English</option>
+                      <option value="fr">Français</option>
+                    </select>
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <h3 className="font-medium text-foreground mb-4">
+                      {isRTL ? 'تغيير كلمة المرور' : 'Change Password'}
+                    </h3>
+                    <div className="space-y-4">
                       <div>
-                        <p className="font-medium text-foreground">
-                          {isRTL ? 'المصادقة الثنائية' : 'Two-Factor Auth'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {isRTL ? 'حماية إضافية للحساب' : 'Extra account protection'}
-                        </p>
+                        <Label>{isRTL ? 'كلمة المرور الحالية' : 'Current Password'}</Label>
+                        <Input type="password" className="mt-2" />
                       </div>
-                      <Button variant="outline" size="sm">
-                        {isRTL ? 'تفعيل' : 'Enable'}
-                      </Button>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                       <div>
-                        <p className="font-medium text-foreground">
-                          {isRTL ? 'تغيير كلمة المرور' : 'Change Password'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {isRTL ? 'آخر تغيير: منذ 30 يوماً' : 'Last changed: 30 days ago'}
-                        </p>
+                        <Label>{isRTL ? 'كلمة المرور الجديدة' : 'New Password'}</Label>
+                        <Input type="password" className="mt-2" />
                       </div>
-                      <Button variant="outline" size="sm">
-                        {isRTL ? 'تغيير' : 'Change'}
-                      </Button>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                      <div>
-                        <p className="font-medium text-foreground">
-                          {isRTL ? 'سجل الدخول' : 'Login History'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {isRTL ? 'عرض سجل تسجيلات الدخول' : 'View login records'}
-                        </p>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        {isRTL ? 'عرض' : 'View'}
+                      <Button variant="outline">
+                        {isRTL ? 'تحديث كلمة المرور' : 'Update Password'}
                       </Button>
                     </div>
                   </div>
+                  
+                  <Button>{isRTL ? 'حفظ الإعدادات' : 'Save Settings'}</Button>
                 </div>
               </div>
             </TabsContent>
