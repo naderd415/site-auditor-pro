@@ -112,6 +112,41 @@ export interface Translation {
       description: string;
       article: string;
     };
+    pdfRotate: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    pdfSign: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    pdfWatermark: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    pdfProtect: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    pdfPageNumbers: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    pdfToHtml: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    pdfToWord: {
+      name: string;
+      description: string;
+      article: string;
+    };
     textCounter: {
       name: string;
       description: string;
@@ -330,6 +365,41 @@ export const translations: Record<Language, Translation> = {
         description: 'حول صورك إلى ملف PDF',
         article: 'أداة تحويل الصور إلى PDF تجمع صورك في ملف PDF واحد. مثالية لإنشاء ألبومات صور أو مستندات مصورة.',
       },
+      pdfRotate: {
+        name: 'تدوير PDF',
+        description: 'دور صفحات ملفات PDF',
+        article: 'أداة تدوير PDF تساعدك على تصحيح اتجاه صفحات ملفات PDF الممسوحة ضوئياً أو المقلوبة.',
+      },
+      pdfSign: {
+        name: 'توقيع PDF',
+        description: 'وقع ملفات PDF إلكترونياً',
+        article: 'أداة توقيع PDF تتيح لك إضافة توقيعك الإلكتروني على مستندات PDF بسهولة واحترافية.',
+      },
+      pdfWatermark: {
+        name: 'علامة مائية PDF',
+        description: 'أضف علامة مائية لملفات PDF',
+        article: 'أداة العلامة المائية تحمي مستندات PDF الخاصة بك بإضافة نص أو شعار على جميع الصفحات.',
+      },
+      pdfProtect: {
+        name: 'حماية PDF',
+        description: 'أضف كلمة مرور لملفات PDF',
+        article: 'أداة حماية PDF تضيف طبقة أمان لمستنداتك عبر كلمة مرور وصلاحيات مخصصة.',
+      },
+      pdfPageNumbers: {
+        name: 'ترقيم PDF',
+        description: 'أضف أرقام صفحات لملفات PDF',
+        article: 'أداة ترقيم PDF تضيف أرقام الصفحات تلقائياً لجميع صفحات المستند.',
+      },
+      pdfToHtml: {
+        name: 'PDF إلى HTML',
+        description: 'حول PDF إلى صفحات HTML',
+        article: 'أداة تحويل PDF إلى HTML تحول مستندات PDF إلى صفحات ويب HTML قابلة للتحرير.',
+      },
+      pdfToWord: {
+        name: 'PDF إلى Word',
+        description: 'حول PDF إلى مستندات Word',
+        article: 'أداة تحويل PDF إلى Word تحول ملفات PDF إلى مستندات Microsoft Word قابلة للتحرير.',
+      },
       textCounter: {
         name: 'عداد النصوص',
         description: 'احسب الكلمات والأحرف والجمل',
@@ -542,6 +612,41 @@ export const translations: Record<Language, Translation> = {
         description: 'Convert your images to a PDF file',
         article: 'The image to PDF converter combines your images into a single PDF file. Perfect for creating photo albums or image documents.',
       },
+      pdfRotate: {
+        name: 'Rotate PDF',
+        description: 'Rotate PDF file pages',
+        article: 'The PDF rotation tool helps you fix the orientation of scanned or incorrectly oriented PDF pages.',
+      },
+      pdfSign: {
+        name: 'Sign PDF',
+        description: 'Sign PDF files electronically',
+        article: 'The PDF signing tool lets you add your electronic signature to PDF documents easily and professionally.',
+      },
+      pdfWatermark: {
+        name: 'PDF Watermark',
+        description: 'Add watermark to PDF files',
+        article: 'The watermark tool protects your PDF documents by adding text or logo to all pages.',
+      },
+      pdfProtect: {
+        name: 'Protect PDF',
+        description: 'Add password to PDF files',
+        article: 'The PDF protection tool adds a security layer to your documents via password and custom permissions.',
+      },
+      pdfPageNumbers: {
+        name: 'PDF Page Numbers',
+        description: 'Add page numbers to PDF files',
+        article: 'The PDF numbering tool automatically adds page numbers to all document pages.',
+      },
+      pdfToHtml: {
+        name: 'PDF to HTML',
+        description: 'Convert PDF to HTML pages',
+        article: 'The PDF to HTML converter transforms PDF documents into editable web HTML pages.',
+      },
+      pdfToWord: {
+        name: 'PDF to Word',
+        description: 'Convert PDF to Word documents',
+        article: 'The PDF to Word converter transforms PDF files into editable Microsoft Word documents.',
+      },
       textCounter: {
         name: 'Text Counter',
         description: 'Count words, characters, and sentences',
@@ -753,6 +858,41 @@ export const translations: Record<Language, Translation> = {
         name: 'Image vers PDF',
         description: 'Convertissez vos images en fichier PDF',
         article: 'Le convertisseur image vers PDF combine vos images en un seul fichier PDF.',
+      },
+      pdfRotate: {
+        name: 'Rotation PDF',
+        description: 'Faites pivoter les pages PDF',
+        article: 'L\'outil de rotation PDF vous aide à corriger l\'orientation des pages PDF numérisées.',
+      },
+      pdfSign: {
+        name: 'Signature PDF',
+        description: 'Signez électroniquement les fichiers PDF',
+        article: 'L\'outil de signature PDF vous permet d\'ajouter votre signature électronique aux documents PDF.',
+      },
+      pdfWatermark: {
+        name: 'Filigrane PDF',
+        description: 'Ajoutez un filigrane aux fichiers PDF',
+        article: 'L\'outil de filigrane protège vos documents PDF en ajoutant du texte ou un logo sur toutes les pages.',
+      },
+      pdfProtect: {
+        name: 'Protection PDF',
+        description: 'Ajoutez un mot de passe aux fichiers PDF',
+        article: 'L\'outil de protection PDF ajoute une couche de sécurité à vos documents via mot de passe.',
+      },
+      pdfPageNumbers: {
+        name: 'Numérotation PDF',
+        description: 'Ajoutez des numéros de page aux fichiers PDF',
+        article: 'L\'outil de numérotation PDF ajoute automatiquement des numéros de page à toutes les pages.',
+      },
+      pdfToHtml: {
+        name: 'PDF vers HTML',
+        description: 'Convertissez PDF en pages HTML',
+        article: 'Le convertisseur PDF vers HTML transforme les documents PDF en pages web HTML modifiables.',
+      },
+      pdfToWord: {
+        name: 'PDF vers Word',
+        description: 'Convertissez PDF en documents Word',
+        article: 'Le convertisseur PDF vers Word transforme les fichiers PDF en documents Microsoft Word modifiables.',
       },
       textCounter: {
         name: 'Compteur de texte',
