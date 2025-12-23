@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { qrCategories, getRandomTemplate, getAllTemplates, getTemplateGradient, QRTemplate } from '@/lib/qr/templates';
 
 type QRType = 'url' | 'text' | 'wifi' | 'email' | 'phone' | 'sms';
-type QRPattern = 'squares' | 'dots' | 'rounded';
+type QRPattern = 'squares' | 'dots' | 'rounded' | 'classy' | 'classy-rounded' | 'extra-rounded' | 'diamond' | 'star';
 
 interface QRSettings {
   size: number;
@@ -177,13 +177,11 @@ const QRGenerator = () => {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
         
-        // Create a temporary canvas for pattern effect
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         const tempCtx = tempCanvas.getContext('2d')!;
         
-        // Clear with background or transparent
         if (settings.transparentBg) {
           tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
         } else {
@@ -191,7 +189,6 @@ const QRGenerator = () => {
           tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
         }
         
-        // Calculate module size (approximate)
         const moduleSize = actualSize / (25 + settings.margin * 2);
         
         for (let y = 0; y < canvas.height; y += moduleSize) {
@@ -201,18 +198,61 @@ const QRGenerator = () => {
             
             if (isDark) {
               tempCtx.fillStyle = settings.darkColor;
-              const padding = moduleSize * 0.1;
+              const padding = moduleSize * 0.08;
               const size = moduleSize - padding * 2;
+              const cx = x + moduleSize / 2;
+              const cy = y + moduleSize / 2;
               
-              if (settings.pattern === 'dots') {
-                tempCtx.beginPath();
-                tempCtx.arc(x + moduleSize / 2, y + moduleSize / 2, size / 2, 0, Math.PI * 2);
-                tempCtx.fill();
-              } else if (settings.pattern === 'rounded') {
-                const radius = size * 0.3;
-                tempCtx.beginPath();
-                tempCtx.roundRect(x + padding, y + padding, size, size, radius);
-                tempCtx.fill();
+              switch (settings.pattern) {
+                case 'dots':
+                  tempCtx.beginPath();
+                  tempCtx.arc(cx, cy, size / 2, 0, Math.PI * 2);
+                  tempCtx.fill();
+                  break;
+                case 'rounded':
+                  tempCtx.beginPath();
+                  tempCtx.roundRect(x + padding, y + padding, size, size, size * 0.3);
+                  tempCtx.fill();
+                  break;
+                case 'classy':
+                  tempCtx.beginPath();
+                  tempCtx.roundRect(x + padding, y + padding, size, size, [size * 0.5, 0, size * 0.5, 0]);
+                  tempCtx.fill();
+                  break;
+                case 'classy-rounded':
+                  tempCtx.beginPath();
+                  tempCtx.roundRect(x + padding, y + padding, size, size, [size * 0.6, size * 0.1, size * 0.6, size * 0.1]);
+                  tempCtx.fill();
+                  break;
+                case 'extra-rounded':
+                  tempCtx.beginPath();
+                  tempCtx.arc(cx, cy, size / 2.2, 0, Math.PI * 2);
+                  tempCtx.fill();
+                  break;
+                case 'diamond':
+                  tempCtx.beginPath();
+                  tempCtx.moveTo(cx, y + padding);
+                  tempCtx.lineTo(x + padding + size, cy);
+                  tempCtx.lineTo(cx, y + padding + size);
+                  tempCtx.lineTo(x + padding, cy);
+                  tempCtx.closePath();
+                  tempCtx.fill();
+                  break;
+                case 'star':
+                  const spikes = 4;
+                  const outerRadius = size / 2;
+                  const innerRadius = size / 4;
+                  tempCtx.beginPath();
+                  for (let i = 0; i < spikes * 2; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const angle = (i * Math.PI) / spikes - Math.PI / 2;
+                    const px = cx + Math.cos(angle) * radius;
+                    const py = cy + Math.sin(angle) * radius;
+                    i === 0 ? tempCtx.moveTo(px, py) : tempCtx.lineTo(px, py);
+                  }
+                  tempCtx.closePath();
+                  tempCtx.fill();
+                  break;
               }
             }
           }
@@ -455,10 +495,15 @@ const QRGenerator = () => {
     { id: 'sms', label: 'SMS', icon: MessageSquare },
   ];
 
-  const patterns: { id: QRPattern; label: string; labelAr: string; icon: React.ElementType }[] = [
-    { id: 'squares', label: 'Squares', labelAr: 'مربعات', icon: Square },
-    { id: 'dots', label: 'Dots', labelAr: 'نقاط', icon: Circle },
-    { id: 'rounded', label: 'Rounded', labelAr: 'مدور', icon: RectangleHorizontal },
+  const patterns: { id: QRPattern; label: string; labelAr: string }[] = [
+    { id: 'squares', label: 'Squares', labelAr: 'مربعات' },
+    { id: 'dots', label: 'Dots', labelAr: 'نقاط' },
+    { id: 'rounded', label: 'Rounded', labelAr: 'مدور' },
+    { id: 'classy', label: 'Classy', labelAr: 'أنيق' },
+    { id: 'classy-rounded', label: 'Classy Round', labelAr: 'أنيق مدور' },
+    { id: 'extra-rounded', label: 'Extra Round', labelAr: 'دائري كامل' },
+    { id: 'diamond', label: 'Diamond', labelAr: 'ماسي' },
+    { id: 'star', label: 'Star', labelAr: 'نجمة' },
   ];
 
   const filteredTemplates = selectedCategory === 'all' 
@@ -474,46 +519,54 @@ const QRGenerator = () => {
       article={t.tools.qrGenerator.article}
       keywords="QR code, QR generator, create QR, WiFi QR, URL QR, مولد QR, رمز QR"
     >
-      <div className="glass-card p-6 rounded-2xl space-y-6">
-        {/* QR Preview - Always Visible at Top */}
-        <div className="flex flex-col items-center">
-          <div 
-            className="relative rounded-2xl p-6 flex items-center justify-center"
-            style={{
-              background: settings.transparentBg 
-                ? 'repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 16px 16px'
-                : settings.lightColor,
-              minHeight: '280px',
-              minWidth: '280px',
-            }}
-          >
-            <canvas
-              ref={canvasRef}
-              className="max-w-full max-h-[260px]"
-              style={{ display: hasData ? 'block' : 'none' }}
-            />
-            {!hasData && (
-              <p className="text-muted-foreground text-center px-8">
-                {isRTL ? 'أدخل البيانات لإنشاء QR' : 'Enter data to generate QR'}
-              </p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: QR Preview - Fixed */}
+        <div className="lg:sticky lg:top-24 lg:h-fit">
+          <div className="glass-card p-6 rounded-2xl">
+            <div 
+              className="relative rounded-2xl p-4 flex items-center justify-center mx-auto border border-border"
+              style={{
+                background: settings.transparentBg 
+                  ? 'repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 16px 16px'
+                  : settings.lightColor,
+                width: 'min(100%, 320px)',
+                aspectRatio: '1',
+              }}
+            >
+              <canvas
+                ref={canvasRef}
+                className="max-w-full max-h-full"
+                style={{ display: hasData ? 'block' : 'none' }}
+              />
+              {!hasData && (
+                <p className="text-muted-foreground text-center px-4 text-sm">
+                  {isRTL ? 'أدخل البيانات لإنشاء QR' : 'Enter data to generate QR'}
+                </p>
+              )}
+            </div>
+
+            {/* Quick Actions */}
+            {hasData && (
+              <div className="flex gap-2 mt-4 flex-wrap justify-center">
+                <Button onClick={() => downloadQR('png')} size="sm" variant="outline">
+                  <Download className="w-4 h-4 me-1" /> PNG
+                </Button>
+                <Button onClick={() => downloadQR('svg')} size="sm" variant="outline">
+                  <Download className="w-4 h-4 me-1" /> SVG
+                </Button>
+                <Button onClick={() => downloadQR('jpg')} size="sm" variant="outline">
+                  <Download className="w-4 h-4 me-1" /> JPG
+                </Button>
+                <Button onClick={copyToClipboard} size="sm" variant="outline">
+                  <Copy className="w-4 h-4 me-1" /> {isRTL ? 'نسخ' : 'Copy'}
+                </Button>
+              </div>
             )}
           </div>
-
-          {/* Quick Actions */}
-          {hasData && (
-            <div className="flex gap-2 mt-4 flex-wrap justify-center">
-              <Button onClick={() => downloadQR('png')} size="sm" variant="outline">
-                <Download className="w-4 h-4 me-1" /> PNG
-              </Button>
-              <Button onClick={() => downloadQR('svg')} size="sm" variant="outline">
-                <Download className="w-4 h-4 me-1" /> SVG
-              </Button>
-              <Button onClick={copyToClipboard} size="sm" variant="outline">
-                <Copy className="w-4 h-4 me-1" /> {isRTL ? 'نسخ' : 'Copy'}
-              </Button>
-            </div>
-          )}
         </div>
+
+        {/* Right: Controls */}
+        <div className="glass-card p-6 rounded-2xl space-y-6">
 
         {/* Settings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -735,19 +788,28 @@ const QRGenerator = () => {
               <label className="block text-sm font-medium mb-2">
                 {isRTL ? 'نمط الـ QR' : 'QR Pattern'}
               </label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {patterns.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => updateSettings({ pattern: p.id })}
-                    className={`flex-1 flex flex-col items-center gap-1 p-3 rounded-lg border transition-all ${
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${
                       settings.pattern === p.id
                         ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border bg-muted/50'
+                        : 'border-border bg-muted/50 hover:border-primary/50'
                     }`}
                   >
-                    <p.icon className="w-5 h-5" />
-                    <span className="text-xs">{isRTL ? p.labelAr : p.label}</span>
+                    <div className="w-6 h-6 flex items-center justify-center">
+                      {p.id === 'squares' && <div className="w-4 h-4 bg-current" />}
+                      {p.id === 'dots' && <div className="w-4 h-4 bg-current rounded-full" />}
+                      {p.id === 'rounded' && <div className="w-4 h-4 bg-current rounded-md" />}
+                      {p.id === 'classy' && <div className="w-4 h-4 bg-current rounded-tl-full rounded-br-full" />}
+                      {p.id === 'classy-rounded' && <div className="w-4 h-4 bg-current rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm" />}
+                      {p.id === 'extra-rounded' && <div className="w-5 h-5 bg-current rounded-full" />}
+                      {p.id === 'diamond' && <div className="w-4 h-4 bg-current rotate-45" />}
+                      {p.id === 'star' && <span className="text-xs">✦</span>}
+                    </div>
+                    <span className="text-[10px]">{isRTL ? p.labelAr : p.label}</span>
                   </button>
                 ))}
               </div>
@@ -840,49 +902,66 @@ const QRGenerator = () => {
               </div>
             </div>
 
-            {/* Color Sliders */}
+            {/* Color Picker */}
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   {isRTL ? 'لون الـ QR' : 'QR Color'}
                 </label>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-3">
+                  {/* Color picker square with lightness gradient */}
+                  <div className="relative">
                     <div 
-                      className="w-8 h-8 rounded border"
+                      className="w-full h-32 rounded-lg cursor-crosshair relative overflow-hidden"
+                      style={{
+                        background: `linear-gradient(to bottom, white, transparent, black), 
+                                    linear-gradient(to right, #ccc, hsl(${darkHSL.h}, 100%, 50%))`,
+                      }}
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                        const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+                        const s = Math.round(x * 100);
+                        const l = Math.round((1 - y) * 100);
+                        updateDarkColorFromHSL(darkHSL.h, s, l);
+                      }}
+                    >
+                      <div 
+                        className="absolute w-4 h-4 border-2 border-white rounded-full shadow-md -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        style={{
+                          left: `${darkHSL.s}%`,
+                          top: `${100 - darkHSL.l}%`,
+                          backgroundColor: settings.darkColor,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Hue slider */}
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-10 h-10 rounded-lg border-2 border-border shadow-sm"
                       style={{ backgroundColor: settings.darkColor }}
                     />
-                    <span className="text-xs text-muted-foreground w-16">H: {darkHSL.h}°</span>
-                    <Slider
-                      value={[darkHSL.h]}
-                      onValueChange={([h]) => updateDarkColorFromHSL(h, darkHSL.s, darkHSL.l)}
-                      min={0}
-                      max={360}
-                      className="flex-1"
-                      style={{
-                        background: 'linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red)'
-                      }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-16">S: {darkHSL.s}%</span>
-                    <Slider
-                      value={[darkHSL.s]}
-                      onValueChange={([s]) => updateDarkColorFromHSL(darkHSL.h, s, darkHSL.l)}
-                      min={0}
-                      max={100}
-                      className="flex-1"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground w-16">L: {darkHSL.l}%</span>
-                    <Slider
-                      value={[darkHSL.l]}
-                      onValueChange={([l]) => updateDarkColorFromHSL(darkHSL.h, darkHSL.s, l)}
-                      min={0}
-                      max={100}
-                      className="flex-1"
-                    />
+                    <div className="flex-1">
+                      <div 
+                        className="h-4 rounded-full cursor-pointer relative"
+                        style={{
+                          background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)',
+                        }}
+                        onClick={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                          const h = Math.round(x * 360);
+                          updateDarkColorFromHSL(h, darkHSL.s, darkHSL.l);
+                        }}
+                      >
+                        <div 
+                          className="absolute w-4 h-4 bg-white border-2 border-gray-300 rounded-full shadow -translate-x-1/2 -translate-y-0 pointer-events-none"
+                          style={{ left: `${(darkHSL.h / 360) * 100}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -892,40 +971,53 @@ const QRGenerator = () => {
                   <label className="block text-sm font-medium mb-2">
                     {isRTL ? 'لون التدرج' : 'Gradient Color'}
                   </label>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
+                  <div className="space-y-3">
+                    <div 
+                      className="w-full h-24 rounded-lg cursor-crosshair relative overflow-hidden"
+                      style={{
+                        background: `linear-gradient(to bottom, white, transparent, black), 
+                                    linear-gradient(to right, #ccc, hsl(${gradientHSL.h}, 100%, 50%))`,
+                      }}
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                        const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+                        const s = Math.round(x * 100);
+                        const l = Math.round((1 - y) * 100);
+                        updateGradientColorFromHSL(gradientHSL.h, s, l);
+                      }}
+                    >
                       <div 
-                        className="w-8 h-8 rounded border"
+                        className="absolute w-4 h-4 border-2 border-white rounded-full shadow-md -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        style={{
+                          left: `${gradientHSL.s}%`,
+                          top: `${100 - gradientHSL.l}%`,
+                          backgroundColor: settings.gradientColor,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-8 h-8 rounded-lg border shadow-sm"
                         style={{ backgroundColor: settings.gradientColor }}
                       />
-                      <span className="text-xs text-muted-foreground w-16">H: {gradientHSL.h}°</span>
-                      <Slider
-                        value={[gradientHSL.h]}
-                        onValueChange={([h]) => updateGradientColorFromHSL(h, gradientHSL.s, gradientHSL.l)}
-                        min={0}
-                        max={360}
-                        className="flex-1"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground w-16">S: {gradientHSL.s}%</span>
-                      <Slider
-                        value={[gradientHSL.s]}
-                        onValueChange={([s]) => updateGradientColorFromHSL(gradientHSL.h, s, gradientHSL.l)}
-                        min={0}
-                        max={100}
-                        className="flex-1"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground w-16">L: {gradientHSL.l}%</span>
-                      <Slider
-                        value={[gradientHSL.l]}
-                        onValueChange={([l]) => updateGradientColorFromHSL(gradientHSL.h, gradientHSL.s, l)}
-                        min={0}
-                        max={100}
-                        className="flex-1"
-                      />
+                      <div 
+                        className="flex-1 h-3 rounded-full cursor-pointer relative"
+                        style={{
+                          background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)',
+                        }}
+                        onClick={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                          const h = Math.round(x * 360);
+                          updateGradientColorFromHSL(h, gradientHSL.s, gradientHSL.l);
+                        }}
+                      >
+                        <div 
+                          className="absolute w-3 h-3 bg-white border-2 border-gray-300 rounded-full shadow -translate-x-1/2 pointer-events-none"
+                          style={{ left: `${(gradientHSL.h / 360) * 100}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -933,6 +1025,7 @@ const QRGenerator = () => {
             </div>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </ToolPageLayout>
   );
