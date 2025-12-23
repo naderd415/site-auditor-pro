@@ -7,7 +7,7 @@ export interface QRTemplate {
   primaryColor: string;
   secondaryColor?: string;
   gradient?: boolean;
-  pattern?: 'squares' | 'dots' | 'rounded' | 'classy' | 'classy-rounded' | 'extra-rounded' | 'diamond' | 'star';
+  pattern?: 'squares' | 'dots' | 'rounded' | 'classy' | 'classy-rounded' | 'extra-rounded' | 'diamond' | 'star' | 'heart' | 'hexagon';
   category: string;
 }
 
