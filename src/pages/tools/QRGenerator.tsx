@@ -330,7 +330,7 @@ const QRGenerator = () => {
               {isRTL ? 'مولد QR Code الاحترافي' : 'Professional QR Code Generator'}
             </h1>
             
-            <Tabs defaultValue="content" className="w-full">
+            <Tabs defaultValue="content" className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
               <TabsList className="w-full flex-wrap h-auto gap-1 bg-muted/50 p-1">
                 <TabsTrigger value="content" className="gap-2 text-xs">
                   <Link2 className="w-3.5 h-3.5" />
