@@ -245,19 +245,96 @@ const cornerTypes: { id: CornersType; name: string; nameAr: string }[] = [
   { id: 'extra-rounded', name: 'Smooth', nameAr: 'ناعم' },
 ];
 
-// أنواع المحتوى
+// أنواع المحتوى مع الوصف
 const contentTypes = [
-  { type: 'url' as ContentType, icon: Link2, label: 'URL', labelAr: 'رابط' },
-  { type: 'text' as ContentType, icon: FileText, label: 'Text', labelAr: 'نص' },
-  { type: 'wifi' as ContentType, icon: Wifi, label: 'WiFi', labelAr: 'واي فاي' },
-  { type: 'vcard' as ContentType, icon: User, label: 'vCard', labelAr: 'بطاقة' },
-  { type: 'email' as ContentType, icon: Mail, label: 'Email', labelAr: 'إيميل' },
-  { type: 'phone' as ContentType, icon: Phone, label: 'Phone', labelAr: 'هاتف' },
-  { type: 'sms' as ContentType, icon: MessageSquare, label: 'SMS', labelAr: 'رسالة' },
-  { type: 'whatsapp' as ContentType, icon: Send, label: 'WhatsApp', labelAr: 'واتساب' },
-  { type: 'location' as ContentType, icon: MapPin, label: 'Location', labelAr: 'موقع' },
-  { type: 'event' as ContentType, icon: Calendar, label: 'Event', labelAr: 'حدث' },
-  { type: 'crypto' as ContentType, icon: Bitcoin, label: 'Crypto', labelAr: 'كريبتو' },
+  { 
+    type: 'url' as ContentType, 
+    icon: Link2, 
+    label: 'URL', 
+    labelAr: 'رابط',
+    desc: 'Create QR for any website URL. Perfect for sharing links to websites, social media profiles, online stores, or landing pages.',
+    descAr: 'أنشئ QR لأي رابط موقع. مثالي لمشاركة روابط المواقع، حسابات السوشيال ميديا، المتاجر الإلكترونية، أو صفحات الهبوط.'
+  },
+  { 
+    type: 'text' as ContentType, 
+    icon: FileText, 
+    label: 'Text', 
+    labelAr: 'نص',
+    desc: 'Encode plain text in QR code. Great for messages, notes, or any text content up to 4000 characters.',
+    descAr: 'شفّر نص عادي في كود QR. رائع للرسائل، الملاحظات، أو أي محتوى نصي حتى 4000 حرف.'
+  },
+  { 
+    type: 'wifi' as ContentType, 
+    icon: Wifi, 
+    label: 'WiFi', 
+    labelAr: 'واي فاي',
+    desc: 'Share WiFi network credentials instantly. Guests scan to connect automatically without typing passwords.',
+    descAr: 'شارك بيانات شبكة الواي فاي فوراً. الضيوف يمسحون للاتصال تلقائياً بدون كتابة كلمات المرور.'
+  },
+  { 
+    type: 'vcard' as ContentType, 
+    icon: User, 
+    label: 'vCard', 
+    labelAr: 'بطاقة',
+    desc: 'Digital business card with contact info. Includes name, phone, email, company, title, website, and address.',
+    descAr: 'بطاقة عمل رقمية مع معلومات الاتصال. تشمل الاسم، الهاتف، الإيميل، الشركة، المسمى الوظيفي، الموقع، والعنوان.'
+  },
+  { 
+    type: 'email' as ContentType, 
+    icon: Mail, 
+    label: 'Email', 
+    labelAr: 'إيميل',
+    desc: 'Create QR that opens email app with pre-filled recipient. Perfect for contact pages and customer support.',
+    descAr: 'أنشئ QR يفتح تطبيق البريد مع المستلم محدد مسبقاً. مثالي لصفحات الاتصال ودعم العملاء.'
+  },
+  { 
+    type: 'phone' as ContentType, 
+    icon: Phone, 
+    label: 'Phone', 
+    labelAr: 'هاتف',
+    desc: 'QR code that initiates a phone call when scanned. Perfect for business cards and contact information.',
+    descAr: 'كود QR يبدأ مكالمة هاتفية عند المسح. مثالي لبطاقات العمل ومعلومات الاتصال.'
+  },
+  { 
+    type: 'sms' as ContentType, 
+    icon: MessageSquare, 
+    label: 'SMS', 
+    labelAr: 'رسالة',
+    desc: 'Open SMS app with pre-filled number and message. Great for marketing campaigns and quick feedback.',
+    descAr: 'افتح تطبيق الرسائل مع رقم ورسالة محددة مسبقاً. رائع للحملات التسويقية والتعليقات السريعة.'
+  },
+  { 
+    type: 'whatsapp' as ContentType, 
+    icon: Send, 
+    label: 'WhatsApp', 
+    labelAr: 'واتساب',
+    desc: 'Open WhatsApp chat directly with pre-written message. Perfect for customer support and quick communication.',
+    descAr: 'افتح محادثة واتساب مباشرة مع رسالة مكتوبة مسبقاً. مثالي لدعم العملاء والتواصل السريع.'
+  },
+  { 
+    type: 'location' as ContentType, 
+    icon: MapPin, 
+    label: 'Location', 
+    labelAr: 'موقع',
+    desc: 'Share GPS coordinates that open in maps app. Ideal for event venues, stores, and meeting points.',
+    descAr: 'شارك إحداثيات GPS تفتح في تطبيق الخرائط. مثالي لأماكن الفعاليات، المتاجر، ونقاط الالتقاء.'
+  },
+  { 
+    type: 'event' as ContentType, 
+    icon: Calendar, 
+    label: 'Event', 
+    labelAr: 'حدث',
+    desc: 'Add calendar event with date, time, location and description. Perfect for invitations and appointments.',
+    descAr: 'أضف حدث للتقويم مع التاريخ، الوقت، المكان والوصف. مثالي للدعوات والمواعيد.'
+  },
+  { 
+    type: 'crypto' as ContentType, 
+    icon: Bitcoin, 
+    label: 'Crypto', 
+    labelAr: 'كريبتو',
+    desc: 'Receive cryptocurrency payments. Supports Bitcoin, Ethereum, Litecoin, Dogecoin, Solana, BNB, XRP, USDT.',
+    descAr: 'استلم مدفوعات العملات الرقمية. يدعم Bitcoin, Ethereum, Litecoin, Dogecoin, Solana, BNB, XRP, USDT.'
+  },
 ];
 
 const QRGenerator = () => {
@@ -1077,6 +1154,21 @@ startxref
                   </button>
                 ))}
               </div>
+              
+              {/* وصف نوع المحتوى المحدد */}
+              {(() => {
+                const selectedContent = contentTypes.find(c => c.type === contentType);
+                if (selectedContent) {
+                  return (
+                    <div className="bg-muted/50 p-3 rounded-lg border border-border/50">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {isRTL ? selectedContent.descAr : selectedContent.desc}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
               
               {/* نموذج المحتوى */}
               <div className="pt-2">
