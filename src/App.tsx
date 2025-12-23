@@ -41,7 +41,15 @@ import PDFSplit from "./pages/tools/PDFSplit";
 import PDFCompress from "./pages/tools/PDFCompress";
 import PDFToImage from "./pages/tools/PDFToImage";
 import ImageToPDF from "./pages/tools/ImageToPDF";
+import PDFToHTML from "./pages/tools/PDFToHTML";
+import PDFToWord from "./pages/tools/PDFToWord";
+import PDFRotate from "./pages/tools/PDFRotate";
+import PDFWatermark from "./pages/tools/PDFWatermark";
+import PDFProtect from "./pages/tools/PDFProtect";
+import PDFPageNumbers from "./pages/tools/PDFPageNumbers";
+import PDFSign from "./pages/tools/PDFSign";
 import BackgroundRemover from "./pages/tools/BackgroundRemover";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -74,9 +82,19 @@ const App = () => (
               <Route path="/tools/pdf-compress" element={<PDFCompress />} />
               <Route path="/tools/pdf-to-image" element={<PDFToImage />} />
               <Route path="/tools/image-to-pdf" element={<ImageToPDF />} />
+              <Route path="/tools/pdf-to-html" element={<PDFToHTML />} />
+              <Route path="/tools/pdf-to-word" element={<PDFToWord />} />
+              <Route path="/tools/pdf-rotate" element={<PDFRotate />} />
+              <Route path="/tools/pdf-watermark" element={<PDFWatermark />} />
+              <Route path="/tools/pdf-protect" element={<PDFProtect />} />
+              <Route path="/tools/pdf-page-numbers" element={<PDFPageNumbers />} />
+              <Route path="/tools/pdf-sign" element={<PDFSign />} />
               
               {/* Image Tools - Background Remover */}
               <Route path="/tools/background-remover" element={<BackgroundRemover />} />
+              
+              {/* Admin */}
+              <Route path="/admin" element={<Admin />} />
               
               {/* Text Tools */}
               <Route path="/tools/text-counter" element={<TextCounter />} />
