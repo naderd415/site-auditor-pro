@@ -10,16 +10,65 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Download, Link2, FileText, Mail, Phone, Upload, X, 
-  Shuffle, Undo2, Palette, Image, Shapes, Layers, Star
+  Shuffle, Undo2, Palette, Image, Shapes, Layers, Star,
+  Wifi, User, MessageSquare, MapPin, Calendar, Send, Bitcoin
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 // أنواع النقاط والزوايا
 type DotsType = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded';
 type CornersType = 'square' | 'dot' | 'extra-rounded';
-type ContentType = 'url' | 'text' | 'email' | 'phone';
+type ContentType = 'url' | 'text' | 'email' | 'phone' | 'wifi' | 'vcard' | 'sms' | 'location' | 'event' | 'whatsapp' | 'crypto';
+
+interface WifiData {
+  ssid: string;
+  password: string;
+  encryption: 'WPA' | 'WEP' | 'nopass';
+  hidden: boolean;
+}
+
+interface VCardData {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  company: string;
+  title: string;
+  website: string;
+  address: string;
+}
+
+interface SmsData {
+  phone: string;
+  message: string;
+}
+
+interface LocationData {
+  latitude: string;
+  longitude: string;
+}
+
+interface EventData {
+  title: string;
+  location: string;
+  start: string;
+  end: string;
+  description: string;
+}
+
+interface WhatsAppData {
+  phone: string;
+  message: string;
+}
+
+interface CryptoData {
+  type: 'bitcoin' | 'ethereum';
+  address: string;
+  amount: string;
+}
 
 interface QRState {
   data: string;
@@ -144,6 +193,21 @@ const cornerTypes: { id: CornersType; name: string; nameAr: string }[] = [
   { id: 'extra-rounded', name: 'Smooth', nameAr: 'ناعم' },
 ];
 
+// أنواع المحتوى
+const contentTypes = [
+  { type: 'url' as ContentType, icon: Link2, label: 'URL', labelAr: 'رابط' },
+  { type: 'text' as ContentType, icon: FileText, label: 'Text', labelAr: 'نص' },
+  { type: 'wifi' as ContentType, icon: Wifi, label: 'WiFi', labelAr: 'واي فاي' },
+  { type: 'vcard' as ContentType, icon: User, label: 'vCard', labelAr: 'بطاقة' },
+  { type: 'email' as ContentType, icon: Mail, label: 'Email', labelAr: 'إيميل' },
+  { type: 'phone' as ContentType, icon: Phone, label: 'Phone', labelAr: 'هاتف' },
+  { type: 'sms' as ContentType, icon: MessageSquare, label: 'SMS', labelAr: 'رسالة' },
+  { type: 'whatsapp' as ContentType, icon: Send, label: 'WhatsApp', labelAr: 'واتساب' },
+  { type: 'location' as ContentType, icon: MapPin, label: 'Location', labelAr: 'موقع' },
+  { type: 'event' as ContentType, icon: Calendar, label: 'Event', labelAr: 'حدث' },
+  { type: 'crypto' as ContentType, icon: Bitcoin, label: 'Crypto', labelAr: 'كريبتو' },
+];
+
 const QRGenerator = () => {
   const { t, isRTL } = useLanguage();
   const qrRef = useRef<HTMLDivElement>(null);
@@ -155,6 +219,15 @@ const QRGenerator = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [quality, setQuality] = useState(1000);
   const [historyStack, setHistoryStack] = useState<QRState[]>([]);
+  
+  // بيانات المحتوى المتقدمة
+  const [wifiData, setWifiData] = useState<WifiData>({ ssid: '', password: '', encryption: 'WPA', hidden: false });
+  const [vcardData, setVcardData] = useState<VCardData>({ firstName: '', lastName: '', phone: '', email: '', company: '', title: '', website: '', address: '' });
+  const [smsData, setSmsData] = useState<SmsData>({ phone: '', message: '' });
+  const [locationData, setLocationData] = useState<LocationData>({ latitude: '', longitude: '' });
+  const [eventData, setEventData] = useState<EventData>({ title: '', location: '', start: '', end: '', description: '' });
+  const [whatsappData, setWhatsappData] = useState<WhatsAppData>({ phone: '', message: '' });
+  const [cryptoData, setCryptoData] = useState<CryptoData>({ type: 'bitcoin', address: '', amount: '' });
   
   const [qrState, setQrState] = useState<QRState>({
     data: 'https://besttoolshub.com',
@@ -169,6 +242,41 @@ const QRGenerator = () => {
     transparentBg: false,
   });
 
+  // تحويل البيانات لصيغة QR
+  const generateQRData = useCallback((): string => {
+    switch (contentType) {
+      case 'wifi':
+        if (!wifiData.ssid) return 'WIFI:T:WPA;S:MyNetwork;P:password123;;';
+        return `WIFI:T:${wifiData.encryption};S:${wifiData.ssid};P:${wifiData.password};H:${wifiData.hidden ? 'true' : 'false'};;`;
+      case 'vcard':
+        if (!vcardData.firstName && !vcardData.lastName) return qrState.data;
+        return `BEGIN:VCARD\nVERSION:3.0\nN:${vcardData.lastName};${vcardData.firstName}\nFN:${vcardData.firstName} ${vcardData.lastName}\nTEL:${vcardData.phone}\nEMAIL:${vcardData.email}\nORG:${vcardData.company}\nTITLE:${vcardData.title}\nURL:${vcardData.website}\nADR:${vcardData.address}\nEND:VCARD`;
+      case 'sms':
+        if (!smsData.phone) return qrState.data;
+        return `SMSTO:${smsData.phone}:${smsData.message}`;
+      case 'location':
+        if (!locationData.latitude || !locationData.longitude) return qrState.data;
+        return `geo:${locationData.latitude},${locationData.longitude}`;
+      case 'event':
+        if (!eventData.title) return qrState.data;
+        const formatDate = (d: string) => d ? new Date(d).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z' : '';
+        return `BEGIN:VEVENT\nSUMMARY:${eventData.title}\nLOCATION:${eventData.location}\nDTSTART:${formatDate(eventData.start)}\nDTEND:${formatDate(eventData.end)}\nDESCRIPTION:${eventData.description}\nEND:VEVENT`;
+      case 'whatsapp':
+        if (!whatsappData.phone) return qrState.data;
+        return `https://wa.me/${whatsappData.phone.replace(/\D/g, '')}${whatsappData.message ? `?text=${encodeURIComponent(whatsappData.message)}` : ''}`;
+      case 'crypto':
+        if (!cryptoData.address) return qrState.data;
+        return cryptoData.type === 'bitcoin' 
+          ? `bitcoin:${cryptoData.address}${cryptoData.amount ? `?amount=${cryptoData.amount}` : ''}`
+          : `ethereum:${cryptoData.address}${cryptoData.amount ? `?value=${cryptoData.amount}` : ''}`;
+      default:
+        return qrState.data;
+    }
+  }, [contentType, wifiData, vcardData, smsData, locationData, eventData, whatsappData, cryptoData, qrState.data]);
+
+  // حساب البيانات النهائية للـ QR
+  const qrData = generateQRData();
+
   // إنشاء QR Code
   useEffect(() => {
     if (!qrRef.current) return;
@@ -177,7 +285,7 @@ const QRGenerator = () => {
       width: 250,
       height: 250,
       type: 'svg',
-      data: qrState.data || 'https://besttoolshub.com',
+      data: qrData || 'https://besttoolshub.com',
       image: qrState.logo || undefined,
       dotsOptions: {
         type: qrState.dotsType,
@@ -207,7 +315,7 @@ const QRGenerator = () => {
     qrRef.current.innerHTML = '';
     qrCode.append(qrRef.current);
     qrCodeRef.current = qrCode;
-  }, [qrState]);
+  }, [qrState, qrData]);
 
   const updateQrState = (updates: Partial<QRState>) => {
     setQrState(prev => ({ ...prev, ...updates }));
@@ -334,33 +442,354 @@ const QRGenerator = () => {
     }
   };
 
-  const getPlaceholder = () => {
-    switch (contentType) {
-      case 'url': return 'https://www.example.com';
-      case 'text': return isRTL ? 'اكتب النص هنا...' : 'Enter your text...';
-      case 'email': return 'name@example.com';
-      case 'phone': return '+201234567890';
-    }
-  };
-
-  const getLabel = () => {
-    switch (contentType) {
-      case 'url': return isRTL ? 'رابط الموقع (URL)' : 'Website URL';
-      case 'text': return isRTL ? 'النص' : 'Text';
-      case 'email': return isRTL ? 'البريد الإلكتروني' : 'Email';
-      case 'phone': return isRTL ? 'رقم الهاتف' : 'Phone Number';
-    }
-  };
-
   const filteredTemplates = selectedCategory === 'all' 
     ? templates 
     : templates.filter(t => t.cat === selectedCategory);
+
+  // رندر نموذج المحتوى حسب النوع
+  const renderContentForm = () => {
+    switch (contentType) {
+      case 'url':
+      case 'text':
+        return (
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {contentType === 'url' ? (isRTL ? 'رابط الموقع (URL)' : 'Website URL') : (isRTL ? 'النص' : 'Text')}
+            </label>
+            <Input
+              value={qrState.data}
+              onChange={(e) => updateQrState({ data: e.target.value })}
+              placeholder={contentType === 'url' ? 'https://www.example.com' : (isRTL ? 'اكتب النص هنا...' : 'Enter your text...')}
+              className="text-base"
+            />
+          </div>
+        );
+      
+      case 'email':
+        return (
+          <div>
+            <label className="block text-sm font-medium mb-2">{isRTL ? 'البريد الإلكتروني' : 'Email Address'}</label>
+            <Input
+              value={qrState.data}
+              onChange={(e) => updateQrState({ data: `mailto:${e.target.value}` })}
+              placeholder="name@example.com"
+              className="text-base"
+            />
+          </div>
+        );
+      
+      case 'phone':
+        return (
+          <div>
+            <label className="block text-sm font-medium mb-2">{isRTL ? 'رقم الهاتف' : 'Phone Number'}</label>
+            <Input
+              value={qrState.data}
+              onChange={(e) => updateQrState({ data: `tel:${e.target.value}` })}
+              placeholder="+201234567890"
+              className="text-base"
+            />
+          </div>
+        );
+      
+      case 'wifi':
+        return (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'اسم الشبكة (SSID)' : 'Network Name (SSID)'}</label>
+              <Input
+                value={wifiData.ssid}
+                onChange={(e) => setWifiData(prev => ({ ...prev, ssid: e.target.value }))}
+                placeholder="MyWiFi"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'كلمة المرور' : 'Password'}</label>
+              <Input
+                type="password"
+                value={wifiData.password}
+                onChange={(e) => setWifiData(prev => ({ ...prev, password: e.target.value }))}
+                placeholder="••••••••"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع التشفير' : 'Encryption'}</label>
+              <div className="flex gap-2">
+                {(['WPA', 'WEP', 'nopass'] as const).map((enc) => (
+                  <button
+                    key={enc}
+                    onClick={() => setWifiData(prev => ({ ...prev, encryption: enc }))}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
+                      wifiData.encryption === enc
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {enc === 'nopass' ? (isRTL ? 'بدون' : 'None') : enc}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={wifiData.hidden}
+                onCheckedChange={(checked) => setWifiData(prev => ({ ...prev, hidden: checked }))}
+              />
+              <span className="text-sm">{isRTL ? 'شبكة مخفية' : 'Hidden Network'}</span>
+            </div>
+          </div>
+        );
+      
+      case 'vcard':
+        return (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'الاسم الأول' : 'First Name'}</label>
+                <Input
+                  value={vcardData.firstName}
+                  onChange={(e) => setVcardData(prev => ({ ...prev, firstName: e.target.value }))}
+                  placeholder={isRTL ? 'أحمد' : 'John'}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'اسم العائلة' : 'Last Name'}</label>
+                <Input
+                  value={vcardData.lastName}
+                  onChange={(e) => setVcardData(prev => ({ ...prev, lastName: e.target.value }))}
+                  placeholder={isRTL ? 'محمد' : 'Doe'}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'الهاتف' : 'Phone'}</label>
+                <Input
+                  value={vcardData.phone}
+                  onChange={(e) => setVcardData(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+201234567890"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'الإيميل' : 'Email'}</label>
+                <Input
+                  value={vcardData.email}
+                  onChange={(e) => setVcardData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="email@example.com"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'الشركة' : 'Company'}</label>
+                <Input
+                  value={vcardData.company}
+                  onChange={(e) => setVcardData(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder={isRTL ? 'الشركة' : 'Company Inc.'}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'المسمى الوظيفي' : 'Job Title'}</label>
+                <Input
+                  value={vcardData.title}
+                  onChange={(e) => setVcardData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder={isRTL ? 'مدير' : 'Manager'}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">{isRTL ? 'الموقع الإلكتروني' : 'Website'}</label>
+              <Input
+                value={vcardData.website}
+                onChange={(e) => setVcardData(prev => ({ ...prev, website: e.target.value }))}
+                placeholder="https://example.com"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">{isRTL ? 'العنوان' : 'Address'}</label>
+              <Input
+                value={vcardData.address}
+                onChange={(e) => setVcardData(prev => ({ ...prev, address: e.target.value }))}
+                placeholder={isRTL ? 'القاهرة، مصر' : 'Cairo, Egypt'}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'sms':
+        return (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'رقم الهاتف' : 'Phone Number'}</label>
+              <Input
+                value={smsData.phone}
+                onChange={(e) => setSmsData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="+201234567890"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'نص الرسالة (اختياري)' : 'Message (optional)'}</label>
+              <Textarea
+                value={smsData.message}
+                onChange={(e) => setSmsData(prev => ({ ...prev, message: e.target.value }))}
+                placeholder={isRTL ? 'مرحباً!' : 'Hello!'}
+                rows={3}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'whatsapp':
+        return (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'رقم الهاتف (مع كود الدولة)' : 'Phone Number (with country code)'}</label>
+              <Input
+                value={whatsappData.phone}
+                onChange={(e) => setWhatsappData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="201234567890"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'الرسالة (اختياري)' : 'Message (optional)'}</label>
+              <Textarea
+                value={whatsappData.message}
+                onChange={(e) => setWhatsappData(prev => ({ ...prev, message: e.target.value }))}
+                placeholder={isRTL ? 'مرحباً، أريد الاستفسار عن...' : 'Hello, I want to ask about...'}
+                rows={3}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'location':
+        return (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium mb-1">{isRTL ? 'خط العرض' : 'Latitude'}</label>
+                <Input
+                  value={locationData.latitude}
+                  onChange={(e) => setLocationData(prev => ({ ...prev, latitude: e.target.value }))}
+                  placeholder="30.0444"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">{isRTL ? 'خط الطول' : 'Longitude'}</label>
+                <Input
+                  value={locationData.longitude}
+                  onChange={(e) => setLocationData(prev => ({ ...prev, longitude: e.target.value }))}
+                  placeholder="31.2357"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {isRTL ? 'يمكنك الحصول على الإحداثيات من خرائط جوجل' : 'You can get coordinates from Google Maps'}
+            </p>
+          </div>
+        );
+      
+      case 'event':
+        return (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'عنوان الحدث' : 'Event Title'}</label>
+              <Input
+                value={eventData.title}
+                onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder={isRTL ? 'اجتماع عمل' : 'Business Meeting'}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'المكان' : 'Location'}</label>
+              <Input
+                value={eventData.location}
+                onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder={isRTL ? 'القاهرة، مصر' : 'Cairo, Egypt'}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'تاريخ البداية' : 'Start Date'}</label>
+                <Input
+                  type="datetime-local"
+                  value={eventData.start}
+                  onChange={(e) => setEventData(prev => ({ ...prev, start: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1">{isRTL ? 'تاريخ النهاية' : 'End Date'}</label>
+                <Input
+                  type="datetime-local"
+                  value={eventData.end}
+                  onChange={(e) => setEventData(prev => ({ ...prev, end: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'الوصف' : 'Description'}</label>
+              <Textarea
+                value={eventData.description}
+                onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder={isRTL ? 'تفاصيل الحدث...' : 'Event details...'}
+                rows={2}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'crypto':
+        return (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع العملة' : 'Cryptocurrency'}</label>
+              <div className="flex gap-2">
+                {(['bitcoin', 'ethereum'] as const).map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setCryptoData(prev => ({ ...prev, type }))}
+                    className={`px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${
+                      cryptoData.type === type
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {type === 'bitcoin' ? '₿ Bitcoin' : 'Ξ Ethereum'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'عنوان المحفظة' : 'Wallet Address'}</label>
+              <Input
+                value={cryptoData.address}
+                onChange={(e) => setCryptoData(prev => ({ ...prev, address: e.target.value }))}
+                placeholder={cryptoData.type === 'bitcoin' ? 'bc1q...' : '0x...'}
+                className="font-mono text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'المبلغ (اختياري)' : 'Amount (optional)'}</label>
+              <Input
+                value={cryptoData.amount}
+                onChange={(e) => setCryptoData(prev => ({ ...prev, amount: e.target.value }))}
+                placeholder="0.001"
+                type="number"
+                step="0.0001"
+              />
+            </div>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   return (
     <ToolPageLayout
       title={isRTL ? 'مولد QR Code الاحترافي' : 'Professional QR Code Generator'}
       description={isRTL ? 'أداة توليد QR Code احترافية ومجانية. أضف شعارك، غير الألوان، واختر التصميم المناسب.' : 'Professional and free QR Code generator. Add your logo, change colors, and choose the right design.'}
-      keywords="qr code, generator, qr maker, barcode"
+      keywords="qr code, generator, qr maker, barcode, wifi qr, vcard qr"
       article={isRTL 
         ? 'مولد QR Code في BestToolsHub هو أداة مجانية تساعدك على إنشاء رمز QR بسرعة وبشكل احترافي، سواء كنت تريد وضعه على بطاقة عمل، إعلان مطبوع، منيو مطعم، أو رابط حسابات التواصل الاجتماعي. يمكنك تخصيص الألوان والتصميم وإضافة شعار في المنتصف.'
         : 'QR Code Generator at BestToolsHub is a free tool that helps you create QR codes quickly and professionally. Whether you want to put it on a business card, printed ad, restaurant menu, or social media link. You can customize colors, design, and add a logo in the center.'
@@ -438,36 +867,29 @@ const QRGenerator = () => {
 
             {/* تبويب المحتوى */}
             <TabsContent value="content" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  { type: 'url' as ContentType, icon: Link2, label: 'URL' },
-                  { type: 'text' as ContentType, icon: FileText, label: isRTL ? 'نص' : 'Text' },
-                  { type: 'email' as ContentType, icon: Mail, label: isRTL ? 'إيميل' : 'Email' },
-                  { type: 'phone' as ContentType, icon: Phone, label: isRTL ? 'هاتف' : 'Phone' },
-                ].map(({ type, icon: Icon, label }) => (
-                  <button
-                    key={type}
-                    onClick={() => setContentType(type)}
-                    className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${
-                      contentType === type 
-                        ? 'border-primary bg-primary/10 text-primary' 
-                        : 'border-border text-muted-foreground hover:border-primary/50'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-sm">{label}</span>
-                  </button>
-                ))}
-              </div>
+              {/* أزرار أنواع المحتوى */}
+              <ScrollArea className="w-full">
+                <div className="flex gap-2 pb-2">
+                  {contentTypes.map(({ type, icon: Icon, label, labelAr }) => (
+                    <button
+                      key={type}
+                      onClick={() => setContentType(type)}
+                      className={`px-3 py-2 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap ${
+                        contentType === type 
+                          ? 'border-primary bg-primary/10 text-primary' 
+                          : 'border-border text-muted-foreground hover:border-primary/50'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="text-sm">{isRTL ? labelAr : label}</span>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
               
-              <div>
-                <label className="block text-sm font-medium mb-2">{getLabel()}</label>
-                <Input
-                  value={qrState.data}
-                  onChange={(e) => updateQrState({ data: e.target.value })}
-                  placeholder={getPlaceholder()}
-                  className="text-base"
-                />
+              {/* نموذج المحتوى */}
+              <div className="pt-2">
+                {renderContentForm()}
               </div>
             </TabsContent>
 
