@@ -1,334 +1,205 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import QRCode from 'qrcode';
+import QRCodeStyling from 'qr-code-styling';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { ToolPageLayout } from '@/components/tools/ToolPageLayout';
 import { useLanguage } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Download, Copy, Upload, X, Sparkles, ChevronDown } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Download, Link2, FileText, Mail, Phone, Upload, X, 
+  Shuffle, Undo2, Palette, Image, Shapes, Layers, Star
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { qrCategories, getRandomTemplate, type QRTemplate } from '@/lib/qr/templates';
 
-type QRPattern = 'squares' | 'dots' | 'rounded' | 'classy' | 'classy-rounded' | 'extra-rounded' | 'diamond' | 'star' | 'heart' | 'hexagon';
+// أنواع النقاط والزوايا
+type DotsType = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded';
+type CornersType = 'square' | 'dot' | 'extra-rounded';
+type ContentType = 'url' | 'text' | 'email' | 'phone';
 
-interface QRSettings {
-  size: number;
-  darkColor: string;
-  lightColor: string;
-  transparentBg: boolean;
-  pattern: QRPattern;
+interface QRState {
+  data: string;
+  dotsType: DotsType;
+  cornersType: CornersType;
+  cornersDotType: 'square' | 'dot';
+  color1: string;
+  color2: string;
+  bg: string;
   logo: string | null;
+  gradientType: 'linear' | 'radial';
+  transparentBg: boolean;
 }
 
-// تحويل hex إلى HSL
-const hexToHSL = (hex: string) => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result) return { h: 0, s: 100, l: 50 };
-  
-  let r = parseInt(result[1], 16) / 255;
-  let g = parseInt(result[2], 16) / 255;
-  let b = parseInt(result[3], 16) / 255;
-  
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
+interface Template {
+  id: number;
+  cat: string;
+  name: string;
+  nameAr: string;
+  color1: string;
+  color2: string;
+  bg: string;
+  dots: DotsType;
+  corner: CornersType;
+  icon: string;
+}
 
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
-    }
-  }
+// القوالب الجاهزة
+const templates: Template[] = [
+  { id: 1, cat: 'social', name: 'Facebook', nameAr: 'فيسبوك', color1: '#1877F2', color2: '#1877F2', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '📘' },
+  { id: 2, cat: 'social', name: 'Instagram', nameAr: 'انستغرام', color1: '#833AB4', color2: '#FD1D1D', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '📸' },
+  { id: 3, cat: 'social', name: 'Twitter', nameAr: 'تويتر', color1: '#1DA1F2', color2: '#1DA1F2', bg: '#ffffff', dots: 'classy', corner: 'extra-rounded', icon: '🐦' },
+  { id: 4, cat: 'social', name: 'WhatsApp', nameAr: 'واتساب', color1: '#25D366', color2: '#128C7E', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '💬' },
+  { id: 5, cat: 'business', name: 'Corporate', nameAr: 'شركات', color1: '#2c3e50', color2: '#34495e', bg: '#ecf0f1', dots: 'square', corner: 'square', icon: '🏢' },
+  { id: 6, cat: 'business', name: 'Gold Luxury', nameAr: 'ذهبي فاخر', color1: '#D4AF37', color2: '#C5A028', bg: '#000000', dots: 'classy', corner: 'extra-rounded', icon: '👑' },
+  { id: 7, cat: 'love', name: 'Love', nameAr: 'حب', color1: '#e91e63', color2: '#ff4081', bg: '#ffebee', dots: 'dots', corner: 'dot', icon: '❤️' },
+  { id: 8, cat: 'love', name: 'Romantic Night', nameAr: 'ليلة رومانسية', color1: '#ff6b81', color2: '#ff4757', bg: '#fff0f5', dots: 'rounded', corner: 'extra-rounded', icon: '💕' },
+  { id: 9, cat: 'fun', name: 'Neon', nameAr: 'نيون', color1: '#00ff00', color2: '#ccff00', bg: '#000000', dots: 'square', corner: 'square', icon: '⚡' },
+  { id: 10, cat: 'tech', name: 'Cyber', nameAr: 'سايبر', color1: '#00d2ff', color2: '#3a7bd5', bg: '#000000', dots: 'square', corner: 'square', icon: '🔌' },
+  { id: 11, cat: 'food', name: 'Restaurant', nameAr: 'مطعم', color1: '#e67e22', color2: '#d35400', bg: '#fff3e0', dots: 'rounded', corner: 'extra-rounded', icon: '🍽️' },
+  { id: 12, cat: 'food', name: 'Coffee Shop', nameAr: 'كافيه', color1: '#6f4e37', color2: '#8B4513', bg: '#FFF8DC', dots: 'classy', corner: 'extra-rounded', icon: '☕' },
+  { id: 13, cat: 'sport', name: 'Gym', nameAr: 'جيم', color1: '#00b894', color2: '#00cec9', bg: '#e0f7fa', dots: 'rounded', corner: 'extra-rounded', icon: '💪' },
+  { id: 14, cat: 'sport', name: 'Football', nameAr: 'كرة قدم', color1: '#0984e3', color2: '#6c5ce7', bg: '#e3f2fd', dots: 'dots', corner: 'dot', icon: '⚽' },
+  { id: 15, cat: 'tech', name: 'Matrix', nameAr: 'ماتريكس', color1: '#00ff00', color2: '#008800', bg: '#000000', dots: 'square', corner: 'square', icon: '💻' },
+  { id: 16, cat: 'business', name: 'Minimal', nameAr: 'بسيط', color1: '#000000', color2: '#333333', bg: '#ffffff', dots: 'square', corner: 'square', icon: '⬛' },
+  { id: 17, cat: 'fun', name: 'Rainbow', nameAr: 'قوس قزح', color1: '#ff0000', color2: '#0000ff', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '🌈' },
+  { id: 18, cat: 'love', name: 'Valentine', nameAr: 'عيد الحب', color1: '#c0392b', color2: '#e74c3c', bg: '#ffffff', dots: 'extra-rounded', corner: 'extra-rounded', icon: '💝' },
+  { id: 19, cat: 'food', name: 'Pizza', nameAr: 'بيتزا', color1: '#ff6b35', color2: '#f7c815', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '🍕' },
+  { id: 20, cat: 'sport', name: 'Basketball', nameAr: 'كرة سلة', color1: '#ff6b00', color2: '#ff8c00', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '🏀' },
+];
 
-  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
-};
+// الفئات
+const categories = [
+  { id: 'all', name: 'All', nameAr: 'الكل' },
+  { id: 'sport', name: 'Sport', nameAr: 'رياضي' },
+  { id: 'food', name: 'Food', nameAr: 'أكل ومطاعم' },
+  { id: 'love', name: 'Love', nameAr: 'حب ورومانسي' },
+  { id: 'tech', name: 'Tech', nameAr: 'تكنولوجيا' },
+  { id: 'business', name: 'Business', nameAr: 'أعمال' },
+  { id: 'fun', name: 'Fun', nameAr: 'ترفيه' },
+  { id: 'social', name: 'Social', nameAr: 'سوشيال ميديا' },
+];
 
-// تحويل HSL إلى hex
-const hslToHex = (h: number, s: number, l: number): string => {
-  s /= 100;
-  l /= 100;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color).toString(16).padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-};
+const dotsTypes: { id: DotsType; name: string; nameAr: string }[] = [
+  { id: 'square', name: 'Square', nameAr: 'مربع' },
+  { id: 'dots', name: 'Dots', nameAr: 'دائري' },
+  { id: 'rounded', name: 'Rounded', nameAr: 'منحني' },
+  { id: 'extra-rounded', name: 'Smooth', nameAr: 'ناعم' },
+  { id: 'classy', name: 'Classic', nameAr: 'كلاسيك' },
+  { id: 'classy-rounded', name: 'Classic Rounded', nameAr: 'كلاسيك منحني' },
+];
 
-// مكون اختيار اللون
-const ColorPicker = ({ color, onChange, label }: { color: string; onChange: (color: string) => void; label: string }) => {
-  const hsl = hexToHSL(color);
-  
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          className="w-8 h-8 rounded-md border border-border shadow-sm hover:scale-110 transition-transform cursor-pointer"
-          style={{ backgroundColor: color }}
-          title={label}
-        />
-      </PopoverTrigger>
-      <PopoverContent className="w-56 p-3" align="start">
-        <div className="space-y-3">
-          <p className="text-xs font-medium text-muted-foreground">{label}</p>
-          
-          {/* مربع الإشباع والإضاءة */}
-          <div 
-            className="w-full h-28 rounded-md relative cursor-crosshair"
-            style={{
-              background: `linear-gradient(to bottom, white, transparent, black), 
-                           linear-gradient(to right, gray, hsl(${hsl.h}, 100%, 50%))`
-            }}
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-              const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-              onChange(hslToHex(hsl.h, Math.round(x * 100), Math.round((1 - y) * 100)));
-            }}
-          >
-            <div 
-              className="absolute w-3 h-3 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-              style={{ left: `${hsl.s}%`, top: `${100 - hsl.l}%`, backgroundColor: color }}
-            />
-          </div>
-          
-          {/* شريط الـ Hue */}
-          <div 
-            className="w-full h-3 rounded-full cursor-pointer relative"
-            style={{ background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)' }}
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-              onChange(hslToHex(Math.round(x * 360), hsl.s, hsl.l));
-            }}
-          >
-            <div 
-              className="absolute w-3 h-3 border-2 border-white rounded-full shadow -translate-x-1/2 top-0 pointer-events-none"
-              style={{ left: `${(hsl.h / 360) * 100}%`, backgroundColor: `hsl(${hsl.h}, 100%, 50%)` }}
-            />
-          </div>
-          
-          <Input
-            value={color}
-            onChange={(e) => onChange(e.target.value)}
-            className="font-mono text-xs h-8"
-            placeholder="#000000"
-          />
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
-// قائمة الأنماط
-const patterns: { id: QRPattern; name: string; nameAr: string }[] = [
-  { id: 'squares', name: 'Squares', nameAr: 'مربعات' },
-  { id: 'dots', name: 'Dots', nameAr: 'نقاط' },
-  { id: 'rounded', name: 'Rounded', nameAr: 'دائري' },
-  { id: 'classy', name: 'Classy', nameAr: 'أنيق' },
-  { id: 'classy-rounded', name: 'Classy Rounded', nameAr: 'أنيق دائري' },
-  { id: 'extra-rounded', name: 'Extra Rounded', nameAr: 'دائري جداً' },
-  { id: 'diamond', name: 'Diamond', nameAr: 'ماسي' },
-  { id: 'star', name: 'Star', nameAr: 'نجمة' },
-  { id: 'heart', name: 'Heart', nameAr: 'قلب' },
-  { id: 'hexagon', name: 'Hexagon', nameAr: 'سداسي' },
+const cornerTypes: { id: CornersType; name: string; nameAr: string }[] = [
+  { id: 'square', name: 'Square', nameAr: 'مربع' },
+  { id: 'dot', name: 'Dot', nameAr: 'دائري' },
+  { id: 'extra-rounded', name: 'Smooth', nameAr: 'ناعم' },
 ];
 
 const QRGenerator = () => {
   const { t, isRTL } = useLanguage();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const qrRef = useRef<HTMLDivElement>(null);
+  const qrCodeRef = useRef<QRCodeStyling | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
   
-  const [inputValue, setInputValue] = useState('https://example.com');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [contentType, setContentType] = useState<ContentType>('url');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [quality, setQuality] = useState(1000);
+  const [historyStack, setHistoryStack] = useState<QRState[]>([]);
   
-  const [settings, setSettings] = useState<QRSettings>({
-    size: 400,
-    darkColor: '#000000',
-    lightColor: '#ffffff',
-    transparentBg: false,
-    pattern: 'squares',
+  const [qrState, setQrState] = useState<QRState>({
+    data: 'https://besttoolshub.com',
+    dotsType: 'square',
+    cornersType: 'square',
+    cornersDotType: 'square',
+    color1: '#000000',
+    color2: '#000000',
+    bg: '#ffffff',
     logo: null,
+    gradientType: 'linear',
+    transparentBg: false,
   });
 
-  // توليد الـ QR
-  const generateQR = useCallback(async () => {
-    if (!inputValue.trim() || !canvasRef.current) return;
-
-    try {
-      const canvas = canvasRef.current;
-      const actualSize = settings.size;
-
-      await QRCode.toCanvas(canvas, inputValue, {
-        width: actualSize,
-        margin: 2,
-        color: {
-          dark: settings.darkColor,
-          light: settings.transparentBg ? '#00000000' : settings.lightColor,
-        },
-        errorCorrectionLevel: 'H',
-      });
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      // تطبيق النمط
-      if (settings.pattern !== 'squares') {
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixelData = imageData.data;
-        
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
-        const tempCtx = tempCanvas.getContext('2d')!;
-        
-        if (settings.transparentBg) {
-          tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-        } else {
-          tempCtx.fillStyle = settings.lightColor;
-          tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        }
-        
-        const moduleSize = actualSize / 29;
-        
-        for (let y = 0; y < canvas.height; y += moduleSize) {
-          for (let x = 0; x < canvas.width; x += moduleSize) {
-            const pixelIndex = (Math.floor(y) * canvas.width + Math.floor(x)) * 4;
-            const isDark = pixelData[pixelIndex] < 128;
-            
-            if (isDark) {
-              tempCtx.fillStyle = settings.darkColor;
-              const padding = moduleSize * 0.1;
-              const size = moduleSize - padding * 2;
-              const cx = x + moduleSize / 2;
-              const cy = y + moduleSize / 2;
-              
-              switch (settings.pattern) {
-                case 'dots':
-                  tempCtx.beginPath();
-                  tempCtx.arc(cx, cy, size / 2, 0, Math.PI * 2);
-                  tempCtx.fill();
-                  break;
-                case 'rounded':
-                  tempCtx.beginPath();
-                  tempCtx.roundRect(x + padding, y + padding, size, size, size * 0.3);
-                  tempCtx.fill();
-                  break;
-                case 'classy':
-                  tempCtx.beginPath();
-                  tempCtx.roundRect(x + padding, y + padding, size, size, [size * 0.5, 0, size * 0.5, 0]);
-                  tempCtx.fill();
-                  break;
-                case 'classy-rounded':
-                  tempCtx.beginPath();
-                  tempCtx.roundRect(x + padding, y + padding, size, size, [size * 0.6, size * 0.1, size * 0.6, size * 0.1]);
-                  tempCtx.fill();
-                  break;
-                case 'extra-rounded':
-                  tempCtx.beginPath();
-                  tempCtx.arc(cx, cy, size / 2.2, 0, Math.PI * 2);
-                  tempCtx.fill();
-                  break;
-                case 'diamond':
-                  tempCtx.beginPath();
-                  tempCtx.moveTo(cx, y + padding);
-                  tempCtx.lineTo(x + padding + size, cy);
-                  tempCtx.lineTo(cx, y + padding + size);
-                  tempCtx.lineTo(x + padding, cy);
-                  tempCtx.closePath();
-                  tempCtx.fill();
-                  break;
-                case 'star':
-                  const spikes = 4;
-                  const outerRadius = size / 2;
-                  const innerRadius = size / 4;
-                  tempCtx.beginPath();
-                  for (let i = 0; i < spikes * 2; i++) {
-                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
-                    const angle = (i * Math.PI) / spikes - Math.PI / 2;
-                    const px = cx + Math.cos(angle) * radius;
-                    const py = cy + Math.sin(angle) * radius;
-                    i === 0 ? tempCtx.moveTo(px, py) : tempCtx.lineTo(px, py);
-                  }
-                  tempCtx.closePath();
-                  tempCtx.fill();
-                  break;
-                case 'heart':
-                  const hs = size * 0.5;
-                  tempCtx.beginPath();
-                  tempCtx.moveTo(cx, cy + hs * 0.4);
-                  tempCtx.bezierCurveTo(cx - hs, cy - hs * 0.5, cx - hs * 0.5, cy - hs, cx, cy - hs * 0.3);
-                  tempCtx.bezierCurveTo(cx + hs * 0.5, cy - hs, cx + hs, cy - hs * 0.5, cx, cy + hs * 0.4);
-                  tempCtx.fill();
-                  break;
-                case 'hexagon':
-                  const hexSize = size / 2;
-                  tempCtx.beginPath();
-                  for (let i = 0; i < 6; i++) {
-                    const angle = (i * Math.PI) / 3 - Math.PI / 2;
-                    const px = cx + Math.cos(angle) * hexSize;
-                    const py = cy + Math.sin(angle) * hexSize;
-                    i === 0 ? tempCtx.moveTo(px, py) : tempCtx.lineTo(px, py);
-                  }
-                  tempCtx.closePath();
-                  tempCtx.fill();
-                  break;
-              }
-            }
-          }
-        }
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(tempCanvas, 0, 0);
-      }
-
-      // إضافة اللوجو
-      if (settings.logo) {
-        const logo = new Image();
-        logo.onload = () => {
-          const logoSize = actualSize * 0.2;
-          const logoX = (canvas.width - logoSize) / 2;
-          const logoY = (canvas.height - logoSize) / 2;
-          
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.roundRect(logoX - 4, logoY - 4, logoSize + 8, logoSize + 8, 8);
-          ctx.fill();
-          ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
-        };
-        logo.src = settings.logo;
-      }
-    } catch (error) {
-      console.error('QR generation error:', error);
-    }
-  }, [inputValue, settings]);
-
+  // إنشاء QR Code
   useEffect(() => {
-    generateQR();
-  }, [generateQR]);
+    if (!qrRef.current) return;
+    
+    const qrCode = new QRCodeStyling({
+      width: 300,
+      height: 300,
+      type: 'svg',
+      data: qrState.data || 'https://besttoolshub.com',
+      image: qrState.logo || undefined,
+      dotsOptions: {
+        type: qrState.dotsType,
+        gradient: {
+          type: qrState.gradientType,
+          colorStops: [
+            { offset: 0, color: qrState.color1 },
+            { offset: 1, color: qrState.color2 }
+          ]
+        }
+      },
+      backgroundOptions: {
+        color: qrState.transparentBg ? 'transparent' : qrState.bg
+      },
+      cornersSquareOptions: {
+        type: qrState.cornersType
+      },
+      cornersDotOptions: {
+        type: qrState.cornersDotType
+      },
+      imageOptions: {
+        crossOrigin: 'anonymous',
+        margin: 10
+      }
+    });
 
-  const updateSettings = (newSettings: Partial<QRSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    qrRef.current.innerHTML = '';
+    qrCode.append(qrRef.current);
+    qrCodeRef.current = qrCode;
+  }, [qrState]);
+
+  const updateQrState = (updates: Partial<QRState>) => {
+    setQrState(prev => ({ ...prev, ...updates }));
   };
 
-  const applyTemplate = (template: QRTemplate) => {
-    updateSettings({
-      darkColor: template.primaryColor,
-      pattern: template.pattern || 'squares',
+  const saveToHistory = () => {
+    setHistoryStack(prev => {
+      const newStack = [...prev, { ...qrState }];
+      if (newStack.length > 10) newStack.shift();
+      return newStack;
+    });
+  };
+
+  const undoTemplate = () => {
+    if (historyStack.length === 0) return;
+    const prev = historyStack[historyStack.length - 1];
+    setHistoryStack(prev => prev.slice(0, -1));
+    setQrState(prev);
+    toast.success(isRTL ? 'تم التراجع' : 'Undone');
+  };
+
+  const applyTemplate = (template: Template) => {
+    saveToHistory();
+    updateQrState({
+      color1: template.color1,
+      color2: template.color2,
+      bg: template.bg,
+      dotsType: template.dots,
+      cornersType: template.corner,
+      cornersDotType: template.corner === 'square' ? 'square' : 'dot',
+      transparentBg: false,
     });
     toast.success(isRTL ? `تم تطبيق ${template.nameAr}` : `Applied ${template.name}`);
   };
 
-  const luckyPick = () => {
-    applyTemplate(getRandomTemplate());
-    toast.success(isRTL ? '🎲 ضربة حظ!' : '🎲 Lucky pick!');
+  const applyRandomTemplate = () => {
+    const random = templates[Math.floor(Math.random() * templates.length)];
+    applyTemplate(random);
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,299 +207,453 @@ const QRGenerator = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        updateSettings({ logo: reader.result as string });
-        toast.success(isRTL ? 'تم إضافة الشعار!' : 'Logo added!');
+        updateQrState({ logo: reader.result as string });
+        toast.success(isRTL ? 'تم رفع الشعار!' : 'Logo uploaded!');
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const downloadQR = (format: 'png' | 'jpg') => {
-    const canvas = canvasRef.current;
-    if (!canvas || !inputValue) return;
+  const removeLogo = () => {
+    updateQrState({ logo: null });
+    if (logoInputRef.current) logoInputRef.current.value = '';
+    toast.success(isRTL ? 'تم إزالة الشعار' : 'Logo removed');
+  };
 
-    let dataUrl: string;
-    if (format === 'jpg') {
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-      const ctx = tempCanvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = settings.lightColor;
-        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        ctx.drawImage(canvas, 0, 0);
-        dataUrl = tempCanvas.toDataURL('image/jpeg', 0.95);
-      } else return;
-    } else {
-      dataUrl = canvas.toDataURL('image/png');
-    }
-
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = `qrcode.${format}`;
-    link.click();
+  const downloadQR = async (format: 'png' | 'svg') => {
+    if (!qrCodeRef.current) return;
+    
+    qrCodeRef.current.update({ width: quality, height: quality });
+    await qrCodeRef.current.download({ name: 'qr_code', extension: format });
+    qrCodeRef.current.update({ width: 300, height: 300 });
     toast.success(isRTL ? 'تم التحميل!' : 'Downloaded!');
   };
 
-  const copyToClipboard = async () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const handleBulkGeneration = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const text = await file.text();
+    const rows = text.trim().split(/\r?\n/).map(row => row.split(','));
+    
+    const zip = new JSZip();
+    const folder = zip.folder('qr_codes');
+
+    toast.loading(isRTL ? 'جاري إنشاء الأكواد...' : 'Generating QR codes...');
+
     try {
-      const blob = await new Promise<Blob>((resolve) => canvas.toBlob((b) => resolve(b!), 'image/png'));
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      toast.success(isRTL ? 'تم النسخ!' : 'Copied!');
-    } catch (error) {
-      toast.error(isRTL ? 'فشل النسخ' : 'Copy failed');
+      for (let i = 0; i < rows.length; i++) {
+        const [value, name] = rows[i];
+        if (!value) continue;
+        
+        const fileName = (name || `qr_${i + 1}`).trim().replace(/[^a-z0-9]/gi, '_');
+        
+        const tempQR = new QRCodeStyling({
+          width: quality,
+          height: quality,
+          data: value,
+          image: qrState.logo || undefined,
+          dotsOptions: {
+            type: qrState.dotsType,
+            gradient: {
+              type: qrState.gradientType,
+              colorStops: [
+                { offset: 0, color: qrState.color1 },
+                { offset: 1, color: qrState.color2 }
+              ]
+            }
+          },
+          cornersSquareOptions: { type: qrState.cornersType },
+          cornersDotOptions: { type: qrState.cornersDotType },
+          backgroundOptions: {
+            color: qrState.transparentBg ? 'transparent' : qrState.bg
+          },
+          imageOptions: { crossOrigin: 'anonymous', margin: 10 }
+        });
+
+        const blob = await tempQR.getRawData('png');
+        if (blob && folder) {
+          folder.file(`${fileName}.png`, blob);
+        }
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, 'qr_bulk_codes.zip');
+      toast.dismiss();
+      toast.success(isRTL ? 'تم إنشاء الملف!' : 'ZIP file created!');
+    } catch (err) {
+      console.error(err);
+      toast.dismiss();
+      toast.error(isRTL ? 'حدث خطأ' : 'Error occurred');
     }
   };
 
-  const filteredCategories = selectedCategory 
-    ? qrCategories.filter(c => c.id === selectedCategory)
-    : qrCategories;
+  const getPlaceholder = () => {
+    switch (contentType) {
+      case 'url': return 'https://www.example.com';
+      case 'text': return isRTL ? 'اكتب النص هنا...' : 'Enter your text...';
+      case 'email': return 'name@example.com';
+      case 'phone': return '+201234567890';
+    }
+  };
+
+  const getLabel = () => {
+    switch (contentType) {
+      case 'url': return isRTL ? 'رابط الموقع (URL)' : 'Website URL';
+      case 'text': return isRTL ? 'النص' : 'Text';
+      case 'email': return isRTL ? 'البريد الإلكتروني' : 'Email';
+      case 'phone': return isRTL ? 'رقم الهاتف' : 'Phone Number';
+    }
+  };
+
+  const filteredTemplates = selectedCategory === 'all' 
+    ? templates 
+    : templates.filter(t => t.cat === selectedCategory);
 
   return (
     <ToolPageLayout
-      title={isRTL ? 'مولد QR Code' : 'QR Code Generator'}
-      description={isRTL ? 'أنشئ رموز QR مخصصة بأنماط وألوان مختلفة' : 'Create custom QR codes with various patterns and colors'}
-      keywords="qr code, generator, qr maker"
+      title={isRTL ? 'مولد QR Code الاحترافي' : 'Professional QR Code Generator'}
+      description={isRTL ? 'أداة توليد QR Code احترافية ومجانية. أضف شعارك، غير الألوان، واختر التصميم المناسب.' : 'Professional and free QR Code generator. Add your logo, change colors, and choose the right design.'}
+      keywords="qr code, generator, qr maker, barcode"
       article={isRTL 
-        ? 'أدخل الرابط أو النص، اختر القالب والنمط، ثم حمّل الرمز. يمكنك تخصيص الألوان والأنماط المختلفة لإنشاء رموز QR فريدة.'
-        : 'Enter your URL or text, choose a template and pattern, then download your code. You can customize colors and patterns to create unique QR codes.'
+        ? 'مولد QR Code في BestToolsHub هو أداة مجانية تساعدك على إنشاء رمز QR بسرعة وبشكل احترافي، سواء كنت تريد وضعه على بطاقة عمل، إعلان مطبوع، منيو مطعم، أو رابط حسابات التواصل الاجتماعي. يمكنك تخصيص الألوان والتصميم وإضافة شعار في المنتصف.'
+        : 'QR Code Generator at BestToolsHub is a free tool that helps you create QR codes quickly and professionally. Whether you want to put it on a business card, printed ad, restaurant menu, or social media link. You can customize colors, design, and add a logo in the center.'
       }
     >
-      <div className="flex flex-col lg:flex-row gap-6 min-h-[600px]">
-        {/* الجانب الأيسر - المعاينة */}
-        <div className="lg:w-[350px] flex-shrink-0">
-          <div className="bg-card rounded-xl border border-border p-4 sticky top-4">
-            <div className="bg-muted/30 rounded-lg p-4 flex items-center justify-center mb-4">
-              <canvas
-                ref={canvasRef}
-                className="max-w-full h-auto rounded-lg"
-                style={{ 
-                  maxWidth: '280px', 
-                  maxHeight: '280px',
-                  backgroundColor: settings.transparentBg ? 'transparent' : settings.lightColor
-                }}
-              />
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* لوحة الإعدادات (يسار/أعلى) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h1 className="text-2xl font-bold mb-6 flex items-center gap-3">
+              <span className="text-2xl">📱</span>
+              {isRTL ? 'مولد QR Code الاحترافي' : 'Professional QR Code Generator'}
+            </h1>
             
-            {/* أزرار التحميل والنسخ */}
-            <div className="flex gap-2">
-              <Button onClick={() => downloadQR('png')} className="flex-1 gap-2" size="sm">
-                <Download className="w-4 h-4" />
-                PNG
-              </Button>
-              <Button onClick={() => downloadQR('jpg')} variant="outline" className="flex-1 gap-2" size="sm">
-                <Download className="w-4 h-4" />
-                JPG
-              </Button>
-              <Button onClick={copyToClipboard} variant="outline" size="sm">
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
+            <Tabs defaultValue="content" className="w-full">
+              <TabsList className="w-full flex-wrap h-auto gap-1 bg-muted/50 p-1">
+                <TabsTrigger value="content" className="gap-2 text-xs">
+                  <Link2 className="w-3.5 h-3.5" />
+                  {isRTL ? 'المحتوى' : 'Content'}
+                </TabsTrigger>
+                <TabsTrigger value="templates" className="gap-2 text-xs">
+                  <Star className="w-3.5 h-3.5" />
+                  {isRTL ? 'القوالب' : 'Templates'}
+                </TabsTrigger>
+                <TabsTrigger value="colors" className="gap-2 text-xs">
+                  <Palette className="w-3.5 h-3.5" />
+                  {isRTL ? 'الألوان' : 'Colors'}
+                </TabsTrigger>
+                <TabsTrigger value="logo" className="gap-2 text-xs">
+                  <Image className="w-3.5 h-3.5" />
+                  {isRTL ? 'الشعار' : 'Logo'}
+                </TabsTrigger>
+                <TabsTrigger value="design" className="gap-2 text-xs">
+                  <Shapes className="w-3.5 h-3.5" />
+                  {isRTL ? 'التصميم' : 'Design'}
+                </TabsTrigger>
+                <TabsTrigger value="bulk" className="gap-2 text-xs">
+                  <Layers className="w-3.5 h-3.5" />
+                  {isRTL ? 'بالجملة' : 'Bulk'}
+                </TabsTrigger>
+              </TabsList>
 
-        {/* الجانب الأيمن - الأدوات */}
-        <div className="flex-1 space-y-4">
-          {/* إدخال الرابط */}
-          <div className="bg-card rounded-xl border border-border p-4">
-            <label className="text-sm font-medium text-foreground mb-2 block">
-              {isRTL ? 'أدخل الرابط أو النص' : 'Enter URL or Text'}
-            </label>
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="https://example.com"
-              className="text-base"
-            />
-          </div>
-
-          {/* الإعدادات */}
-          <div className="bg-card rounded-xl border border-border p-4 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">
-              {isRTL ? 'الإعدادات' : 'Settings'}
-            </h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              {/* الحجم */}
-              <div>
-                <label className="text-xs text-muted-foreground mb-2 block">
-                  {isRTL ? 'الحجم' : 'Size'}: {settings.size}px
-                </label>
-                <Slider
-                  value={[settings.size]}
-                  onValueChange={([v]) => updateSettings({ size: v })}
-                  min={200}
-                  max={800}
-                  step={50}
-                  className="w-full"
-                />
-              </div>
-              
-              {/* الألوان */}
-              <div className="flex items-end gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    {isRTL ? 'الأمامي' : 'Foreground'}
-                  </label>
-                  <ColorPicker
-                    color={settings.darkColor}
-                    onChange={(c) => updateSettings({ darkColor: c })}
-                    label={isRTL ? 'لون الأمامي' : 'Foreground Color'}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    {isRTL ? 'الخلفية' : 'Background'}
-                  </label>
-                  <ColorPicker
-                    color={settings.lightColor}
-                    onChange={(c) => updateSettings({ lightColor: c })}
-                    label={isRTL ? 'لون الخلفية' : 'Background Color'}
-                  />
-                </div>
-                <Button
-                  variant={settings.transparentBg ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => updateSettings({ transparentBg: !settings.transparentBg })}
-                  className="text-xs h-8"
-                >
-                  {isRTL ? 'شفاف' : 'Transparent'}
-                </Button>
-              </div>
-            </div>
-
-            {/* النمط */}
-            <div>
-              <label className="text-xs text-muted-foreground mb-2 block">
-                {isRTL ? 'النمط' : 'Pattern'}
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {patterns.map((p) => (
-                  <Button
-                    key={p.id}
-                    variant={settings.pattern === p.id ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => updateSettings({ pattern: p.id })}
-                    className="text-xs h-7 px-2"
-                  >
-                    {isRTL ? p.nameAr : p.name}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* رفع اللوجو */}
-            <div>
-              <label className="text-xs text-muted-foreground mb-2 block">
-                {isRTL ? 'الشعار (اختياري)' : 'Logo (optional)'}
-              </label>
-              <div className="flex gap-2">
-                <input
-                  ref={logoInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => logoInputRef.current?.click()}
-                  className="gap-2"
-                >
-                  <Upload className="w-4 h-4" />
-                  {isRTL ? 'رفع شعار' : 'Upload Logo'}
-                </Button>
-                {settings.logo && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => updateSettings({ logo: null })}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* القوالب */}
-          <div className="bg-card rounded-xl border border-border p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-foreground">
-                {isRTL ? 'القوالب' : 'Templates'}
-              </h3>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-1 text-xs h-7">
-                      {selectedCategory 
-                        ? qrCategories.find(c => c.id === selectedCategory)?.icon + ' ' + (isRTL ? qrCategories.find(c => c.id === selectedCategory)?.nameAr : qrCategories.find(c => c.id === selectedCategory)?.name)
-                        : (isRTL ? 'كل الفئات' : 'All Categories')
-                      }
-                      <ChevronDown className="w-3 h-3" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-48 p-1" align="end">
-                    <Button
-                      variant={selectedCategory === null ? 'secondary' : 'ghost'}
-                      size="sm"
-                      className="w-full justify-start text-xs"
-                      onClick={() => setSelectedCategory(null)}
+              {/* تبويب المحتوى */}
+              <TabsContent value="content" className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { type: 'url' as ContentType, icon: Link2, label: 'URL' },
+                    { type: 'text' as ContentType, icon: FileText, label: isRTL ? 'نص' : 'Text' },
+                    { type: 'email' as ContentType, icon: Mail, label: isRTL ? 'إيميل' : 'Email' },
+                    { type: 'phone' as ContentType, icon: Phone, label: isRTL ? 'هاتف' : 'Phone' },
+                  ].map(({ type, icon: Icon, label }) => (
+                    <button
+                      key={type}
+                      onClick={() => setContentType(type)}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+                        contentType === type 
+                          ? 'border-primary bg-primary/10 text-primary' 
+                          : 'border-border text-muted-foreground hover:border-primary/50'
+                      }`}
                     >
-                      {isRTL ? 'كل الفئات' : 'All Categories'}
-                    </Button>
-                    {qrCategories.map((cat) => (
-                      <Button
-                        key={cat.id}
-                        variant={selectedCategory === cat.id ? 'secondary' : 'ghost'}
-                        size="sm"
-                        className="w-full justify-start text-xs gap-2"
-                        onClick={() => setSelectedCategory(cat.id)}
+                      <Icon className="w-5 h-5" />
+                      <span className="text-sm">{label}</span>
+                    </button>
+                  ))}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">{getLabel()}</label>
+                  <Input
+                    value={qrState.data}
+                    onChange={(e) => updateQrState({ data: e.target.value })}
+                    placeholder={getPlaceholder()}
+                    className="text-base"
+                  />
+                </div>
+              </TabsContent>
+
+              {/* تبويب القوالب */}
+              <TabsContent value="templates" className="space-y-4 mt-4">
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-all ${
+                        selectedCategory === cat.id
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      {isRTL ? cat.nameAr : cat.name}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button onClick={applyRandomTemplate} className="flex-1 gap-2">
+                    <Shuffle className="w-4 h-4" />
+                    {isRTL ? 'عشوائي' : 'Random'}
+                  </Button>
+                  <Button onClick={undoTemplate} variant="outline" className="gap-2" disabled={historyStack.length === 0}>
+                    <Undo2 className="w-4 h-4" />
+                    {isRTL ? 'تراجع' : 'Undo'}
+                  </Button>
+                </div>
+
+                <ScrollArea className="h-[280px]">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                    {filteredTemplates.map((template) => (
+                      <button
+                        key={template.id}
+                        onClick={() => applyTemplate(template)}
+                        className="p-4 rounded-xl border border-border hover:border-primary/50 hover:shadow-md transition-all flex flex-col items-center gap-2 bg-card"
+                        style={{
+                          background: `linear-gradient(135deg, ${template.bg} 60%, ${template.color1} 100%)`
+                        }}
                       >
-                        <span>{cat.icon}</span>
-                        {isRTL ? cat.nameAr : cat.name}
-                      </Button>
+                        <span className="text-2xl">{template.icon}</span>
+                        <span className="text-xs font-medium" style={{ color: template.bg === '#000000' ? '#fff' : '#000' }}>
+                          {isRTL ? template.nameAr : template.name}
+                        </span>
+                      </button>
                     ))}
-                  </PopoverContent>
-                </Popover>
-                <Button variant="outline" size="sm" onClick={luckyPick} className="gap-1 text-xs h-7">
-                  <Sparkles className="w-3 h-3" />
-                  {isRTL ? 'عشوائي' : 'Random'}
-                </Button>
-              </div>
-            </div>
-            
-            <ScrollArea className="h-[200px]">
-              <div className="space-y-3">
-                {filteredCategories.map((category) => (
-                  <div key={category.id}>
-                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                      <span>{category.icon}</span>
-                      {isRTL ? category.nameAr : category.name}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {category.templates.slice(0, 8).map((template) => (
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+
+              {/* تبويب الألوان */}
+              <TabsContent value="colors" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <h3 className="font-bold text-sm">{isRTL ? 'لون الخلفية' : 'Background Color'}</h3>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="color"
+                      value={qrState.bg}
+                      onChange={(e) => updateQrState({ bg: e.target.value })}
+                      className="w-10 h-10 rounded cursor-pointer border-0 p-0"
+                      disabled={qrState.transparentBg}
+                    />
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={qrState.transparentBg}
+                        onCheckedChange={(checked) => updateQrState({ transparentBg: checked })}
+                      />
+                      <span className="text-sm">{isRTL ? 'خلفية شفافة' : 'Transparent'}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h3 className="font-bold text-sm">{isRTL ? 'لون الرمز' : 'QR Color'}</h3>
+                  <div className="flex gap-4">
+                    <div>
+                      <label className="block text-xs mb-1">{isRTL ? 'لون 1' : 'Color 1'}</label>
+                      <input
+                        type="color"
+                        value={qrState.color1}
+                        onChange={(e) => updateQrState({ color1: e.target.value })}
+                        className="w-10 h-10 rounded cursor-pointer border-0 p-0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs mb-1">{isRTL ? 'لون 2 (تدرج)' : 'Color 2 (Gradient)'}</label>
+                      <input
+                        type="color"
+                        value={qrState.color2}
+                        onChange={(e) => updateQrState({ color2: e.target.value })}
+                        className="w-10 h-10 rounded cursor-pointer border-0 p-0"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm mb-2">{isRTL ? 'نوع التدرج' : 'Gradient Type'}</label>
+                    <div className="flex gap-2">
+                      {(['linear', 'radial'] as const).map((type) => (
                         <button
-                          key={template.id}
-                          onClick={() => applyTemplate(template)}
-                          className="w-6 h-6 rounded-md border border-border hover:scale-125 transition-transform"
-                          style={{ 
-                            backgroundColor: template.primaryColor,
-                            background: template.gradient && template.secondaryColor
-                              ? `linear-gradient(135deg, ${template.primaryColor}, ${template.secondaryColor})`
-                              : template.primaryColor
-                          }}
-                          title={isRTL ? template.nameAr : template.name}
-                        />
+                          key={type}
+                          onClick={() => updateQrState({ gradientType: type })}
+                          className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                            qrState.gradientType === type
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          {type === 'linear' ? (isRTL ? 'خطي' : 'Linear') : (isRTL ? 'دائري' : 'Radial')}
+                        </button>
                       ))}
                     </div>
                   </div>
-                ))}
+                </div>
+              </TabsContent>
+
+              {/* تبويب الشعار */}
+              <TabsContent value="logo" className="space-y-4 mt-4">
+                <div
+                  onClick={() => logoInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                >
+                  <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">{isRTL ? 'اضغط لرفع شعار (PNG, JPG)' : 'Click to upload logo (PNG, JPG)'}</p>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </div>
+                
+                {qrState.logo && (
+                  <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                    <img src={qrState.logo} alt="Logo" className="w-12 h-12 object-contain" />
+                    <Button variant="destructive" size="sm" onClick={removeLogo}>
+                      <X className="w-4 h-4 mr-2" />
+                      {isRTL ? 'إزالة الشعار' : 'Remove Logo'}
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* تبويب التصميم */}
+              <TabsContent value="design" className="space-y-6 mt-4">
+                <div>
+                  <label className="block text-sm font-medium mb-3">{isRTL ? 'شكل النقاط' : 'Dots Shape'}</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {dotsTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => updateQrState({ dotsType: type.id })}
+                        className={`p-2 rounded-lg border text-sm transition-all ${
+                          qrState.dotsType === type.id
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}
+                      >
+                        {isRTL ? type.nameAr : type.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-3">{isRTL ? 'إطار العيون' : 'Eye Frame'}</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {cornerTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => updateQrState({ cornersType: type.id })}
+                        className={`p-2 rounded-lg border text-sm transition-all ${
+                          qrState.cornersType === type.id
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}
+                      >
+                        {isRTL ? type.nameAr : type.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-3">{isRTL ? 'كرة العيون' : 'Eye Ball'}</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'square' as const, name: 'Square', nameAr: 'مربع' },
+                      { id: 'dot' as const, name: 'Dot', nameAr: 'دائري' },
+                    ].map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => updateQrState({ cornersDotType: type.id })}
+                        className={`p-2 rounded-lg border text-sm transition-all ${
+                          qrState.cornersDotType === type.id
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}
+                      >
+                        {isRTL ? type.nameAr : type.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* تبويب إنشاء بالجملة */}
+              <TabsContent value="bulk" className="space-y-4 mt-4">
+                <div
+                  onClick={() => csvInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                >
+                  <Layers className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-2">{isRTL ? 'ارفع ملف CSV يحتوي على البيانات' : 'Upload CSV file with data'}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {isRTL ? 'العمود الأول = القيمة، العمود الثاني = اسم الملف (اختياري)' : 'Column 1 = Value, Column 2 = Filename (optional)'}
+                  </p>
+                  <input
+                    ref={csvInputRef}
+                    type="file"
+                    accept=".csv"
+                    onChange={handleBulkGeneration}
+                    className="hidden"
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+
+        {/* لوحة المعاينة (يمين/أسفل) */}
+        <div className="lg:col-span-1">
+          <div className="bg-card border border-border rounded-2xl p-6 sticky top-24">
+            <div 
+              ref={qrRef}
+              className="flex justify-center mb-6 bg-white p-4 rounded-xl shadow-sm mx-auto w-fit min-h-[300px]"
+            />
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <label className="text-sm whitespace-nowrap">{isRTL ? 'الجودة:' : 'Quality:'}</label>
+                <Slider
+                  value={[quality]}
+                  onValueChange={([v]) => setQuality(v)}
+                  min={300}
+                  max={2000}
+                  step={100}
+                  className="flex-1"
+                />
+                <span className="text-sm font-mono w-16">{quality}px</span>
               </div>
-            </ScrollArea>
+              
+              <Button onClick={() => downloadQR('png')} className="w-full gap-2">
+                <Download className="w-4 h-4" />
+                {isRTL ? 'تحميل PNG' : 'Download PNG'}
+              </Button>
+              <Button onClick={() => downloadQR('svg')} variant="outline" className="w-full">
+                {isRTL ? 'تحميل SVG' : 'Download SVG'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
