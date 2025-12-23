@@ -20,6 +20,12 @@ export interface ToolsSEOData {
   pdfCompress: ToolSEO;
   pdfToImage: ToolSEO;
   imageToPdf: ToolSEO;
+  pdfRotate: ToolSEO;
+  pdfSign: ToolSEO;
+  pdfWatermark: ToolSEO;
+  pdfProtect: ToolSEO;
+  pdfPageNumbers: ToolSEO;
+  pdfToHtml: ToolSEO;
   textCounter: ToolSEO;
   textFormatter: ToolSEO;
   textDiff: ToolSEO;
@@ -710,61 +716,242 @@ WCAG هي إرشادات الوصولية لمحتوى الويب. تحدد نس
 4. احصل على جميع الحسابات`
     },
     qrGenerator: {
-      title: 'مولد رمز QR مجاني - أنشئ QR Code',
-      description: 'أنشئ رموز QR للروابط والنصوص والواي فاي والإيميل. مولد QR مجاني مع خيارات تخصيص الألوان.',
-      keywords: 'مولد QR, QR code generator, رمز QR, إنشاء QR, QR للواي فاي, باركود QR',
-      article: `مولد رموز QR يتيح لك إنشاء رموز QR احترافية لمختلف الاستخدامات.
+      title: 'مولد QR Code احترافي مجاني - WiFi, vCard, كريبتو',
+      description: 'أنشئ رموز QR احترافية للروابط، واي فاي، بطاقات العمل vCard، العملات الرقمية، واتساب والمزيد. 100+ قالب جاهز مع تخصيص كامل.',
+      keywords: 'مولد QR, QR code generator, رمز QR, إنشاء QR, QR للواي فاي, QR للعملات الرقمية, QR vCard, باركود QR, مولد باركود, QR مجاني',
+      article: `مولد QR Code الاحترافي في BestToolsHub هو الأداة الأكثر تطوراً لإنشاء رموز QR باحترافية وسهولة. يدعم أكثر من 11 نوع محتوى مختلف مع 100+ قالب تصميم جاهز.
 
-أنواع محتوى QR:
-- روابط URL
-- نص عادي
-- معلومات واي فاي
-- البريد الإلكتروني
-- رقم الهاتف
-- رسائل SMS
+ما هو رمز QR Code؟
+QR Code (Quick Response Code) هو رمز ثنائي الأبعاد يمكن مسحه بكاميرا الهاتف للوصول السريع لمحتوى معين. يستخدم في كل مكان من المطاعم والمتاجر إلى بطاقات العمل والإعلانات.
 
-خيارات التخصيص:
-- حجم الرمز
-- لون QR ولون الخلفية
-- مستوى تصحيح الأخطاء
-- إضافة شعار (اختياري)
+أنواع المحتوى المدعومة:
+- روابط URL: لمواقع الويب وصفحات السوشيال ميديا
+- واي فاي WiFi: مشاركة بيانات الشبكة (الاسم وكلمة المرور) بنقرة
+- بطاقة عمل vCard: معلومات الاتصال كاملة (الاسم، الهاتف، الإيميل، الشركة)
+- البريد الإلكتروني: رابط مباشر لإرسال إيميل
+- الهاتف: اتصال مباشر عند المسح
+- رسائل SMS: فتح رسالة جاهزة
+- واتساب: فتح محادثة واتساب مع رسالة معدة
+- الموقع الجغرافي: إحداثيات GPS للخرائط
+- الأحداث: إضافة موعد للتقويم
+- العملات الرقمية: Bitcoin, Ethereum, Litecoin, Dogecoin, Solana, BNB, XRP, USDT
 
-استخدامات QR:
-- مشاركة روابط المواقع
-- بطاقات العمل الرقمية
-- مشاركة كلمة سر الواي فاي
-- ملصقات المنتجات
-- القوائم الرقمية للمطاعم
+خيارات التصميم المتقدمة:
+- 100+ قالب جاهز في فئات متنوعة (سوشيال، أعمال، حب، طعام، رياضة، تقنية)
+- تخصيص ألوان الرمز والخلفية مع التدرجات
+- 6 أنماط مختلفة للنقاط (مربع، دائري، منحني، كلاسيكي)
+- 3 أنماط لإطار العيون
+- إضافة شعار في المنتصف
+- خلفية شفافة للتصميمات
 
-تنزيل بصيغ:
-- PNG للويب
-- SVG للطباعة
-- JPG للمشاركة`
+صيغ التحميل:
+- PNG: للويب والسوشيال ميديا
+- SVG: للطباعة بجودة عالية
+- JPEG: للمشاركة السريعة
+- WEBP: حجم أصغر بجودة عالية
+- PDF: للمستندات الرسمية
+
+ميزات إضافية:
+- إنشاء بالجملة من ملف CSV
+- تحديد جودة/دقة التصدير (300-2000 بكسل)
+- ألوان سريعة وأنماط جاهزة
+- تراجع عن التغييرات
+
+استخدامات QR Code:
+- المطاعم والكافيهات: قوائم طعام رقمية
+- المتاجر: معلومات المنتجات والتتبع
+- التسويق: روابط العروض والخصومات
+- بطاقات العمل: مشاركة بيانات الاتصال
+- الفعاليات: تذاكر وتسجيل الحضور
+- العملات الرقمية: استلام المدفوعات
+
+مجاني 100% ويعمل من المتصفح مباشرة بدون تسجيل أو تحميل برامج.`
     },
     qrScanner: {
-      title: 'ماسح رمز QR - اقرأ QR من الصور',
-      description: 'امسح رموز QR من الصور واستخرج المحتوى. قارئ QR مجاني يعمل من المتصفح بدون تطبيقات.',
-      keywords: 'ماسح QR, QR scanner, قارئ QR, مسح رمز QR, QR code reader, قراءة باركود',
-      article: `ماسح رموز QR يقرأ رموز QR من الصور ويستخرج محتواها بسهولة.
+      title: 'ماسح QR Code مجاني - اقرأ رموز QR من الصور',
+      description: 'امسح واستخرج محتوى رموز QR من أي صورة. قارئ QR مجاني يعمل من المتصفح بدون تطبيقات. سريع وآمن.',
+      keywords: 'ماسح QR, QR scanner, قارئ QR, مسح رمز QR, QR code reader, قراءة باركود, فك رمز QR, scan QR online',
+      article: `ماسح رموز QR في BestToolsHub هو أداة مجانية احترافية لقراءة واستخراج محتوى رموز QR من أي صورة بسهولة وسرعة.
 
-كيفية الاستخدام:
+ما هو ماسح QR Code؟
+ماسح QR هو أداة تحلل الصور التي تحتوي على رموز QR وتستخرج المحتوى المشفر فيها، سواء كان رابط موقع، نص، معلومات واي فاي، أو أي بيانات أخرى.
+
+كيفية استخدام الماسح:
 1. ارفع صورة تحتوي على رمز QR
-2. الأداة تكتشف الرمز تلقائياً
-3. يظهر المحتوى (رابط، نص، إلخ)
-4. انسخ المحتوى أو افتح الرابط
+2. الأداة تكتشف الرمز تلقائياً وتحلله
+3. يظهر المحتوى (رابط، نص، بيانات واي فاي، إلخ)
+4. انسخ المحتوى بضغطة أو افتح الرابط مباشرة
 
 ما يمكن مسحه:
-- رموز QR من صور الموبايل
-- لقطات شاشة
-- صور من الإنترنت
-- مستندات PDF (كصور)
+- صور من الهاتف أو الكاميرا
+- لقطات شاشة (Screenshots)
+- صور محفوظة من الإنترنت
+- صور مستندات أو ملصقات
+- أي صورة تحتوي على رمز QR
+
+أنواع المحتوى المدعومة:
+- روابط مواقع الويب
+- نصوص عادية
+- بيانات واي فاي (SSID وكلمة المرور)
+- بيانات الاتصال (vCard)
+- روابط البريد الإلكتروني
+- أرقام الهاتف
+- رسائل SMS
+- إحداثيات المواقع
+- أحداث التقويم
+- عناوين العملات الرقمية
 
 مميزات الأداة:
-- كشف تلقائي للرمز
-- دعم جميع صيغ QR
-- عمل بدون إنترنت
+- كشف تلقائي وذكي للرمز
+- دعم جميع أنواع وصيغ QR
+- سرعة فائقة في القراءة
+- يعمل بدون اتصال إنترنت
+- خصوصية تامة - الصور لا ترفع للسيرفر
+- مجاني 100% بدون حدود
+
+متى تحتاج ماسح QR؟
+- استخراج رابط من صورة أو لقطة شاشة
+- الحصول على كلمة سر واي فاي من ملصق
+- قراءة بيانات الاتصال من بطاقة عمل رقمية
+- فك محتوى رموز QR المطبوعة
+
+لا حاجة لتحميل تطبيقات - يعمل مباشرة من المتصفح على أي جهاز.`
+    },
+    pdfRotate: {
+      title: 'تدوير صفحات PDF مجاناً - Rotate PDF Online',
+      description: 'دور صفحات ملف PDF 90 أو 180 درجة مجاناً. صحح اتجاه الصفحات الممسوحة ضوئياً. سهل وسريع.',
+      keywords: 'تدوير PDF, تدوير صفحات PDF, rotate PDF, تعديل اتجاه PDF, PDF rotation, قلب صفحات PDF',
+      article: `أداة تدوير PDF تساعدك على تصحيح اتجاه صفحات ملفات PDF الممسوحة ضوئياً أو المقلوبة.
+
+استخدامات تدوير PDF:
+- تصحيح صفحات ممسوحة بشكل مقلوب
+- توحيد اتجاه جميع الصفحات
+- تحويل من أفقي لعمودي أو العكس
+
+خيارات التدوير:
+- 90 درجة لليمين
+- 90 درجة لليسار
+- 180 درجة (قلب)
+
+مميزات الأداة:
+- تدوير صفحات محددة أو جميعها
+- معاينة قبل الحفظ
+- مجاني بدون حدود`
+    },
+    pdfSign: {
+      title: 'توقيع PDF إلكترونياً مجاناً - Digital Signature',
+      description: 'وقع ملفات PDF إلكترونياً مجاناً. ارسم توقيعك أو ارفع صورته. أضف التوقيع في أي مكان بالمستند.',
+      keywords: 'توقيع PDF, توقيع إلكتروني, sign PDF, digital signature, توقيع مستندات, e-signature',
+      article: `أداة توقيع PDF تتيح لك إضافة توقيعك الإلكتروني على مستندات PDF بسهولة واحترافية.
+
+طرق إضافة التوقيع:
+- الرسم بالماوس أو اللمس
+- رفع صورة التوقيع
+- كتابة الاسم بخط اليد
+
+مميزات الأداة:
+- تحريك التوقيع وتحديد موقعه بدقة
+- تغيير حجم التوقيع
+- إضافة تاريخ تلقائي
+- حفظ التوقيع للاستخدام لاحقاً
 - خصوصية تامة - لا رفع للسيرفر
-- مجاني 100%`
+
+استخدامات التوقيع الإلكتروني:
+- توقيع العقود والاتفاقيات
+- الموافقة على المستندات
+- توقيع الفواتير
+- المستندات الرسمية`
+    },
+    pdfWatermark: {
+      title: 'إضافة علامة مائية لـ PDF مجاناً - Watermark',
+      description: 'أضف علامة مائية نصية أو صورة لملفات PDF. احمِ مستنداتك وضع شعارك. مجاني وسهل.',
+      keywords: 'علامة مائية PDF, watermark PDF, إضافة شعار PDF, حماية PDF, watermark مجاني',
+      article: `أداة العلامة المائية تحمي مستندات PDF الخاصة بك بإضافة نص أو شعار على جميع الصفحات.
+
+أنواع العلامات المائية:
+- نص مخصص (مثل: سري، مسودة، نسخة)
+- شعار الشركة (صورة)
+- تاريخ أو رقم
+
+خيارات التخصيص:
+- شفافية العلامة
+- الموقع (وسط، زاوية، مائل)
+- الحجم واللون
+- التكرار على جميع الصفحات
+
+استخدامات العلامة المائية:
+- حماية الملكية الفكرية
+- تمييز المسودات من النسخ النهائية
+- إضافة شعار الشركة للمستندات
+- منع النسخ غير المصرح به`
+    },
+    pdfProtect: {
+      title: 'حماية PDF بكلمة مرور مجاناً - Password Protect',
+      description: 'أضف كلمة مرور لملفات PDF لحمايتها. منع الفتح أو التعديل أو الطباعة. تشفير آمن.',
+      keywords: 'حماية PDF, كلمة مرور PDF, تشفير PDF, password protect PDF, قفل PDF, PDF security',
+      article: `أداة حماية PDF تضيف طبقة أمان لمستنداتك عبر كلمة مرور وصلاحيات مخصصة.
+
+أنواع الحماية:
+- كلمة مرور للفتح: منع فتح الملف بدون كلمة المرور
+- كلمة مرور للتعديل: السماح بالقراءة فقط
+- منع الطباعة
+- منع النسخ واللصق
+- منع التعديل والحذف
+
+مميزات الأداة:
+- تشفير قوي 128-bit
+- خيارات صلاحيات متعددة
+- معالجة محلية آمنة
+- مجاني بدون حدود
+
+استخدامات حماية PDF:
+- المستندات السرية
+- العقود والاتفاقيات
+- التقارير المالية
+- الملفات الشخصية`
+    },
+    pdfPageNumbers: {
+      title: 'إضافة أرقام صفحات لـ PDF مجاناً - Page Numbers',
+      description: 'أضف أرقام الصفحات لملفات PDF بمواقع وأنماط مختلفة. رقم تلقائي لجميع الصفحات.',
+      keywords: 'أرقام صفحات PDF, ترقيم PDF, page numbers PDF, إضافة أرقام PDF, ترقيم الصفحات',
+      article: `أداة ترقيم PDF تضيف أرقام الصفحات تلقائياً لجميع صفحات المستند.
+
+خيارات الترقيم:
+- الموقع: أعلى/أسفل، يمين/يسار/وسط
+- تنسيق الرقم: 1، 2، 3 أو صفحة 1 من X
+- بداية الترقيم من رقم محدد
+- تخطي صفحات معينة
+
+أنماط الأرقام:
+- أرقام عربية (1, 2, 3)
+- أرقام رومانية (I, II, III)
+- أحرف (A, B, C)
+
+استخدامات الترقيم:
+- الكتب والتقارير
+- المستندات الرسمية
+- العروض التقديمية
+- الرسائل العلمية`
+    },
+    pdfToHtml: {
+      title: 'تحويل PDF إلى HTML مجاناً - PDF to HTML',
+      description: 'حول ملفات PDF إلى صفحات HTML قابلة للتحرير. استخرج النصوص والصور. مجاني واونلاين.',
+      keywords: 'PDF إلى HTML, تحويل PDF لـ HTML, PDF to HTML, convert PDF, استخراج نص PDF',
+      article: `أداة تحويل PDF إلى HTML تحول مستندات PDF إلى صفحات ويب HTML قابلة للتحرير.
+
+مميزات التحويل:
+- الحفاظ على التنسيق والتخطيط
+- استخراج النصوص كاملة
+- تحويل الصور
+- روابط قابلة للنقر
+
+استخدامات التحويل:
+- نشر PDF على الويب
+- تحرير محتوى PDF
+- استخراج النصوص للتعديل
+- إنشاء صفحات ويب من مستندات
+
+الأداة تعمل من المتصفح مباشرة بدون تحميل برامج.`
     }
   },
   en: {
@@ -1376,61 +1563,228 @@ How to use:
 4. Get all calculations`
     },
     qrGenerator: {
-      title: 'Free QR Code Generator - Create QR Codes',
-      description: 'Create QR codes for URLs, text, WiFi, and email. Free QR generator with color customization options.',
-      keywords: 'QR generator, QR code generator, create QR code, QR code maker, WiFi QR, barcode generator',
-      article: `The QR code generator lets you create professional QR codes for various uses.
+      title: 'Professional QR Code Generator - WiFi, vCard, Crypto',
+      description: 'Create professional QR codes for URLs, WiFi, vCard, cryptocurrency, WhatsApp and more. 100+ ready templates with full customization.',
+      keywords: 'QR generator, QR code generator, create QR code, WiFi QR, crypto QR, vCard QR, barcode generator, free QR maker',
+      article: `The Professional QR Code Generator at BestToolsHub is the most advanced tool for creating professional QR codes easily. Supports 11+ content types with 100+ design templates.
 
-QR content types:
-- Website URLs
-- Plain text
-- WiFi information
-- Email addresses
-- Phone numbers
-- SMS messages
+What is a QR Code?
+QR Code (Quick Response Code) is a 2D barcode that can be scanned with a phone camera for quick access to content. Used everywhere from restaurants and stores to business cards and advertisements.
 
-Customization options:
-- Code size
-- QR color and background color
-- Error correction level
-- Add logo (optional)
+Supported Content Types:
+- URL links: For websites and social media pages
+- WiFi: Share network credentials (SSID and password) with one tap
+- vCard: Complete contact information (name, phone, email, company)
+- Email: Direct link to send email
+- Phone: Direct call when scanned
+- SMS: Open a pre-filled message
+- WhatsApp: Open WhatsApp chat with preset message
+- Location: GPS coordinates for maps
+- Events: Add appointments to calendar
+- Cryptocurrency: Bitcoin, Ethereum, Litecoin, Dogecoin, Solana, BNB, XRP, USDT
 
-QR uses:
-- Sharing website links
-- Digital business cards
-- Sharing WiFi passwords
-- Product labels
-- Digital restaurant menus
+Advanced Design Options:
+- 100+ ready templates in various categories (social, business, love, food, sports, tech)
+- Customize QR and background colors with gradients
+- 6 different dot patterns (square, circular, rounded, classic)
+- 3 eye frame styles
+- Add logo in center
+- Transparent background for designs
 
-Download formats:
-- PNG for web
-- SVG for print
-- JPG for sharing`
+Download Formats:
+- PNG: For web and social media
+- SVG: For high-quality printing
+- JPEG: For quick sharing
+- WEBP: Smaller size with high quality
+- PDF: For official documents
+
+Additional Features:
+- Bulk generation from CSV file
+- Export quality/resolution control (300-2000 pixels)
+- Quick colors and ready styles
+- Undo changes
+
+100% free and works directly in browser without registration or software download.`
     },
     qrScanner: {
-      title: 'QR Code Scanner - Scan QR from Images',
-      description: 'Scan QR codes from images and extract content. Free QR reader that works in browser without apps.',
-      keywords: 'QR scanner, QR code reader, scan QR code, QR reader, decode QR, barcode scanner',
-      article: `The QR code scanner reads QR codes from images and extracts their content easily.
+      title: 'Free QR Code Scanner - Read QR from Images',
+      description: 'Scan and extract QR code content from any image. Free QR reader that works in browser without apps. Fast and secure.',
+      keywords: 'QR scanner, QR code reader, scan QR code, QR reader, decode QR, barcode scanner, scan QR online',
+      article: `The QR Code Scanner at BestToolsHub is a free professional tool for reading and extracting QR code content from any image easily and quickly.
 
-How to use:
+What is a QR Scanner?
+A QR scanner is a tool that analyzes images containing QR codes and extracts the encoded content, whether it's a website link, text, WiFi information, or any other data.
+
+How to Use:
 1. Upload an image containing a QR code
-2. The tool detects the code automatically
-3. Content appears (link, text, etc.)
-4. Copy content or open link
+2. The tool automatically detects and analyzes the code
+3. Content appears (link, text, WiFi data, etc.)
+4. Copy content with one click or open the link directly
 
-What can be scanned:
-- QR codes from mobile photos
+What Can Be Scanned:
+- Photos from phone or camera
 - Screenshots
-- Images from the internet
-- PDF documents (as images)
+- Images saved from internet
+- Document or sticker photos
+- Any image containing a QR code
 
-Tool features:
-- Automatic code detection
-- Support for all QR formats
-- Works offline
+Supported Content Types:
+- Website URLs
+- Plain text
+- WiFi data (SSID and password)
+- Contact information (vCard)
+- Email links
+- Phone numbers
+- SMS messages
+- Location coordinates
+- Calendar events
+- Cryptocurrency addresses
+
+Tool Features:
+- Automatic and smart code detection
+- Support for all QR types and formats
+- Super fast reading
+- Works without internet connection
+- Complete privacy - images don't upload to server
+- 100% free with no limits
+
+No need to download apps - works directly in browser on any device.`
+    },
+    pdfRotate: {
+      title: 'Rotate PDF Pages Free - Rotate PDF Online',
+      description: 'Rotate PDF pages 90 or 180 degrees for free. Fix orientation of scanned pages. Easy and fast.',
+      keywords: 'rotate PDF, rotate PDF pages, PDF rotation, fix PDF orientation, turn PDF pages',
+      article: `The PDF rotation tool helps you fix the orientation of scanned or incorrectly oriented PDF pages.
+
+Uses for PDF Rotation:
+- Fix pages scanned upside down
+- Unify orientation of all pages
+- Convert from landscape to portrait or vice versa
+
+Rotation Options:
+- 90 degrees clockwise
+- 90 degrees counter-clockwise
+- 180 degrees (flip)
+
+Tool Features:
+- Rotate specific pages or all
+- Preview before saving
+- Free with no limits`
+    },
+    pdfSign: {
+      title: 'Sign PDF Electronically Free - Digital Signature',
+      description: 'Sign PDF files electronically for free. Draw your signature or upload image. Add signature anywhere in document.',
+      keywords: 'sign PDF, electronic signature, digital signature, PDF signature, e-signature, document signing',
+      article: `The PDF signing tool lets you add your electronic signature to PDF documents easily and professionally.
+
+Ways to Add Signature:
+- Draw with mouse or touch
+- Upload signature image
+- Type name in handwriting font
+
+Tool Features:
+- Move and position signature precisely
+- Resize signature
+- Add date automatically
+- Save signature for later use
 - Complete privacy - no server upload
-- 100% free`
+
+Uses for Electronic Signatures:
+- Signing contracts and agreements
+- Approving documents
+- Signing invoices
+- Official documents`
+    },
+    pdfWatermark: {
+      title: 'Add Watermark to PDF Free - PDF Watermark',
+      description: 'Add text or image watermark to PDF files. Protect your documents and add your logo. Free and easy.',
+      keywords: 'PDF watermark, add watermark PDF, watermark PDF, protect PDF, free watermark',
+      article: `The watermark tool protects your PDF documents by adding text or logo to all pages.
+
+Watermark Types:
+- Custom text (e.g., Confidential, Draft, Copy)
+- Company logo (image)
+- Date or number
+
+Customization Options:
+- Watermark transparency
+- Position (center, corner, diagonal)
+- Size and color
+- Repeat on all pages
+
+Uses for Watermarks:
+- Intellectual property protection
+- Distinguishing drafts from final copies
+- Adding company logo to documents
+- Preventing unauthorized copying`
+    },
+    pdfProtect: {
+      title: 'Password Protect PDF Free - PDF Encryption',
+      description: 'Add password to PDF files for protection. Prevent opening, editing, or printing. Secure encryption.',
+      keywords: 'protect PDF, password PDF, encrypt PDF, password protect PDF, lock PDF, PDF security',
+      article: `The PDF protection tool adds a security layer to your documents via password and custom permissions.
+
+Protection Types:
+- Open password: Prevent opening file without password
+- Edit password: Allow read-only access
+- Prevent printing
+- Prevent copy and paste
+- Prevent editing and deletion
+
+Tool Features:
+- Strong 128-bit encryption
+- Multiple permission options
+- Secure local processing
+- Free with no limits
+
+Uses for PDF Protection:
+- Confidential documents
+- Contracts and agreements
+- Financial reports
+- Personal files`
+    },
+    pdfPageNumbers: {
+      title: 'Add Page Numbers to PDF Free - PDF Page Numbers',
+      description: 'Add page numbers to PDF files in different positions and styles. Automatic numbering for all pages.',
+      keywords: 'PDF page numbers, number PDF, page numbers PDF, add numbers PDF, PDF numbering',
+      article: `The PDF numbering tool automatically adds page numbers to all document pages.
+
+Numbering Options:
+- Position: Top/bottom, right/left/center
+- Number format: 1, 2, 3 or Page 1 of X
+- Start numbering from specific number
+- Skip certain pages
+
+Number Styles:
+- Arabic numerals (1, 2, 3)
+- Roman numerals (I, II, III)
+- Letters (A, B, C)
+
+Uses for Numbering:
+- Books and reports
+- Official documents
+- Presentations
+- Academic papers`
+    },
+    pdfToHtml: {
+      title: 'Convert PDF to HTML Free - PDF to HTML',
+      description: 'Convert PDF files to editable HTML pages. Extract text and images. Free and online.',
+      keywords: 'PDF to HTML, convert PDF to HTML, PDF converter, extract PDF text, PDF to web',
+      article: `The PDF to HTML converter transforms PDF documents into editable web HTML pages.
+
+Conversion Features:
+- Preserve formatting and layout
+- Extract complete text
+- Convert images
+- Clickable links
+
+Uses for Conversion:
+- Publish PDF on web
+- Edit PDF content
+- Extract text for editing
+- Create web pages from documents
+
+The tool works directly in browser without downloading software.`
     }
   }
 };
