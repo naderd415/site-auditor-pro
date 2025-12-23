@@ -65,9 +65,11 @@ interface WhatsAppData {
 }
 
 interface CryptoData {
-  type: 'bitcoin' | 'ethereum';
+  type: 'bitcoin' | 'ethereum' | 'litecoin' | 'dogecoin' | 'solana' | 'bnb' | 'xrp' | 'usdt';
   address: string;
   amount: string;
+  label?: string;
+  message?: string;
 }
 
 interface QRState {
@@ -316,9 +318,26 @@ const QRGenerator = () => {
         return `https://wa.me/${whatsappData.phone.replace(/\D/g, '')}${whatsappData.message ? `?text=${encodeURIComponent(whatsappData.message)}` : ''}`;
       case 'crypto':
         if (!cryptoData.address) return qrState.data;
-        return cryptoData.type === 'bitcoin' 
-          ? `bitcoin:${cryptoData.address}${cryptoData.amount ? `?amount=${cryptoData.amount}` : ''}`
-          : `ethereum:${cryptoData.address}${cryptoData.amount ? `?value=${cryptoData.amount}` : ''}`;
+        const buildCryptoUrl = () => {
+          const params = new URLSearchParams();
+          if (cryptoData.amount) params.append('amount', cryptoData.amount);
+          if (cryptoData.label) params.append('label', cryptoData.label);
+          if (cryptoData.message) params.append('message', cryptoData.message);
+          const queryString = params.toString() ? `?${params.toString()}` : '';
+          
+          switch (cryptoData.type) {
+            case 'bitcoin': return `bitcoin:${cryptoData.address}${queryString}`;
+            case 'ethereum': return `ethereum:${cryptoData.address}${cryptoData.amount ? `?value=${cryptoData.amount}` : ''}`;
+            case 'litecoin': return `litecoin:${cryptoData.address}${queryString}`;
+            case 'dogecoin': return `dogecoin:${cryptoData.address}${queryString}`;
+            case 'solana': return `solana:${cryptoData.address}${queryString}`;
+            case 'bnb': return `bnb:${cryptoData.address}${queryString}`;
+            case 'xrp': return `xrp:${cryptoData.address}${queryString}`;
+            case 'usdt': return `tether:${cryptoData.address}${queryString}`;
+            default: return `bitcoin:${cryptoData.address}${queryString}`;
+          }
+        };
+        return buildCryptoUrl();
       default:
         return qrState.data;
     }
@@ -859,22 +878,48 @@ startxref
         );
       
       case 'crypto':
+        const cryptoOptions = [
+          { type: 'bitcoin' as const, label: 'Bitcoin', symbol: '₿', color: '#F7931A' },
+          { type: 'ethereum' as const, label: 'Ethereum', symbol: 'Ξ', color: '#627EEA' },
+          { type: 'litecoin' as const, label: 'Litecoin', symbol: 'Ł', color: '#BFBBBB' },
+          { type: 'dogecoin' as const, label: 'Dogecoin', symbol: 'Ð', color: '#C2A633' },
+          { type: 'solana' as const, label: 'Solana', symbol: '◎', color: '#9945FF' },
+          { type: 'bnb' as const, label: 'BNB', symbol: 'BNB', color: '#F3BA2F' },
+          { type: 'xrp' as const, label: 'XRP', symbol: 'XRP', color: '#23292F' },
+          { type: 'usdt' as const, label: 'USDT', symbol: '₮', color: '#26A17B' },
+        ];
+        
+        const getPlaceholder = () => {
+          switch (cryptoData.type) {
+            case 'bitcoin': return 'bc1q... أو 1... أو 3...';
+            case 'ethereum': return '0x...';
+            case 'litecoin': return 'ltc1... أو L... أو M...';
+            case 'dogecoin': return 'D...';
+            case 'solana': return 'العنوان...';
+            case 'bnb': return 'bnb1... أو 0x...';
+            case 'xrp': return 'r...';
+            case 'usdt': return '0x... أو T...';
+            default: return 'العنوان...';
+          }
+        };
+        
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع العملة' : 'Cryptocurrency'}</label>
-              <div className="flex gap-2">
-                {(['bitcoin', 'ethereum'] as const).map((type) => (
+              <label className="block text-sm font-medium mb-2">{isRTL ? 'اختر العملة الرقمية' : 'Select Cryptocurrency'}</label>
+              <div className="grid grid-cols-4 gap-2">
+                {cryptoOptions.map((crypto) => (
                   <button
-                    key={type}
-                    onClick={() => setCryptoData(prev => ({ ...prev, type }))}
-                    className={`px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${
-                      cryptoData.type === type
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    key={crypto.type}
+                    onClick={() => setCryptoData(prev => ({ ...prev, type: crypto.type }))}
+                    className={`p-2 rounded-lg text-xs transition-all flex flex-col items-center gap-1 border ${
+                      cryptoData.type === crypto.type
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/50'
                     }`}
                   >
-                    {type === 'bitcoin' ? '₿ Bitcoin' : 'Ξ Ethereum'}
+                    <span className="text-lg font-bold" style={{ color: crypto.color }}>{crypto.symbol}</span>
+                    <span className="text-[10px]">{crypto.label}</span>
                   </button>
                 ))}
               </div>
@@ -884,18 +929,36 @@ startxref
               <Input
                 value={cryptoData.address}
                 onChange={(e) => setCryptoData(prev => ({ ...prev, address: e.target.value }))}
-                placeholder={cryptoData.type === 'bitcoin' ? 'bc1q...' : '0x...'}
+                placeholder={getPlaceholder()}
                 className="font-mono text-sm"
               />
             </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium mb-1">{isRTL ? 'المبلغ (اختياري)' : 'Amount (optional)'}</label>
+                <Input
+                  value={cryptoData.amount}
+                  onChange={(e) => setCryptoData(prev => ({ ...prev, amount: e.target.value }))}
+                  placeholder="0.001"
+                  type="number"
+                  step="0.0001"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">{isRTL ? 'التسمية (اختياري)' : 'Label (optional)'}</label>
+                <Input
+                  value={cryptoData.label || ''}
+                  onChange={(e) => setCryptoData(prev => ({ ...prev, label: e.target.value }))}
+                  placeholder={isRTL ? 'دفعة متجر' : 'Store Payment'}
+                />
+              </div>
+            </div>
             <div>
-              <label className="block text-sm font-medium mb-1">{isRTL ? 'المبلغ (اختياري)' : 'Amount (optional)'}</label>
+              <label className="block text-sm font-medium mb-1">{isRTL ? 'رسالة (اختياري)' : 'Message (optional)'}</label>
               <Input
-                value={cryptoData.amount}
-                onChange={(e) => setCryptoData(prev => ({ ...prev, amount: e.target.value }))}
-                placeholder="0.001"
-                type="number"
-                step="0.0001"
+                value={cryptoData.message || ''}
+                onChange={(e) => setCryptoData(prev => ({ ...prev, message: e.target.value }))}
+                placeholder={isRTL ? 'شكراً لدعمك' : 'Thanks for your support'}
               />
             </div>
           </div>
