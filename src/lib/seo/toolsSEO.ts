@@ -26,6 +26,7 @@ export interface ToolsSEOData {
   pdfProtect: ToolSEO;
   pdfPageNumbers: ToolSEO;
   pdfToHtml: ToolSEO;
+  pdfToWord: ToolSEO;
   textCounter: ToolSEO;
   textFormatter: ToolSEO;
   textDiff: ToolSEO;
@@ -1350,6 +1351,46 @@ QR Code (Quick Response Code) هو رمز ثنائي الأبعاد يمكن م�
 - إنشاء صفحات ويب من مستندات
 
 الأداة تعمل من المتصفح مباشرة بدون تحميل برامج.`
+    },
+    pdfToWord: {
+      title: 'تحويل PDF إلى Word مجاناً - PDF to DOCX اونلاين',
+      description: 'حول ملفات PDF إلى مستندات Word قابلة للتحرير مجاناً. احتفظ بالتنسيق والصور. سريع وآمن بدون تحميل برامج.',
+      keywords: 'تحويل PDF إلى Word, PDF to Word, PDF to DOCX, تحويل PDF لوورد, استخراج نص PDF, محول PDF, تعديل PDF',
+      article: `أداة تحويل PDF إلى Word هي أداة احترافية مجانية تحول ملفات PDF إلى مستندات Microsoft Word قابلة للتحرير مع الحفاظ على التنسيق الأصلي.
+
+لماذا تحويل PDF إلى Word؟
+ملفات PDF غير قابلة للتعديل بسهولة، لذلك تحتاج لتحويلها إلى Word عندما تريد:
+- تعديل محتوى المستند
+- إضافة أو حذف نصوص
+- تغيير التنسيق والخطوط
+- نسخ المحتوى بسهولة
+- إعادة استخدام المحتوى في مستندات أخرى
+
+مميزات أداة التحويل:
+- الحفاظ على التنسيق الأصلي (الخطوط، الألوان، التخطيط)
+- استخراج الجداول بشكل دقيق
+- الحفاظ على الصور المضمنة
+- دعم المستندات متعددة الصفحات
+- تحويل سريع في المتصفح
+- خصوصية تامة - الملفات لا ترفع لخوادم خارجية
+- مجاني 100% بدون حدود
+
+كيفية الاستخدام:
+1. ارفع ملف PDF بالسحب والإفلات أو بالضغط
+2. انتظر معالجة الملف
+3. حمّل ملف Word الناتج (.docx)
+
+استخدامات شائعة:
+- تحرير العقود والمستندات الرسمية
+- تعديل السير الذاتية
+- استخراج محتوى الكتب الإلكترونية
+- تحرير التقارير والأبحاث
+- تعديل النماذج والاستمارات
+
+نصائح للحصول على أفضل نتيجة:
+- استخدم ملفات PDF نصية (وليست صور ممسوحة)
+- الملفات ذات التنسيق البسيط تعطي نتائج أفضل
+- تحقق من المستند بعد التحويل لإجراء تعديلات طفيفة إن لزم`
     }
   },
   en: {
@@ -2183,6 +2224,46 @@ Uses for Conversion:
 - Create web pages from documents
 
 The tool works directly in browser without downloading software.`
+    },
+    pdfToWord: {
+      title: 'Free PDF to Word Converter - PDF to DOCX Online',
+      description: 'Convert PDF files to editable Word documents for free. Preserve formatting and images. Fast and secure without software.',
+      keywords: 'PDF to Word, convert PDF to Word, PDF to DOCX, PDF converter, extract PDF text, edit PDF, Word converter',
+      article: `The PDF to Word converter is a professional free tool that converts PDF files to editable Microsoft Word documents while preserving the original formatting.
+
+Why Convert PDF to Word?
+PDF files are not easily editable, so you need to convert them to Word when you want to:
+- Edit document content
+- Add or remove text
+- Change formatting and fonts
+- Copy content easily
+- Reuse content in other documents
+
+Converter Features:
+- Preserve original formatting (fonts, colors, layout)
+- Accurate table extraction
+- Preserve embedded images
+- Support for multi-page documents
+- Fast browser-based conversion
+- Complete privacy - files don't upload to external servers
+- 100% free with no limits
+
+How to Use:
+1. Upload PDF file by drag and drop or click
+2. Wait for file processing
+3. Download the resulting Word file (.docx)
+
+Common Uses:
+- Edit contracts and official documents
+- Modify resumes and CVs
+- Extract e-book content
+- Edit reports and research papers
+- Modify forms and templates
+
+Tips for Best Results:
+- Use text-based PDFs (not scanned images)
+- Files with simpler formatting give better results
+- Review the document after conversion for minor adjustments if needed`
     }
   }
 };
