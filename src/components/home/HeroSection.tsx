@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n';
-import { Search, Sparkles } from 'lucide-react';
+import { Search, Sparkles, Loader2, Send } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { allTools } from '@/components/home/ToolsGrid';
+import { toast } from 'sonner';
 
 interface HeroSectionProps {
   onSearch?: (query: string) => void;
@@ -9,10 +12,45 @@ interface HeroSectionProps {
 export function HeroSection({ onSearch }: HeroSectionProps) {
   const { t, isRTL } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiResponse, setAiResponse] = useState('');
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
     onSearch?.(value);
+  };
+
+  const handleAISearch = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsLoading(true);
+    setAiResponse('');
+    
+    try {
+      const toolsData = allTools.map(tool => ({
+        name: t.tools[tool.id.replace(/-/g, '') as keyof typeof t.tools]?.name || tool.id,
+        description: t.tools[tool.id.replace(/-/g, '') as keyof typeof t.tools]?.description || ''
+      }));
+
+      const { data, error } = await supabase.functions.invoke('ai-search', {
+        body: { query: searchQuery, tools: toolsData }
+      });
+
+      if (error) throw error;
+      
+      setAiResponse(data.response);
+    } catch (error) {
+      console.error('AI search error:', error);
+      toast.error(isRTL ? 'حدث خطأ في البحث' : 'Search error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAISearch();
+    }
   };
 
   return (
@@ -33,8 +71,8 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
           </p>
 
           {/* AI Badge */}
-          <div className="flex justify-center mb-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30">
+          <div className="flex justify-center mb-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 backdrop-blur-sm">
               <Sparkles className="w-4 h-4 text-primary animate-pulse" />
               <span className="text-sm font-medium text-primary">
                 {isRTL ? 'اسأل الذكاء الاصطناعي' : 'Ask AI'}
@@ -45,25 +83,60 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
 
           {/* Search Box */}
           <div className="relative max-w-xl mx-auto animate-slide-up" style={{ animationDelay: '0.4s' }}>
-            <div className="glass-card p-2 rounded-xl border border-primary/20 shadow-lg shadow-primary/10">
-              <div className="relative">
-                <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder={isRTL ? 'اسأل الذكاء الاصطناعي عن أي أداة...' : 'Ask AI about any tool...'}
-                  className="w-full bg-muted/50 border-0 rounded-lg ps-12 pe-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-                <div className="absolute end-3 top-1/2 -translate-y-1/2">
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-xs text-primary">
-                    <Sparkles className="w-3 h-3" />
-                    <span>{isRTL ? 'مدعوم بالذكاء الاصطناعي' : 'AI Powered'}</span>
-                  </div>
+            <div className="ai-search-box p-1 rounded-2xl">
+              <div className="relative flex items-center gap-2 bg-background/80 backdrop-blur-xl rounded-xl p-1">
+                <div className="flex-1 relative">
+                  <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder={isRTL ? 'اسأل الذكاء الاصطناعي عن أي أداة...' : 'Ask AI about any tool...'}
+                    className="w-full bg-transparent border-0 rounded-lg ps-12 pe-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  />
                 </div>
+                <button
+                  onClick={handleAISearch}
+                  disabled={isLoading || !searchQuery.trim()}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary to-accent text-primary-foreground font-medium transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+            
+            {/* AI Powered Badge */}
+            <div className="flex justify-center mt-3">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground">
+                <Sparkles className="w-3 h-3 text-primary" />
+                <span>{isRTL ? 'مدعوم بالذكاء الاصطناعي من Google Gemini' : 'Powered by Google Gemini AI'}</span>
               </div>
             </div>
           </div>
+
+          {/* AI Response */}
+          {aiResponse && (
+            <div className="mt-6 max-w-xl mx-auto animate-fade-in">
+              <div className="glass-card p-4 rounded-xl text-start border border-primary/20">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                    <Sparkles className="w-3 h-3 text-primary-foreground" />
+                  </div>
+                  <span className="text-sm font-medium text-primary">
+                    {isRTL ? 'إجابة الذكاء الاصطناعي' : 'AI Response'}
+                  </span>
+                </div>
+                <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                  {aiResponse}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
