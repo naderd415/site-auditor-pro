@@ -69,16 +69,22 @@ const Tools = () => {
   return (
     <>
       <Helmet>
-        <title>{isRTL ? 'جميع الأدوات المجانية - BestToolsHub' : 'All Free Tools - BestToolsHub'}</title>
+        <title>{isRTL ? 'جميع الأدوات المجانية المدعومة بالذكاء الاصطناعي - BestToolsHub' : 'All Free AI-Powered Tools - BestToolsHub'}</title>
         <meta name="description" content={isRTL 
-          ? 'تصفح جميع الأدوات المجانية: أدوات الصور، PDF، النصوص، الألوان، الآلات الحاسبة، وأدوات QR. كلها تعمل من المتصفح مباشرة.'
-          : 'Browse all free tools: Image tools, PDF, Text, Colors, Calculators, and QR tools. All work directly from your browser.'
+          ? 'تصفح جميع الأدوات المجانية المدعومة بالذكاء الاصطناعي: أدوات الصور، PDF، النصوص، الألوان، الآلات الحاسبة، وأدوات QR. كلها تعمل من المتصفح مباشرة وبأفضل جودة.'
+          : 'Browse all free AI-powered tools: Image tools, PDF, Text, Colors, Calculators, and QR tools. All work directly from your browser with best quality.'
         } />
-        <meta name="keywords" content="free tools, image converter, PDF tools, text tools, color picker, QR generator, online tools" />
+        <meta name="keywords" content={isRTL 
+          ? 'أدوات مجانية, ذكاء اصطناعي, محول صور, أدوات PDF, أدوات نصوص, منتقي ألوان, مولد QR, أدوات اونلاين'
+          : 'free tools, AI-powered, image converter, PDF tools, text tools, color picker, QR generator, online tools'
+        } />
         <link rel="canonical" href="/tools" />
       </Helmet>
 
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col relative overflow-hidden">
+        {/* Interactive Stars Background */}
+        <div className="interactive-stars-bg" aria-hidden="true" />
+        
         <Header onSearch={handleSearch} />
 
         <main className="flex-grow relative z-10">
@@ -86,13 +92,13 @@ const Tools = () => {
           <section className="py-12 md:py-16">
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                  {isRTL ? 'جميع الأدوات المجانية' : 'All Free Tools'}
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 md:mb-6">
+                  {isRTL ? 'جميع الأدوات المجانية المدعومة بالذكاء الاصطناعي' : 'All Free AI-Powered Tools'}
                 </h1>
-                <p className="text-xl text-muted-foreground">
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground px-4">
                   {isRTL 
-                    ? `${allTools.length} أداة مجانية تعمل مباشرة من متصفحك`
-                    : `${allTools.length} free tools that work directly from your browser`}
+                    ? `${allTools.length} أداة مجانية مدعومة بالذكاء الاصطناعي تعمل مباشرة من متصفحك`
+                    : `${allTools.length} free AI-powered tools that work directly from your browser`}
                 </p>
               </div>
             </div>
