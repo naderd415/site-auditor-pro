@@ -111,9 +111,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      {/* Stars Background */}
-      <div className="stars-bg dark:block hidden" />
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Interactive Stars Background */}
+      <div className="interactive-stars-bg" aria-hidden="true" />
       
       <Header onSearch={handleSearch} />
 
@@ -154,12 +154,13 @@ const Index = () => {
                           key={tool.id}
                           to={tool.href}
                           className="tool-item block py-1.5 px-2 rounded-md transition-all duration-200 group relative overflow-hidden"
+                          title={`${getToolName(tool.nameKey)} - ${isRTL ? 'أداة مجانية مدعومة بالذكاء الاصطناعي' : 'Free AI-Powered Tool'}`}
                         >
                           <h3 className="font-medium text-foreground group-hover:text-primary transition-colors text-xs relative z-10">
                             {getToolName(tool.nameKey)}
                           </h3>
                           <p className="text-[10px] text-muted-foreground line-clamp-1 relative z-10">
-                            {getToolDescription(tool.descriptionKey)}
+                            {getToolDescription(tool.descriptionKey)} {isRTL ? '• مدعوم بالذكاء الاصطناعي' : '• AI-Powered'}
                           </p>
                         </Link>
                       ))}
