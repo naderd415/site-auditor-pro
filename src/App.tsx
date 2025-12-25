@@ -49,6 +49,12 @@ import PDFProtect from "./pages/tools/PDFProtect";
 import PDFPageNumbers from "./pages/tools/PDFPageNumbers";
 import PDFSign from "./pages/tools/PDFSign";
 import BackgroundRemover from "./pages/tools/BackgroundRemover";
+import PowerPointToPDF from "./pages/tools/PowerPointToPDF";
+import PDFToPowerPoint from "./pages/tools/PDFToPowerPoint";
+import WordToPDF from "./pages/tools/WordToPDF";
+import HTMLToPDF from "./pages/tools/HTMLToPDF";
+import ExcelToPDF from "./pages/tools/ExcelToPDF";
+import PDFToExcel from "./pages/tools/PDFToExcel";
 import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
@@ -89,6 +95,12 @@ const App = () => (
               <Route path="/tools/pdf-protect" element={<PDFProtect />} />
               <Route path="/tools/pdf-page-numbers" element={<PDFPageNumbers />} />
               <Route path="/tools/pdf-sign" element={<PDFSign />} />
+              <Route path="/tools/powerpoint-to-pdf" element={<PowerPointToPDF />} />
+              <Route path="/tools/pdf-to-powerpoint" element={<PDFToPowerPoint />} />
+              <Route path="/tools/word-to-pdf" element={<WordToPDF />} />
+              <Route path="/tools/html-to-pdf" element={<HTMLToPDF />} />
+              <Route path="/tools/excel-to-pdf" element={<ExcelToPDF />} />
+              <Route path="/tools/pdf-to-excel" element={<PDFToExcel />} />
               
               {/* Image Tools - Background Remover */}
               <Route path="/tools/background-remover" element={<BackgroundRemover />} />
