@@ -81,6 +81,7 @@ interface QRState {
   color2: string;
   bg: string;
   logo: string | null;
+  logoSize: number;
   gradientType: 'linear' | 'radial';
   transparentBg: boolean;
 }
@@ -367,6 +368,7 @@ const QRGenerator = () => {
     color2: '#000000',
     bg: '#ffffff',
     logo: null,
+    logoSize: 30,
     gradientType: 'linear',
     transparentBg: false,
   });
@@ -454,7 +456,8 @@ const QRGenerator = () => {
       },
       imageOptions: {
         crossOrigin: 'anonymous',
-        margin: 10
+        margin: 10,
+        imageSize: qrState.logoSize / 100
       }
     });
 
@@ -1310,12 +1313,33 @@ startxref
               </div>
               
               {qrState.logo && (
-                <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
-                  <img src={qrState.logo} alt="Logo" className="w-12 h-12 object-contain" />
-                  <Button variant="destructive" size="sm" onClick={removeLogo}>
-                    <X className="w-4 h-4 mr-2" />
-                    {isRTL ? 'إزالة الشعار' : 'Remove Logo'}
-                  </Button>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                    <img src={qrState.logo} alt="Logo" className="w-12 h-12 object-contain" />
+                    <Button variant="destructive" size="sm" onClick={removeLogo}>
+                      <X className="w-4 h-4 mr-2" />
+                      {isRTL ? 'إزالة الشعار' : 'Remove Logo'}
+                    </Button>
+                  </div>
+                  
+                  {/* Logo Size Slider */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium">
+                      {isRTL ? 'حجم الشعار' : 'Logo Size'}: {qrState.logoSize}%
+                    </label>
+                    <Slider
+                      value={[qrState.logoSize]}
+                      onValueChange={([v]) => updateQrState({ logoSize: v })}
+                      min={10}
+                      max={50}
+                      step={5}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>{isRTL ? 'صغير (10%)' : 'Small (10%)'}</span>
+                      <span>{isRTL ? 'كبير (50%)' : 'Large (50%)'}</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </TabsContent>

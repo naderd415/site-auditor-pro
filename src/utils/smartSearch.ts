@@ -553,17 +553,34 @@ export const questionsDataset: QuestionData[] = [
   }
 ];
 
-// Create Fuse instances
+// Create Fuse instances with improved settings
 const toolsFuseOptions = {
-  keys: ['nameAr', 'nameEn', 'descriptionAr', 'descriptionEn', 'keywordsAr', 'keywordsEn'],
-  threshold: 0.4,
-  includeScore: true
+  keys: [
+    { name: 'nameAr', weight: 2 },
+    { name: 'nameEn', weight: 2 },
+    { name: 'descriptionAr', weight: 1.5 },
+    { name: 'descriptionEn', weight: 1.5 },
+    { name: 'keywordsAr', weight: 1 },
+    { name: 'keywordsEn', weight: 1 }
+  ],
+  threshold: 0.45,
+  includeScore: true,
+  minMatchCharLength: 2,
+  ignoreLocation: true
 };
 
 const questionsFuseOptions = {
-  keys: ['questionAr', 'questionEn', 'keywords', 'answerAr', 'answerEn'],
-  threshold: 0.4,
-  includeScore: true
+  keys: [
+    { name: 'questionAr', weight: 2 },
+    { name: 'questionEn', weight: 2 },
+    { name: 'keywords', weight: 1.5 },
+    { name: 'answerAr', weight: 1 },
+    { name: 'answerEn', weight: 1 }
+  ],
+  threshold: 0.45,
+  includeScore: true,
+  minMatchCharLength: 2,
+  ignoreLocation: true
 };
 
 const toolsFuse = new Fuse(toolsDataset, toolsFuseOptions);
@@ -576,19 +593,46 @@ export interface SearchResult {
   toolName?: string;
 }
 
+// Polite Arabic fallback messages
+const politeFallbackMessagesAr = [
+  'أعتذر منك يا صديقي، هذه الأداة غير متوفرة حالياً، ولكنني أتعلم كل يوم! جرب أدواتنا الأخرى... 🙏',
+  'عذراً صديقي العزيز، لم أجد ما تبحث عنه. لكن لدينا أدوات رائعة أخرى قد تفيدك! 💫',
+  'يبدو أن هذا ليس ضمن أدواتنا حالياً، لكن لا تقلق! تصفح أدواتنا المميزة الأخرى. ✨',
+  'أسف جداً، لم أتمكن من إيجاد ما تريد. هل تود استكشاف أدواتنا الأخرى المجانية؟ 🔍',
+  'للأسف هذا غير متاح الآن، لكننا نعمل على تطوير المزيد! جرب أدوات PDF والصور لدينا. 🛠️'
+];
+
+const politeFallbackMessagesEn = [
+  "I'm sorry friend, this tool isn't available yet, but I'm learning every day! Try our other tools... 🙏",
+  "Sorry dear friend, I couldn't find what you're looking for. But we have other great tools that might help! 💫",
+  "This doesn't seem to be among our tools currently, but don't worry! Browse our other amazing tools. ✨",
+  "Very sorry, I couldn't find what you want. Would you like to explore our other free tools? 🔍",
+  "Unfortunately this isn't available now, but we're working on more! Try our PDF and image tools. 🛠️"
+];
+
+function getRandomFallback(isRTL: boolean): string {
+  const messages = isRTL ? politeFallbackMessagesAr : politeFallbackMessagesEn;
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
 export function smartSearch(query: string, isRTL: boolean = true): SearchResult {
   if (!query.trim()) {
     return {
       type: 'fallback',
       response: isRTL 
-        ? 'مرحباً! كيف يمكنني مساعدتك اليوم؟ اكتب سؤالك أو ابحث عن أداة.' 
-        : 'Hello! How can I help you today? Type your question or search for a tool.'
+        ? 'مرحباً! كيف يمكنني مساعدتك اليوم؟ اكتب سؤالك أو ابحث عن أداة. 👋' 
+        : 'Hello! How can I help you today? Type your question or search for a tool. 👋'
     };
   }
 
+  // Normalize query - handle Arabic/English digits
+  const normalizedQuery = query
+    .replace(/[٠١٢٣٤٥٦٧٨٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString())
+    .trim();
+
   // Search in questions first
-  const questionResults = questionsFuse.search(query);
-  if (questionResults.length > 0 && questionResults[0].score && questionResults[0].score < 0.3) {
+  const questionResults = questionsFuse.search(normalizedQuery);
+  if (questionResults.length > 0 && questionResults[0].score && questionResults[0].score < 0.35) {
     const match = questionResults[0].item;
     const response = isRTL ? match.answerAr : match.answerEn;
     
@@ -608,15 +652,15 @@ export function smartSearch(query: string, isRTL: boolean = true): SearchResult 
   }
 
   // Search in tools
-  const toolResults = toolsFuse.search(query);
-  if (toolResults.length > 0 && toolResults[0].score && toolResults[0].score < 0.4) {
+  const toolResults = toolsFuse.search(normalizedQuery);
+  if (toolResults.length > 0 && toolResults[0].score && toolResults[0].score < 0.45) {
     const tool = toolResults[0].item;
     const toolName = isRTL ? tool.nameAr : tool.nameEn;
     const toolDesc = isRTL ? tool.descriptionAr : tool.descriptionEn;
     
     const response = isRTL
-      ? `وجدت لك أداة "${toolName}" - ${toolDesc}. انقر للانتقال إلى الأداة.`
-      : `Found "${toolName}" - ${toolDesc}. Click to go to the tool.`;
+      ? `وجدت لك أداة "${toolName}" - ${toolDesc}. ✅ انقر للانتقال إلى الأداة مجاناً!`
+      : `Found "${toolName}" - ${toolDesc}. ✅ Click to use this free tool!`;
     
     return {
       type: 'tool',
@@ -626,21 +670,19 @@ export function smartSearch(query: string, isRTL: boolean = true): SearchResult 
     };
   }
 
-  // If we have partial matches, suggest them
-  if (toolResults.length > 0) {
+  // If we have partial matches, suggest them with friendly message
+  if (toolResults.length > 0 && toolResults[0].score && toolResults[0].score < 0.6) {
     const suggestions = toolResults.slice(0, 3).map(r => isRTL ? r.item.nameAr : r.item.nameEn);
     const response = isRTL
-      ? `لم أجد نتيجة دقيقة، لكن ربما تبحث عن: ${suggestions.join('، ')}`
-      : `No exact match found, but you might be looking for: ${suggestions.join(', ')}`;
+      ? `لم أجد نتيجة دقيقة، لكن ربما تبحث عن إحدى هذه الأدوات المجانية: ${suggestions.join('، ')} 🔎`
+      : `No exact match found, but you might be looking for one of these free tools: ${suggestions.join(', ')} 🔎`;
     
     return { type: 'fallback', response };
   }
 
-  // Fallback response
+  // Polite fallback response
   return {
     type: 'fallback',
-    response: isRTL
-      ? 'عذراً، لم أتمكن من العثور على ما تبحث عنه. جرب البحث بكلمات مختلفة أو تصفح الأدوات المتاحة.'
-      : 'Sorry, I couldn\'t find what you\'re looking for. Try different keywords or browse available tools.'
+    response: getRandomFallback(isRTL)
   };
 }
