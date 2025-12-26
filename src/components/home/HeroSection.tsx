@@ -1,9 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n';
-import { Search, Sparkles, Loader2, Send } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { allTools } from '@/components/home/ToolsGrid';
-import { toast } from 'sonner';
+import { Search, Sparkles, Send, ArrowRight } from 'lucide-react';
+import { smartSearch } from '@/utils/smartSearch';
 
 interface HeroSectionProps {
   onSearch?: (query: string) => void;
@@ -11,45 +10,31 @@ interface HeroSectionProps {
 
 export function HeroSection({ onSearch }: HeroSectionProps) {
   const { t, isRTL } = useLanguage();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [aiResponse, setAiResponse] = useState('');
+  const [searchResult, setSearchResult] = useState<ReturnType<typeof smartSearch> | null>(null);
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
     onSearch?.(value);
   };
 
-  const handleAISearch = async () => {
+  const handleSmartSearch = () => {
     if (!searchQuery.trim()) return;
     
-    setIsLoading(true);
-    setAiResponse('');
-    
-    try {
-      const toolsData = allTools.map(tool => ({
-        name: t.tools[tool.id.replace(/-/g, '') as keyof typeof t.tools]?.name || tool.id,
-        description: t.tools[tool.id.replace(/-/g, '') as keyof typeof t.tools]?.description || ''
-      }));
-
-      const { data, error } = await supabase.functions.invoke('ai-search', {
-        body: { query: searchQuery, tools: toolsData }
-      });
-
-      if (error) throw error;
-      
-      setAiResponse(data.response);
-    } catch (error) {
-      console.error('AI search error:', error);
-      toast.error(isRTL ? 'حدث خطأ في البحث' : 'Search error occurred');
-    } finally {
-      setIsLoading(false);
-    }
+    const result = smartSearch(searchQuery, isRTL);
+    setSearchResult(result);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleAISearch();
+      handleSmartSearch();
+    }
+  };
+
+  const handleToolClick = () => {
+    if (searchResult?.toolPath) {
+      navigate(searchResult.toolPath);
     }
   };
 
@@ -70,12 +55,12 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
             {t.hero.subtitle}
           </p>
 
-          {/* AI Badge */}
+          {/* Smart Search Badge */}
           <div className="flex justify-center mb-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 backdrop-blur-sm">
               <Sparkles className="w-4 h-4 text-primary animate-pulse" />
               <span className="text-sm font-medium text-primary">
-                {isRTL ? 'اسأل الذكاء الاصطناعي' : 'Ask AI'}
+                {isRTL ? 'البحث الذكي' : 'Smart Search'}
               </span>
               <Sparkles className="w-4 h-4 text-primary animate-pulse" />
             </div>
@@ -92,35 +77,31 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder={isRTL ? 'اسأل الذكاء الاصطناعي عن أي أداة...' : 'Ask AI about any tool...'}
+                    placeholder={isRTL ? 'ابحث عن أي أداة...' : 'Search for any tool...'}
                     className="w-full bg-transparent border-0 rounded-lg ps-12 pe-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none"
                   />
                 </div>
                 <button
-                  onClick={handleAISearch}
-                  disabled={isLoading || !searchQuery.trim()}
+                  onClick={handleSmartSearch}
+                  disabled={!searchQuery.trim()}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary to-accent text-primary-foreground font-medium transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Send className="w-5 h-5" />
-                  )}
+                  <Send className="w-5 h-5" />
                 </button>
               </div>
             </div>
             
-            {/* AI Powered Badge */}
+            {/* Smart Search Badge */}
             <div className="flex justify-center mt-3">
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground">
                 <Sparkles className="w-3 h-3 text-primary" />
-                <span>{isRTL ? 'مدعوم بالذكاء الاصطناعي' : 'Powered by AI'}</span>
+                <span>{isRTL ? 'بحث ذكي محلي - بدون إنترنت' : 'Local Smart Search - No Internet Required'}</span>
               </div>
             </div>
           </div>
 
-          {/* AI Response */}
-          {aiResponse && (
+          {/* Search Result */}
+          {searchResult && (
             <div className="mt-6 max-w-xl mx-auto animate-fade-in">
               <div className="glass-card p-4 rounded-xl text-start border border-primary/20">
                 <div className="flex items-center gap-2 mb-3">
@@ -128,12 +109,21 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
                     <Sparkles className="w-3 h-3 text-primary-foreground" />
                   </div>
                   <span className="text-sm font-medium text-primary">
-                    {isRTL ? 'إجابة الذكاء الاصطناعي' : 'AI Response'}
+                    {isRTL ? 'نتيجة البحث' : 'Search Result'}
                   </span>
                 </div>
-                <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                  {aiResponse}
+                <p className="text-foreground text-sm leading-relaxed mb-3">
+                  {searchResult.response}
                 </p>
+                {searchResult.toolPath && (
+                  <button
+                    onClick={handleToolClick}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium"
+                  >
+                    {searchResult.toolName}
+                    <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
               </div>
             </div>
           )}
