@@ -73,12 +73,8 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://besttoolshub.online/tools/background-remover</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  
+  <!-- PDF Tools -->
   
   <!-- PDF Tools -->
   <url>
