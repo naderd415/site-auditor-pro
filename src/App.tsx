@@ -48,7 +48,6 @@ import PDFWatermark from "./pages/tools/PDFWatermark";
 import PDFProtect from "./pages/tools/PDFProtect";
 import PDFPageNumbers from "./pages/tools/PDFPageNumbers";
 import PDFSign from "./pages/tools/PDFSign";
-import BackgroundRemover from "./pages/tools/BackgroundRemover";
 import PowerPointToPDF from "./pages/tools/PowerPointToPDF";
 import PDFToPowerPoint from "./pages/tools/PDFToPowerPoint";
 import WordToPDF from "./pages/tools/WordToPDF";
@@ -101,9 +100,6 @@ const App = () => (
               <Route path="/tools/html-to-pdf" element={<HTMLToPDF />} />
               <Route path="/tools/excel-to-pdf" element={<ExcelToPDF />} />
               <Route path="/tools/pdf-to-excel" element={<PDFToExcel />} />
-              
-              {/* Image Tools - Background Remover */}
-              <Route path="/tools/background-remover" element={<BackgroundRemover />} />
               
               {/* Admin */}
               <Route path="/admin" element={<Admin />} />
