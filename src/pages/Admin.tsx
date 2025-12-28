@@ -1,23 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   LayoutDashboard, 
   Settings, 
   Users, 
   FileText, 
   BarChart3, 
-  Bell, 
-  Shield,
   Palette,
   Globe,
-  Search,
   Plus,
   Edit,
   Trash2,
@@ -39,61 +33,28 @@ import {
   Save,
   MapPin,
   Smartphone,
-  Monitor
+  Monitor,
+  Download,
+  ExternalLink,
+  Image,
+  Type,
+  Megaphone,
+  Linkedin,
+  Youtube,
+  Menu,
+  X,
+  RefreshCw
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
 import { toast } from 'sonner';
-
-// Config interface
-interface SiteConfig {
-  siteName: string;
-  contactEmail: string;
-  defaultLanguage: string;
-  theme: 'light' | 'dark' | 'system';
-  googleAnalyticsId: string;
-  adsenseCode: string;
-  socialLinks: {
-    facebook: string;
-    twitter: string;
-    instagram: string;
-  };
-  seo: {
-    title: string;
-    description: string;
-    keywords: string;
-  };
-}
-
-const defaultConfig: SiteConfig = {
-  siteName: 'BestToolsHub',
-  contactEmail: 'contact@besttoolshub.online',
-  defaultLanguage: 'ar',
-  theme: 'dark',
-  googleAnalyticsId: '',
-  adsenseCode: '',
-  socialLinks: {
-    facebook: '',
-    twitter: '',
-    instagram: ''
-  },
-  seo: {
-    title: 'BestToolsHub - أفضل الأدوات المجانية',
-    description: 'مجموعة شاملة من الأدوات المجانية لتحويل الصور، ملفات PDF، النصوص والمزيد',
-    keywords: 'أدوات مجانية, محول صور, PDF, QR code, ألوان'
-  }
-};
-
-// Analytics data interface
-interface AnalyticsData {
-  totalVisits: number;
-  todayVisits: number;
-  toolsUsed: number;
-  activeUsers: number;
-  bounceRate: number;
-  countries: { name: string; visits: number; flag: string }[];
-  devices: { type: string; percentage: number }[];
-  hourlyData: number[];
-}
+import { 
+  SiteConfig, 
+  getConfig, 
+  saveConfig as saveSiteConfig, 
+  getStats, 
+  downloadConfig,
+  VisitorStats 
+} from '@/lib/siteConfig';
 
 interface StatCardProps {
   title: string;
@@ -152,47 +113,17 @@ const ActivityItem = ({ action, time, status }: ActivityItemProps) => (
   </div>
 );
 
-// Live visitor counter simulation based on localStorage
-const getStoredAnalytics = (): AnalyticsData => {
-  const stored = localStorage.getItem('site_analytics');
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  
-  // Initialize with realistic data
-  const initialData: AnalyticsData = {
-    totalVisits: Math.floor(Math.random() * 5000) + 10000,
-    todayVisits: Math.floor(Math.random() * 200) + 50,
-    toolsUsed: Math.floor(Math.random() * 2000) + 3000,
-    activeUsers: Math.floor(Math.random() * 50) + 10,
-    bounceRate: Math.random() * 20 + 15,
-    countries: [
-      { name: 'مصر', visits: Math.floor(Math.random() * 1000) + 2000, flag: '🇪🇬' },
-      { name: 'السعودية', visits: Math.floor(Math.random() * 800) + 1500, flag: '🇸🇦' },
-      { name: 'الإمارات', visits: Math.floor(Math.random() * 500) + 800, flag: '🇦🇪' },
-      { name: 'المغرب', visits: Math.floor(Math.random() * 400) + 600, flag: '🇲🇦' },
-      { name: 'الجزائر', visits: Math.floor(Math.random() * 300) + 500, flag: '🇩🇿' },
-    ],
-    devices: [
-      { type: 'Mobile', percentage: 65 },
-      { type: 'Desktop', percentage: 30 },
-      { type: 'Tablet', percentage: 5 },
-    ],
-    hourlyData: Array.from({ length: 24 }, () => Math.floor(Math.random() * 100) + 10)
-  };
-  
-  localStorage.setItem('site_analytics', JSON.stringify(initialData));
-  return initialData;
-};
-
-const incrementVisit = () => {
-  const analytics = getStoredAnalytics();
-  analytics.totalVisits += 1;
-  analytics.todayVisits += 1;
-  analytics.activeUsers = Math.max(1, analytics.activeUsers + (Math.random() > 0.5 ? 1 : -1));
-  localStorage.setItem('site_analytics', JSON.stringify(analytics));
-  return analytics;
-};
+// Sidebar navigation items
+const sidebarItems = [
+  { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', labelAr: 'الرئيسية' },
+  { id: 'content', icon: Type, label: 'Content', labelAr: 'المحتوى' },
+  { id: 'ads', icon: Megaphone, label: 'Ads', labelAr: 'الإعلانات' },
+  { id: 'seo', icon: Globe, label: 'SEO', labelAr: 'SEO' },
+  { id: 'analytics', icon: BarChart3, label: 'Analytics', labelAr: 'التحليلات' },
+  { id: 'appearance', icon: Palette, label: 'Appearance', labelAr: 'المظهر' },
+  { id: 'integrations', icon: Code, label: 'Integrations', labelAr: 'التكاملات' },
+  { id: 'settings', icon: Settings, label: 'Settings', labelAr: 'الإعدادات' },
+];
 
 const Admin = () => {
   const { isRTL } = useLanguage();
@@ -200,30 +131,23 @@ const Admin = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [config, setConfig] = useState<SiteConfig>(defaultConfig);
-  const [analytics, setAnalytics] = useState<AnalyticsData>(getStoredAnalytics());
+  const [config, setConfig] = useState<SiteConfig>(getConfig());
+  const [stats, setStats] = useState<VisitorStats>(getStats());
   const [newPassword, setNewPassword] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Load config from localStorage
   useEffect(() => {
-    const savedConfig = localStorage.getItem('site_config');
-    if (savedConfig) {
-      setConfig(JSON.parse(savedConfig));
-    }
-    
-    // Apply theme
-    const theme = savedConfig ? JSON.parse(savedConfig).theme : 'dark';
-    applyTheme(theme);
+    const savedConfig = getConfig();
+    setConfig(savedConfig);
+    applyTheme(savedConfig.theme);
   }, []);
 
-  // Update analytics every 5 seconds
+  // Refresh stats periodically
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setAnalytics(incrementVisit());
-      }
+      setStats(getStats());
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -256,8 +180,8 @@ const Admin = () => {
     setIsLoading(true);
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    const storedPassword = localStorage.getItem('admin_password') || 'Na@01024926212';
-    if (password === storedPassword) {
+    const storedConfig = getConfig();
+    if (password === storedConfig.adminPass) {
       const authToken = {
         authenticated: true,
         expiry: Date.now() + (60 * 60 * 1000)
@@ -279,16 +203,22 @@ const Admin = () => {
     toast.success(isRTL ? 'تم تسجيل الخروج' : 'Logged out successfully');
   };
 
-  const saveConfig = () => {
-    localStorage.setItem('site_config', JSON.stringify(config));
+  const handleSaveConfig = () => {
+    saveSiteConfig(config);
     applyTheme(config.theme);
     toast.success(isRTL ? 'تم حفظ الإعدادات بنجاح' : 'Settings saved successfully');
   };
 
+  const handleDownloadConfig = () => {
+    downloadConfig(config);
+    toast.success(isRTL ? 'تم تنزيل ملف الإعدادات' : 'Config file downloaded');
+  };
+
   const updatePassword = () => {
-    const storedPassword = localStorage.getItem('admin_password') || 'Na@01024926212';
-    if (currentPassword === storedPassword && newPassword.length >= 6) {
-      localStorage.setItem('admin_password', newPassword);
+    if (currentPassword === config.adminPass && newPassword.length >= 6) {
+      const updatedConfig = { ...config, adminPass: newPassword };
+      setConfig(updatedConfig);
+      saveSiteConfig(updatedConfig);
       toast.success(isRTL ? 'تم تحديث كلمة المرور' : 'Password updated');
       setNewPassword('');
       setCurrentPassword('');
@@ -297,56 +227,9 @@ const Admin = () => {
     }
   };
 
-  const tools = [
-    { name: 'QR Generator', views: Math.floor(analytics.toolsUsed * 0.25), status: 'active' },
-    { name: 'Image Compressor', views: Math.floor(analytics.toolsUsed * 0.20), status: 'active' },
-    { name: 'PDF Merge', views: Math.floor(analytics.toolsUsed * 0.15), status: 'active' },
-    { name: 'Color Picker', views: Math.floor(analytics.toolsUsed * 0.12), status: 'active' },
-    { name: 'Text Counter', views: Math.floor(analytics.toolsUsed * 0.10), status: 'active' },
-    { name: 'PDF Rotate', views: Math.floor(analytics.toolsUsed * 0.08), status: 'active' },
-    { name: 'PDF to Word', views: Math.floor(analytics.toolsUsed * 0.05), status: 'active' },
-    { name: 'PDF Watermark', views: Math.floor(analytics.toolsUsed * 0.03), status: 'active' },
-    { name: 'PDF Protect', views: Math.floor(analytics.toolsUsed * 0.02), status: 'active' },
-  ];
-
-  const recentActivity = [
-    { action: isRTL ? 'تم استخدام أداة ضغط PDF' : 'PDF Compress tool used', time: isRTL ? 'منذ دقيقتين' : '2 mins ago', status: 'success' as const },
-    { action: isRTL ? 'تم تحويل صورة إلى PNG' : 'Image converted to PNG', time: isRTL ? 'منذ 5 دقائق' : '5 mins ago', status: 'success' as const },
-    { action: isRTL ? 'تم إنشاء QR Code' : 'QR Code generated', time: isRTL ? 'منذ 12 دقيقة' : '12 mins ago', status: 'success' as const },
-    { action: isRTL ? `زائر جديد من ${analytics.countries[0]?.name}` : `New visitor from ${analytics.countries[0]?.name}`, time: isRTL ? 'منذ 18 دقيقة' : '18 mins ago', status: 'info' as const },
-    { action: isRTL ? 'تم دمج ملفات PDF' : 'PDF files merged', time: isRTL ? 'منذ 25 دقيقة' : '25 mins ago', status: 'success' as const },
-  ];
-
-  const stats = [
-    {
-      title: isRTL ? 'إجمالي الزيارات' : 'Total Visits',
-      value: analytics.totalVisits.toLocaleString(),
-      change: isRTL ? '+12.5% من الشهر الماضي' : '+12.5% from last month',
-      changeType: 'positive' as const,
-      icon: <Eye className="w-6 h-6" />
-    },
-    {
-      title: isRTL ? 'الأدوات المستخدمة' : 'Tools Used',
-      value: analytics.toolsUsed.toLocaleString(),
-      change: isRTL ? '+8.2% من الشهر الماضي' : '+8.2% from last month',
-      changeType: 'positive' as const,
-      icon: <FileText className="w-6 h-6" />
-    },
-    {
-      title: isRTL ? 'المستخدمون النشطون' : 'Active Users',
-      value: analytics.activeUsers.toLocaleString(),
-      change: isRTL ? 'الآن' : 'Live Now',
-      changeType: 'positive' as const,
-      icon: <Users className="w-6 h-6" />
-    },
-    {
-      title: isRTL ? 'معدل الارتداد' : 'Bounce Rate',
-      value: `${analytics.bounceRate.toFixed(1)}%`,
-      change: isRTL ? '-5.4% من الشهر الماضي' : '-5.4% from last month',
-      changeType: 'positive' as const,
-      icon: <BarChart3 className="w-6 h-6" />
-    }
-  ];
+  const openGoogleAnalytics = () => {
+    window.open('https://analytics.google.com/', '_blank');
+  };
 
   // Login Page
   if (!isAuthenticated) {
@@ -401,7 +284,7 @@ const Admin = () => {
                     </span>
                   ) : (
                     <>
-                      <Shield className="w-4 h-4 me-2" />
+                      <Lock className="w-4 h-4 me-2" />
                       {isRTL ? 'دخول' : 'Login'}
                     </>
                   )}
@@ -420,6 +303,18 @@ const Admin = () => {
     );
   }
 
+  // Get top pages from stats
+  const topPages = Object.entries(stats.pageViews || {})
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+
+  // Calculate device percentages
+  const totalDevices = stats.devices?.reduce((sum, d) => sum + d.count, 0) || 1;
+  const devicePercentages = stats.devices?.map(d => ({
+    type: d.type,
+    percentage: Math.round((d.count / totalDevices) * 100)
+  })) || [];
+
   return (
     <>
       <Helmet>
@@ -427,132 +322,170 @@ const Admin = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        <Header />
-        
-        <main className="container mx-auto px-4 pt-24 pb-16">
-          {/* Page Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                {isRTL ? 'لوحة التحكم' : 'Admin Dashboard'}
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {isRTL ? 'إدارة ومراقبة الموقع والأدوات' : 'Manage and monitor website and tools'}
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <div className="relative">
-                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={isRTL ? 'بحث...' : 'Search...'}
-                  className="ps-10 w-64"
-                />
-              </div>
-              <Button variant="outline" className="gap-2">
-                <Bell className="w-4 h-4" />
-                <span className="hidden sm:inline">{isRTL ? 'الإشعارات' : 'Notifications'}</span>
+      <div className="min-h-screen bg-background flex">
+        {/* Sidebar */}
+        <aside className={`fixed lg:static inset-y-0 start-0 z-50 transition-transform duration-300 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-20'
+        } ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'}`}>
+          <div className="h-full glass-card rounded-none lg:rounded-e-2xl border-e border-border flex flex-col">
+            {/* Sidebar Header */}
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              {sidebarOpen && (
+                <h1 className="font-bold text-xl text-foreground">
+                  {isRTL ? 'لوحة التحكم' : 'Admin'}
+                </h1>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="text-muted-foreground"
+              >
+                {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
-              <Button variant="destructive" onClick={handleLogout} className="gap-2">
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">{isRTL ? 'خروج' : 'Logout'}</span>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 p-4 space-y-2">
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                    activeTab === item.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                  {sidebarOpen && (
+                    <span className="font-medium">{isRTL ? item.labelAr : item.label}</span>
+                  )}
+                </button>
+              ))}
+            </nav>
+
+            {/* Sidebar Footer */}
+            <div className="p-4 border-t border-border">
+              <Button
+                variant="destructive"
+                onClick={handleLogout}
+                className={`w-full ${sidebarOpen ? '' : 'px-0'}`}
+              >
+                <LogOut className="w-5 h-5" />
+                {sidebarOpen && <span className="ms-2">{isRTL ? 'خروج' : 'Logout'}</span>}
               </Button>
             </div>
           </div>
+        </aside>
 
-          {/* Tabs Navigation */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-muted/50 p-1 rounded-xl flex-wrap h-auto">
-              <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-background">
-                <LayoutDashboard className="w-4 h-4" />
-                {isRTL ? 'الرئيسية' : 'Dashboard'}
-              </TabsTrigger>
-              <TabsTrigger value="tools" className="gap-2 data-[state=active]:bg-background">
-                <FileText className="w-4 h-4" />
-                {isRTL ? 'الأدوات' : 'Tools'}
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="gap-2 data-[state=active]:bg-background">
-                <BarChart3 className="w-4 h-4" />
-                {isRTL ? 'التحليلات' : 'Analytics'}
-              </TabsTrigger>
-              <TabsTrigger value="appearance" className="gap-2 data-[state=active]:bg-background">
-                <Palette className="w-4 h-4" />
-                {isRTL ? 'المظهر' : 'Appearance'}
-              </TabsTrigger>
-              <TabsTrigger value="seo" className="gap-2 data-[state=active]:bg-background">
-                <Globe className="w-4 h-4" />
-                SEO
-              </TabsTrigger>
-              <TabsTrigger value="integrations" className="gap-2 data-[state=active]:bg-background">
-                <Code className="w-4 h-4" />
-                {isRTL ? 'التكاملات' : 'Integrations'}
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="gap-2 data-[state=active]:bg-background">
-                <Settings className="w-4 h-4" />
-                {isRTL ? 'الإعدادات' : 'Settings'}
-              </TabsTrigger>
-            </TabsList>
+        {/* Mobile overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-            {/* Dashboard Tab */}
-            <TabsContent value="dashboard" className="space-y-6">
-              {/* Live Stats Grid */}
+        {/* Main Content */}
+        <main className="flex-1 p-4 lg:p-8 overflow-auto">
+          {/* Mobile Header */}
+          <div className="lg:hidden flex items-center justify-between mb-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </Button>
+            <h1 className="font-bold text-xl text-foreground">
+              {isRTL ? 'لوحة التحكم' : 'Admin Dashboard'}
+            </h1>
+            <div className="w-10" />
+          </div>
+
+          {/* Dashboard Tab */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'الرئيسية' : 'Dashboard'}
+                </h2>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setStats(getStats())} className="gap-2">
+                    <RefreshCw className="w-4 h-4" />
+                    {isRTL ? 'تحديث' : 'Refresh'}
+                  </Button>
+                  <Button onClick={openGoogleAnalytics} className="gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    Google Analytics
+                  </Button>
+                </div>
+              </div>
+
+              {/* Stats Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {stats.map((stat, index) => (
-                  <StatCard key={index} {...stat} />
-                ))}
+                <StatCard
+                  title={isRTL ? 'إجمالي الزيارات' : 'Total Visits'}
+                  value={stats.totalVisits.toLocaleString()}
+                  change={isRTL ? 'زيارة حقيقية' : 'Real visits'}
+                  changeType="positive"
+                  icon={<Eye className="w-6 h-6" />}
+                />
+                <StatCard
+                  title={isRTL ? 'زيارات اليوم' : "Today's Visits"}
+                  value={stats.todayVisits.toLocaleString()}
+                  change={isRTL ? 'اليوم' : 'Today'}
+                  changeType="positive"
+                  icon={<TrendingUp className="w-6 h-6" />}
+                />
+                <StatCard
+                  title={isRTL ? 'الزوار الفريدون' : 'Unique Visitors'}
+                  value={stats.uniqueVisitors.toLocaleString()}
+                  change={isRTL ? 'متصفحات مختلفة' : 'Different browsers'}
+                  changeType="neutral"
+                  icon={<Users className="w-6 h-6" />}
+                />
+                <StatCard
+                  title={isRTL ? 'الصفحات المعروضة' : 'Page Views'}
+                  value={Object.values(stats.pageViews || {}).reduce((a, b) => a + b, 0).toLocaleString()}
+                  change={isRTL ? 'إجمالي' : 'Total'}
+                  changeType="positive"
+                  icon={<FileText className="w-6 h-6" />}
+                />
               </div>
 
-              {/* Main Content */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Recent Activity */}
-                <div className="lg:col-span-2 glass-card rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-foreground">
-                      {isRTL ? 'النشاط الأخير' : 'Recent Activity'}
-                    </h2>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      <span className="text-xs text-muted-foreground">{isRTL ? 'مباشر' : 'Live'}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {recentActivity.map((activity, index) => (
-                      <ActivityItem key={index} {...activity} />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Top Countries */}
+              {/* Charts Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Hourly Traffic */}
                 <div className="glass-card rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                    <MapPin className="w-5 h-5" />
-                    {isRTL ? 'أهم الدول' : 'Top Countries'}
-                  </h2>
-                  <div className="space-y-4">
-                    {analytics.countries.map((country, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">{country.flag}</span>
-                          <span className="text-sm text-foreground">{country.name}</span>
-                        </div>
-                        <span className="text-sm text-muted-foreground">{country.visits.toLocaleString()}</span>
-                      </div>
+                  <h3 className="text-xl font-bold text-foreground mb-4">
+                    {isRTL ? 'الزيارات بالساعة' : 'Hourly Traffic'}
+                  </h3>
+                  <div className="flex items-end justify-between h-32 gap-1">
+                    {(stats.hourlyData || Array(24).fill(0)).map((value, index) => (
+                      <div
+                        key={index}
+                        className="bg-primary/60 hover:bg-primary rounded-t transition-all duration-200 flex-1 max-w-3"
+                        style={{ height: `${Math.max(4, (value / (Math.max(...(stats.hourlyData || [1])) || 1)) * 100)}%` }}
+                        title={`${index}:00 - ${value} ${isRTL ? 'زيارة' : 'visits'}`}
+                      />
                     ))}
                   </div>
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>00:00</span>
+                    <span>12:00</span>
+                    <span>23:00</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Devices & Hourly Chart */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Devices */}
                 <div className="glass-card rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">
+                  <h3 className="text-xl font-bold text-foreground mb-4">
                     {isRTL ? 'الأجهزة' : 'Devices'}
-                  </h2>
+                  </h3>
                   <div className="space-y-4">
-                    {analytics.devices.map((device, index) => (
+                    {devicePercentages.length > 0 ? devicePercentages.map((device, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <div className="flex items-center gap-2">
@@ -570,456 +503,754 @@ const Admin = () => {
                           />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Hourly Traffic */}
-                <div className="glass-card rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">
-                    {isRTL ? 'الزيارات بالساعة' : 'Hourly Traffic'}
-                  </h2>
-                  <div className="flex items-end justify-between h-32 gap-1">
-                    {analytics.hourlyData.map((value, index) => (
-                      <div
-                        key={index}
-                        className="bg-primary/60 hover:bg-primary rounded-t transition-all duration-200 flex-1 max-w-3"
-                        style={{ height: `${(value / Math.max(...analytics.hourlyData)) * 100}%` }}
-                        title={`${index}:00 - ${value} ${isRTL ? 'زيارة' : 'visits'}`}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                    <span>00:00</span>
-                    <span>12:00</span>
-                    <span>23:00</span>
+                    )) : (
+                      <p className="text-muted-foreground text-center py-8">
+                        {isRTL ? 'لا توجد بيانات بعد' : 'No data yet'}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
-            </TabsContent>
 
-            {/* Tools Tab */}
-            <TabsContent value="tools" className="space-y-6">
+              {/* Top Pages */}
               <div className="glass-card rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-foreground">
-                    {isRTL ? 'إدارة الأدوات' : 'Manage Tools'}
-                  </h2>
-                  <Button className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    {isRTL ? 'إضافة أداة' : 'Add Tool'}
-                  </Button>
-                </div>
-                
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-start p-3 text-sm font-medium text-muted-foreground">
-                          {isRTL ? 'الأداة' : 'Tool'}
-                        </th>
-                        <th className="text-start p-3 text-sm font-medium text-muted-foreground">
-                          {isRTL ? 'المشاهدات' : 'Views'}
-                        </th>
-                        <th className="text-start p-3 text-sm font-medium text-muted-foreground">
-                          {isRTL ? 'الحالة' : 'Status'}
-                        </th>
-                        <th className="text-end p-3 text-sm font-medium text-muted-foreground">
-                          {isRTL ? 'الإجراءات' : 'Actions'}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tools.map((tool, index) => (
-                        <tr key={index} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                          <td className="p-3">
-                            <span className="font-medium text-foreground">{tool.name}</span>
-                          </td>
-                          <td className="p-3 text-muted-foreground">
-                            {tool.views.toLocaleString()}
-                          </td>
-                          <td className="p-3">
-                            <span className="px-2 py-1 text-xs bg-green-500/10 text-green-500 rounded-full">
-                              {isRTL ? 'نشط' : 'Active'}
-                            </span>
-                          </td>
-                          <td className="p-3">
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <h3 className="text-xl font-bold text-foreground mb-4">
+                  {isRTL ? 'أفضل الصفحات' : 'Top Pages'}
+                </h3>
+                <div className="space-y-3">
+                  {topPages.length > 0 ? topPages.map(([page, views], index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      <span className="text-sm text-foreground font-mono">{page}</span>
+                      <span className="text-sm text-muted-foreground">{views.toLocaleString()} {isRTL ? 'زيارة' : 'views'}</span>
+                    </div>
+                  )) : (
+                    <p className="text-muted-foreground text-center py-8">
+                      {isRTL ? 'لا توجد بيانات بعد' : 'No data yet'}
+                    </p>
+                  )}
                 </div>
               </div>
-            </TabsContent>
+            </div>
+          )}
 
-            {/* Analytics Tab */}
-            <TabsContent value="analytics" className="space-y-6">
-              <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-xl font-bold text-foreground mb-6">
-                  {isRTL ? 'إحصائيات الموقع' : 'Website Analytics'}
+          {/* Content Tab - Control all text */}
+          {activeTab === 'content' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'إدارة المحتوى' : 'Content Management'}
                 </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="font-medium text-foreground">
-                      {isRTL ? 'أفضل الصفحات' : 'Top Pages'}
-                    </h3>
-                    {[
-                      { page: '/tools/qr-generator', views: Math.floor(analytics.toolsUsed * 0.25) },
-                      { page: '/tools/image-compressor', views: Math.floor(analytics.toolsUsed * 0.20) },
-                      { page: '/tools/pdf-merge', views: Math.floor(analytics.toolsUsed * 0.15) },
-                      { page: '/', views: Math.floor(analytics.totalVisits * 0.3) },
-                      { page: '/tools/color-picker', views: Math.floor(analytics.toolsUsed * 0.12) },
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                        <span className="text-sm text-foreground">{item.page}</span>
-                        <span className="text-sm text-muted-foreground">{item.views.toLocaleString()}</span>
-                      </div>
-                    ))}
+                <Button onClick={handleSaveConfig} className="gap-2">
+                  <Save className="w-4 h-4" />
+                  {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
+                </Button>
+              </div>
+
+              {/* Hero Section */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Type className="w-5 h-5" />
+                  {isRTL ? 'قسم البطل (Hero)' : 'Hero Section'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>{isRTL ? 'العنوان الرئيسي' : 'Main Title'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.content.heroTitle}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, heroTitle: e.target.value }
+                      }))}
+                      placeholder={isRTL ? 'أدواتك المجانية في مكان واحد' : 'Your Free Tools in One Place'}
+                    />
                   </div>
-                  
-                  <div className="space-y-4">
-                    <h3 className="font-medium text-foreground">
-                      {isRTL ? 'مصادر الزيارات' : 'Traffic Sources'}
-                    </h3>
-                    {[
-                      { source: 'Google', percentage: 45 },
-                      { source: 'Direct', percentage: 25 },
-                      { source: 'Social Media', percentage: 18 },
-                      { source: 'Referral', percentage: 8 },
-                      { source: 'Other', percentage: 4 },
-                    ].map((item, index) => (
+                  <div>
+                    <Label>{isRTL ? 'العنوان الفرعي' : 'Subtitle'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.content.heroSubtitle}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, heroSubtitle: e.target.value }
+                      }))}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label>{isRTL ? 'الوصف' : 'Description'}</Label>
+                    <Textarea
+                      className="mt-2"
+                      rows={3}
+                      value={config.content.heroDescription}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, heroDescription: e.target.value }
+                      }))}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Section */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'نص الفوتر' : 'Footer Text'}
+                </h3>
+                <Input
+                  value={config.content.footerText}
+                  onChange={(e) => setConfig(prev => ({
+                    ...prev,
+                    content: { ...prev.content, footerText: e.target.value }
+                  }))}
+                />
+              </div>
+
+              {/* About Section */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'صفحة من نحن' : 'About Page'}
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label>{isRTL ? 'العنوان' : 'Title'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.content.aboutTitle}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, aboutTitle: e.target.value }
+                      }))}
+                    />
+                  </div>
+                  <div>
+                    <Label>{isRTL ? 'الوصف' : 'Description'}</Label>
+                    <Textarea
+                      className="mt-2"
+                      rows={5}
+                      value={config.content.aboutDescription}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, aboutDescription: e.target.value }
+                      }))}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Section */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'صفحة التواصل' : 'Contact Page'}
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label>{isRTL ? 'العنوان' : 'Title'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.content.contactTitle}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, contactTitle: e.target.value }
+                      }))}
+                    />
+                  </div>
+                  <div>
+                    <Label>{isRTL ? 'الوصف' : 'Description'}</Label>
+                    <Textarea
+                      className="mt-2"
+                      rows={3}
+                      value={config.content.contactDescription}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        content: { ...prev.content, contactDescription: e.target.value }
+                      }))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Ads Tab */}
+          {activeTab === 'ads' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'إدارة الإعلانات' : 'Ads Management'}
+                </h2>
+                <Button onClick={handleSaveConfig} className="gap-2">
+                  <Save className="w-4 h-4" />
+                  {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Header Ad */}
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                    <Megaphone className="w-5 h-5 text-primary" />
+                    {isRTL ? 'إعلان الهيدر (أعلى الصفحة)' : 'Header Ad (Top of Page)'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {isRTL ? 'الشركة A - يظهر أسفل القائمة مباشرة' : 'Company A - Appears directly below navbar'}
+                  </p>
+                  <Textarea
+                    rows={8}
+                    className="font-mono text-sm"
+                    placeholder="<!-- Paste your ad code here -->"
+                    value={config.ads.headerAdCode}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      ads: { ...prev.ads, headerAdCode: e.target.value }
+                    }))}
+                  />
+                </div>
+
+                {/* Sidebar Ad */}
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                    <Megaphone className="w-5 h-5 text-secondary" />
+                    {isRTL ? 'إعلان الشريط الجانبي' : 'Sidebar Ad'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {isRTL ? 'الشركة B - يظهر في الجانب' : 'Company B - Appears on the side'}
+                  </p>
+                  <Textarea
+                    rows={8}
+                    className="font-mono text-sm"
+                    placeholder="<!-- Paste your ad code here -->"
+                    value={config.ads.sidebarAdCode}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      ads: { ...prev.ads, sidebarAdCode: e.target.value }
+                    }))}
+                  />
+                </div>
+
+                {/* Footer Ad */}
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                    <Megaphone className="w-5 h-5 text-accent" />
+                    {isRTL ? 'إعلان الفوتر' : 'Footer Ad'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {isRTL ? 'يظهر أسفل الصفحة قبل الفوتر' : 'Appears at the bottom before footer'}
+                  </p>
+                  <Textarea
+                    rows={8}
+                    className="font-mono text-sm"
+                    placeholder="<!-- Paste your ad code here -->"
+                    value={config.ads.footerAdCode}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      ads: { ...prev.ads, footerAdCode: e.target.value }
+                    }))}
+                  />
+                </div>
+
+                {/* In-Content Ad */}
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                    <Megaphone className="w-5 h-5 text-warning" />
+                    {isRTL ? 'إعلان داخل المحتوى' : 'In-Content Ad'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {isRTL ? 'يظهر داخل صفحات الأدوات' : 'Appears within tool pages'}
+                  </p>
+                  <Textarea
+                    rows={8}
+                    className="font-mono text-sm"
+                    placeholder="<!-- Paste your ad code here -->"
+                    value={config.ads.inContentAdCode}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      ads: { ...prev.ads, inContentAdCode: e.target.value }
+                    }))}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SEO Tab */}
+          {activeTab === 'seo' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'إعدادات SEO' : 'SEO Settings'}
+                </h2>
+                <Button onClick={handleSaveConfig} className="gap-2">
+                  <Save className="w-4 h-4" />
+                  {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
+                </Button>
+              </div>
+
+              <div className="glass-card rounded-2xl p-6 space-y-6">
+                <div>
+                  <Label>{isRTL ? 'عنوان الموقع (Title Tag)' : 'Site Title (Title Tag)'}</Label>
+                  <Input
+                    className="mt-2"
+                    value={config.globalSEO.title}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      globalSEO: { ...prev.globalSEO, title: e.target.value }
+                    }))}
+                    placeholder="BestToolsHub - Free Online Tools"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {isRTL ? 'يظهر في تاب المتصفح ونتائج البحث' : 'Appears in browser tab and search results'}
+                  </p>
+                </div>
+
+                <div>
+                  <Label>{isRTL ? 'وصف الموقع (Meta Description)' : 'Site Description (Meta Description)'}</Label>
+                  <Textarea
+                    className="mt-2"
+                    rows={3}
+                    value={config.globalSEO.description}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      globalSEO: { ...prev.globalSEO, description: e.target.value }
+                    }))}
+                    placeholder="Free online tools for PDF, images, QR codes, and more..."
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {config.globalSEO.description.length}/160 {isRTL ? 'حرف' : 'characters'}
+                  </p>
+                </div>
+
+                <div>
+                  <Label>{isRTL ? 'الكلمات المفتاحية' : 'Keywords'}</Label>
+                  <Textarea
+                    className="mt-2"
+                    rows={2}
+                    value={config.globalSEO.keywords}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      globalSEO: { ...prev.globalSEO, keywords: e.target.value }
+                    }))}
+                    placeholder="free tools, pdf converter, image compressor, qr generator"
+                  />
+                </div>
+              </div>
+
+              {/* Social Links for SEO */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'روابط التواصل الاجتماعي' : 'Social Media Links'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="flex items-center gap-2">
+                      <Facebook className="w-4 h-4" /> Facebook
+                    </Label>
+                    <Input
+                      className="mt-2"
+                      value={config.socialLinks.facebook}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, facebook: e.target.value }
+                      }))}
+                      placeholder="https://facebook.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-2">
+                      <Twitter className="w-4 h-4" /> Twitter / X
+                    </Label>
+                    <Input
+                      className="mt-2"
+                      value={config.socialLinks.twitter}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, twitter: e.target.value }
+                      }))}
+                      placeholder="https://twitter.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-2">
+                      <Instagram className="w-4 h-4" /> Instagram
+                    </Label>
+                    <Input
+                      className="mt-2"
+                      value={config.socialLinks.instagram}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, instagram: e.target.value }
+                      }))}
+                      placeholder="https://instagram.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-2">
+                      <Linkedin className="w-4 h-4" /> LinkedIn
+                    </Label>
+                    <Input
+                      className="mt-2"
+                      value={config.socialLinks.linkedin}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, linkedin: e.target.value }
+                      }))}
+                      placeholder="https://linkedin.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-2">
+                      <Youtube className="w-4 h-4" /> YouTube
+                    </Label>
+                    <Input
+                      className="mt-2"
+                      value={config.socialLinks.youtube}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, youtube: e.target.value }
+                      }))}
+                      placeholder="https://youtube.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-2">
+                      TikTok
+                    </Label>
+                    <Input
+                      className="mt-2"
+                      value={config.socialLinks.tiktok}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, tiktok: e.target.value }
+                      }))}
+                      placeholder="https://tiktok.com/..."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Analytics Tab */}
+          {activeTab === 'analytics' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-foreground">
+                {isRTL ? 'التحليلات التفصيلية' : 'Detailed Analytics'}
+              </h2>
+
+              {/* Browser Stats */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'المتصفحات' : 'Browsers'}
+                </h3>
+                <div className="space-y-3">
+                  {stats.browsers?.length > 0 ? stats.browsers.map((browser, index) => {
+                    const totalBrowsers = stats.browsers.reduce((sum, b) => sum + b.count, 0);
+                    const percentage = Math.round((browser.count / totalBrowsers) * 100);
+                    return (
                       <div key={index} className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-foreground">{item.source}</span>
-                          <span className="text-muted-foreground">{item.percentage}%</span>
+                          <span className="text-foreground">{browser.name}</span>
+                          <span className="text-muted-foreground">{percentage}%</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-primary rounded-full"
-                            style={{ width: `${item.percentage}%` }}
+                            className="h-full bg-secondary rounded-full"
+                            style={{ width: `${percentage}%` }}
                           />
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  }) : (
+                    <p className="text-muted-foreground text-center py-8">
+                      {isRTL ? 'لا توجد بيانات بعد' : 'No data yet'}
+                    </p>
+                  )}
                 </div>
               </div>
-            </TabsContent>
 
-            {/* Appearance Tab */}
-            <TabsContent value="appearance" className="space-y-6">
+              {/* Daily Trend */}
               <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-xl font-bold text-foreground mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'الزيارات اليومية (آخر 30 يوم)' : 'Daily Visits (Last 30 days)'}
+                </h3>
+                <div className="space-y-2">
+                  {stats.dailyData?.length > 0 ? stats.dailyData.slice(-7).map((day, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-muted/30 rounded">
+                      <span className="text-sm text-foreground">{day.date}</span>
+                      <span className="text-sm text-muted-foreground">{day.visits} {isRTL ? 'زيارة' : 'visits'}</span>
+                    </div>
+                  )) : (
+                    <p className="text-muted-foreground text-center py-8">
+                      {isRTL ? 'سيتم جمع البيانات مع مرور الوقت' : 'Data will be collected over time'}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Appearance Tab */}
+          {activeTab === 'appearance' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
                   {isRTL ? 'إعدادات المظهر' : 'Appearance Settings'}
                 </h2>
-                
-                <div className="space-y-6">
-                  {/* Theme Selection */}
-                  <div>
-                    <Label className="text-base font-medium">{isRTL ? 'السمة العامة' : 'Site Theme'}</Label>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {isRTL ? 'اختر المظهر العام للموقع' : 'Choose the overall look of your site'}
-                    </p>
-                    <div className="grid grid-cols-3 gap-4">
-                      <button
-                        onClick={() => setConfig(prev => ({ ...prev, theme: 'light' }))}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          config.theme === 'light' 
-                            ? 'border-primary bg-primary/10' 
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <Sun className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
-                        <span className="text-sm font-medium text-foreground">
-                          {isRTL ? 'فاتح' : 'Light'}
-                        </span>
-                      </button>
-                      <button
-                        onClick={() => setConfig(prev => ({ ...prev, theme: 'dark' }))}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          config.theme === 'dark' 
-                            ? 'border-primary bg-primary/10' 
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <Moon className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                        <span className="text-sm font-medium text-foreground">
-                          {isRTL ? 'داكن' : 'Dark'}
-                        </span>
-                      </button>
-                      <button
-                        onClick={() => setConfig(prev => ({ ...prev, theme: 'system' }))}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          config.theme === 'system' 
-                            ? 'border-primary bg-primary/10' 
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <Monitor className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                        <span className="text-sm font-medium text-foreground">
-                          {isRTL ? 'تلقائي' : 'System'}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
+                <Button onClick={handleSaveConfig} className="gap-2">
+                  <Save className="w-4 h-4" />
+                  {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
+                </Button>
+              </div>
 
-                  {/* Language Selection */}
+              {/* Site Identity */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Image className="w-5 h-5" />
+                  {isRTL ? 'هوية الموقع' : 'Site Identity'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label>{isRTL ? 'اللغة الافتراضية' : 'Default Language'}</Label>
-                    <select 
-                      className="w-full mt-2 p-3 bg-muted rounded-lg border border-border"
-                      value={config.defaultLanguage}
-                      onChange={(e) => setConfig(prev => ({ ...prev, defaultLanguage: e.target.value }))}
-                    >
-                      <option value="ar">العربية</option>
-                      <option value="en">English</option>
-                      <option value="fr">Français</option>
-                    </select>
+                    <Label>{isRTL ? 'اسم الموقع' : 'Site Name'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.siteIdentity.siteName}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        siteIdentity: { ...prev.siteIdentity, siteName: e.target.value }
+                      }))}
+                    />
                   </div>
-                  
-                  <Button onClick={saveConfig} className="gap-2">
-                    <Save className="w-4 h-4" />
-                    {isRTL ? 'حفظ الإعدادات' : 'Save Settings'}
-                  </Button>
+                  <div>
+                    <Label>{isRTL ? 'رابط اللوجو' : 'Logo URL'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.siteIdentity.logoUrl}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        siteIdentity: { ...prev.siteIdentity, logoUrl: e.target.value }
+                      }))}
+                      placeholder="https://..."
+                    />
+                    {config.siteIdentity.logoUrl && (
+                      <div className="mt-2 p-4 bg-muted rounded-lg">
+                        <img 
+                          src={config.siteIdentity.logoUrl} 
+                          alt="Logo Preview" 
+                          className="max-h-12 object-contain"
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Label>{isRTL ? 'رابط الأيقونة (Favicon)' : 'Favicon URL'}</Label>
+                    <Input
+                      className="mt-2"
+                      value={config.siteIdentity.faviconUrl}
+                      onChange={(e) => setConfig(prev => ({
+                        ...prev,
+                        siteIdentity: { ...prev.siteIdentity, faviconUrl: e.target.value }
+                      }))}
+                      placeholder="https://..."
+                    />
+                    {config.siteIdentity.faviconUrl && (
+                      <div className="mt-2 p-4 bg-muted rounded-lg">
+                        <img 
+                          src={config.siteIdentity.faviconUrl} 
+                          alt="Favicon Preview" 
+                          className="w-8 h-8 object-contain"
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </TabsContent>
 
-            {/* SEO Tab */}
-            <TabsContent value="seo" className="space-y-6">
+              {/* Theme Selection */}
               <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-xl font-bold text-foreground mb-6">
-                  {isRTL ? 'إعدادات SEO' : 'SEO Settings'}
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'السمة العامة' : 'Site Theme'}
+                </h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <button
+                    onClick={() => setConfig(prev => ({ ...prev, theme: 'light' }))}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      config.theme === 'light' 
+                        ? 'border-primary bg-primary/10' 
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <Sun className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+                    <span className="text-sm font-medium text-foreground">
+                      {isRTL ? 'فاتح' : 'Light'}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setConfig(prev => ({ ...prev, theme: 'dark' }))}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      config.theme === 'dark' 
+                        ? 'border-primary bg-primary/10' 
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <Moon className="w-8 h-8 mx-auto mb-2 text-blue-500" />
+                    <span className="text-sm font-medium text-foreground">
+                      {isRTL ? 'داكن' : 'Dark'}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setConfig(prev => ({ ...prev, theme: 'system' }))}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      config.theme === 'system' 
+                        ? 'border-primary bg-primary/10' 
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <Monitor className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">
+                      {isRTL ? 'تلقائي' : 'System'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Language Selection */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'اللغة الافتراضية' : 'Default Language'}
+                </h3>
+                <select 
+                  className="w-full p-3 bg-muted rounded-lg border border-border"
+                  value={config.language}
+                  onChange={(e) => setConfig(prev => ({ ...prev, language: e.target.value as 'ar' | 'en' | 'fr' }))}
+                >
+                  <option value="ar">العربية</option>
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* Integrations Tab */}
+          {activeTab === 'integrations' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'التكاملات' : 'Integrations'}
                 </h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <Label>{isRTL ? 'عنوان الموقع' : 'Site Title'}</Label>
-                    <Input 
-                      className="mt-2" 
-                      value={config.seo.title}
-                      onChange={(e) => setConfig(prev => ({
-                        ...prev,
-                        seo: { ...prev.seo, title: e.target.value }
-                      }))}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>{isRTL ? 'وصف الموقع' : 'Site Description'}</Label>
-                    <textarea 
-                      className="w-full mt-2 p-3 bg-muted rounded-lg border border-border min-h-[100px]"
-                      value={config.seo.description}
-                      onChange={(e) => setConfig(prev => ({
-                        ...prev,
-                        seo: { ...prev.seo, description: e.target.value }
-                      }))}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>{isRTL ? 'الكلمات المفتاحية' : 'Keywords'}</Label>
-                    <Input 
-                      className="mt-2" 
-                      value={config.seo.keywords}
-                      onChange={(e) => setConfig(prev => ({
-                        ...prev,
-                        seo: { ...prev.seo, keywords: e.target.value }
-                      }))}
-                    />
-                  </div>
-                  
-                  <Button onClick={saveConfig} className="gap-2">
+                <Button onClick={handleSaveConfig} className="gap-2">
+                  <Save className="w-4 h-4" />
+                  {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
+                </Button>
+              </div>
+
+              {/* Google Analytics */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-blue-500" />
+                  Google Analytics
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {isRTL ? 'أدخل معرف Google Analytics لتتبع الزوار' : 'Enter your Google Analytics ID to track visitors'}
+                </p>
+                <Input
+                  value={config.analytics.googleId}
+                  onChange={(e) => setConfig(prev => ({
+                    ...prev,
+                    analytics: { ...prev.analytics, googleId: e.target.value }
+                  }))}
+                  placeholder="G-XXXXXXXXXX"
+                />
+              </div>
+
+              {/* Google AdSense Global Script */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                  <Code className="w-5 h-5 text-green-500" />
+                  {isRTL ? 'كود Google AdSense العام' : 'Google AdSense Global Script'}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {isRTL ? 'سيتم إضافة هذا الكود إلى رأس الصفحة' : 'This code will be added to the page head'}
+                </p>
+                <Textarea
+                  rows={6}
+                  className="font-mono text-sm"
+                  placeholder="<script async src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXX' crossorigin='anonymous'></script>"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Settings Tab */}
+          {activeTab === 'settings' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {isRTL ? 'الإعدادات' : 'Settings'}
+                </h2>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleDownloadConfig} className="gap-2">
+                    <Download className="w-4 h-4" />
+                    {isRTL ? 'تنزيل config.js' : 'Download config.js'}
+                  </Button>
+                  <Button onClick={handleSaveConfig} className="gap-2">
                     <Save className="w-4 h-4" />
                     {isRTL ? 'حفظ التغييرات' : 'Save Changes'}
                   </Button>
                 </div>
               </div>
-            </TabsContent>
 
-            {/* Integrations Tab (NEW) */}
-            <TabsContent value="integrations" className="space-y-6">
+              {/* Change Password */}
               <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-xl font-bold text-foreground mb-6">
-                  {isRTL ? 'التكاملات والأكواد' : 'Integrations & Codes'}
-                </h2>
-                
-                <div className="space-y-6">
-                  {/* Google Analytics */}
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Lock className="w-5 h-5" />
+                  {isRTL ? 'تغيير كلمة المرور' : 'Change Password'}
+                </h3>
+                <div className="space-y-4 max-w-md">
                   <div>
-                    <Label className="flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4" />
-                      Google Analytics ID
-                    </Label>
-                    <Input 
-                      className="mt-2" 
-                      placeholder="G-XXXXXXXXXX"
-                      value={config.googleAnalyticsId}
-                      onChange={(e) => setConfig(prev => ({ ...prev, googleAnalyticsId: e.target.value }))}
+                    <Label>{isRTL ? 'كلمة المرور الحالية' : 'Current Password'}</Label>
+                    <Input
+                      type="password"
+                      className="mt-2"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {isRTL ? 'أدخل معرف Google Analytics الخاص بك (مثال: G-12345678)' : 'Enter your Google Analytics ID (e.g., G-12345678)'}
-                    </p>
                   </div>
-
-                  {/* AdSense Code */}
                   <div>
-                    <Label className="flex items-center gap-2">
-                      <Code className="w-4 h-4" />
-                      {isRTL ? 'كود Google AdSense' : 'Google AdSense Code'}
-                    </Label>
-                    <textarea 
-                      className="w-full mt-2 p-3 bg-muted rounded-lg border border-border min-h-[150px] font-mono text-sm"
-                      placeholder="<script async src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX' crossorigin='anonymous'></script>"
-                      value={config.adsenseCode}
-                      onChange={(e) => setConfig(prev => ({ ...prev, adsenseCode: e.target.value }))}
+                    <Label>{isRTL ? 'كلمة المرور الجديدة' : 'New Password'}</Label>
+                    <Input
+                      type="password"
+                      className="mt-2"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {isRTL ? 'الصق كود AdSense الكامل هنا' : 'Paste your complete AdSense code here'}
-                    </p>
                   </div>
-
-                  {/* Social Media Links */}
-                  <div className="border-t border-border pt-6">
-                    <h3 className="font-medium text-foreground mb-4 flex items-center gap-2">
-                      {isRTL ? 'روابط التواصل الاجتماعي' : 'Social Media Links'}
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="flex items-center gap-2">
-                          <Facebook className="w-4 h-4 text-blue-600" />
-                          Facebook
-                        </Label>
-                        <Input 
-                          className="mt-2" 
-                          placeholder="https://facebook.com/yourpage"
-                          value={config.socialLinks.facebook}
-                          onChange={(e) => setConfig(prev => ({
-                            ...prev,
-                            socialLinks: { ...prev.socialLinks, facebook: e.target.value }
-                          }))}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label className="flex items-center gap-2">
-                          <Twitter className="w-4 h-4 text-sky-500" />
-                          Twitter / X
-                        </Label>
-                        <Input 
-                          className="mt-2" 
-                          placeholder="https://twitter.com/yourhandle"
-                          value={config.socialLinks.twitter}
-                          onChange={(e) => setConfig(prev => ({
-                            ...prev,
-                            socialLinks: { ...prev.socialLinks, twitter: e.target.value }
-                          }))}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label className="flex items-center gap-2">
-                          <Instagram className="w-4 h-4 text-pink-500" />
-                          Instagram
-                        </Label>
-                        <Input 
-                          className="mt-2" 
-                          placeholder="https://instagram.com/yourprofile"
-                          value={config.socialLinks.instagram}
-                          onChange={(e) => setConfig(prev => ({
-                            ...prev,
-                            socialLinks: { ...prev.socialLinks, instagram: e.target.value }
-                          }))}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Button onClick={saveConfig} className="gap-2">
-                    <Save className="w-4 h-4" />
-                    {isRTL ? 'حفظ التكاملات' : 'Save Integrations'}
+                  <Button onClick={updatePassword} variant="outline" className="gap-2">
+                    <Lock className="w-4 h-4" />
+                    {isRTL ? 'تحديث كلمة المرور' : 'Update Password'}
                   </Button>
                 </div>
               </div>
-            </TabsContent>
 
-            {/* Settings Tab */}
-            <TabsContent value="settings" className="space-y-6">
+              {/* Export/Import */}
               <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-xl font-bold text-foreground mb-6">
-                  {isRTL ? 'الإعدادات العامة' : 'General Settings'}
-                </h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <Label>{isRTL ? 'اسم الموقع' : 'Site Name'}</Label>
-                    <Input 
-                      className="mt-2" 
-                      value={config.siteName}
-                      onChange={(e) => setConfig(prev => ({ ...prev, siteName: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>{isRTL ? 'البريد الإلكتروني' : 'Contact Email'}</Label>
-                    <Input 
-                      className="mt-2" 
-                      value={config.contactEmail}
-                      onChange={(e) => setConfig(prev => ({ ...prev, contactEmail: e.target.value }))}
-                    />
-                  </div>
-
-                  <div className="pt-4 border-t border-border">
-                    <h3 className="font-medium text-foreground mb-4">
-                      {isRTL ? 'تغيير كلمة المرور' : 'Change Password'}
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>{isRTL ? 'كلمة المرور الحالية' : 'Current Password'}</Label>
-                        <Input 
-                          type="password" 
-                          className="mt-2"
-                          value={currentPassword}
-                          onChange={(e) => setCurrentPassword(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>{isRTL ? 'كلمة المرور الجديدة' : 'New Password'}</Label>
-                        <Input 
-                          type="password" 
-                          className="mt-2"
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                      </div>
-                      <Button variant="outline" onClick={updatePassword}>
-                        {isRTL ? 'تحديث كلمة المرور' : 'Update Password'}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Button onClick={saveConfig} className="gap-2">
-                    <Save className="w-4 h-4" />
-                    {isRTL ? 'حفظ الإعدادات' : 'Save Settings'}
-                  </Button>
-                </div>
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {isRTL ? 'تصدير الإعدادات' : 'Export Settings'}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {isRTL 
+                    ? 'قم بتنزيل ملف config.js للاحتفاظ بنسخة احتياطية من إعداداتك'
+                    : 'Download config.js file to backup your settings'}
+                </p>
+                <Button onClick={handleDownloadConfig} variant="outline" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  {isRTL ? 'تنزيل الإعدادات' : 'Download Settings'}
+                </Button>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          )}
         </main>
-
-        <Footer />
       </div>
     </>
   );
