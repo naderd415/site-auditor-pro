@@ -99,24 +99,41 @@ interface Template {
   icon: string;
 }
 
-// القوالب الجاهزة - 100 قالب
+// القوالب الجاهزة - 100+ قالب
 const templates: Template[] = [
+  // Premium Gold (15) - قوالب ذهبية فاخرة
+  { id: 1, cat: 'gold', name: 'Royal Gold', nameAr: 'ذهبي ملكي', color1: '#FFD700', color2: '#DAA520', bg: '#000000', dots: 'classy', corner: 'extra-rounded', icon: '👑' },
+  { id: 2, cat: 'gold', name: 'Gold Shine', nameAr: 'ذهبي لامع', color1: '#F5C518', color2: '#D4AF37', bg: '#1a1a1a', dots: 'extra-rounded', corner: 'extra-rounded', icon: '✨' },
+  { id: 3, cat: 'gold', name: 'Luxury Gold', nameAr: 'ذهبي فاخر', color1: '#E6BE8A', color2: '#C5A028', bg: '#0a0a0a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '💎' },
+  { id: 4, cat: 'gold', name: 'Gold & Black', nameAr: 'ذهبي وأسود', color1: '#FFD700', color2: '#B8860B', bg: '#000000', dots: 'rounded', corner: 'extra-rounded', icon: '🖤' },
+  { id: 5, cat: 'gold', name: 'Gold Gradient', nameAr: 'تدرج ذهبي', color1: '#FFE55C', color2: '#8B6914', bg: '#0f0f0f', dots: 'dots', corner: 'dot', icon: '🌟' },
+  { id: 6, cat: 'gold', name: 'Premium Gold', nameAr: 'ذهبي متميز', color1: '#D4AF37', color2: '#AA8C2C', bg: '#1a0a00', dots: 'classy', corner: 'extra-rounded', icon: '🏆' },
+  { id: 7, cat: 'gold', name: 'Gold Elegance', nameAr: 'ذهبي أنيق', color1: '#FFD700', color2: '#FFA500', bg: '#0d0d0d', dots: 'extra-rounded', corner: 'extra-rounded', icon: '💫' },
+  { id: 8, cat: 'gold', name: 'Rose Gold', nameAr: 'ذهبي وردي', color1: '#B76E79', color2: '#E8A4B8', bg: '#1a1a1a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🌹' },
+  { id: 9, cat: 'gold', name: 'Gold VIP', nameAr: 'ذهبي VIP', color1: '#FFD700', color2: '#CD853F', bg: '#000000', dots: 'square', corner: 'square', icon: '⭐' },
+  { id: 10, cat: 'gold', name: 'Gold Crown', nameAr: 'تاج ذهبي', color1: '#F7DC6F', color2: '#B7950B', bg: '#0a0505', dots: 'classy', corner: 'extra-rounded', icon: '👸' },
+  { id: 11, cat: 'gold', name: 'Gold Wave', nameAr: 'موجة ذهبية', color1: '#FFD700', color2: '#8B7355', bg: '#0f0a05', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🌊' },
+  { id: 12, cat: 'gold', name: 'Champagne Gold', nameAr: 'ذهبي شمبانيا', color1: '#F7E7CE', color2: '#D4AF37', bg: '#1a1510', dots: 'rounded', corner: 'extra-rounded', icon: '🥂' },
+  { id: 13, cat: 'gold', name: 'Gold & White', nameAr: 'ذهبي وأبيض', color1: '#FFD700', color2: '#DAA520', bg: '#FFFFFF', dots: 'classy', corner: 'extra-rounded', icon: '🤍' },
+  { id: 14, cat: 'gold', name: 'Antique Gold', nameAr: 'ذهبي عتيق', color1: '#CFB53B', color2: '#8B6914', bg: '#1a1510', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🏺' },
+  { id: 15, cat: 'gold', name: 'Gold Diamond', nameAr: 'ذهبي ماسي', color1: '#FFD700', color2: '#E6E6FA', bg: '#000000', dots: 'dots', corner: 'dot', icon: '💠' },
+
   // Social Media (15)
-  { id: 1, cat: 'social', name: 'Facebook', nameAr: 'فيسبوك', color1: '#1877F2', color2: '#1877F2', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '📘' },
-  { id: 2, cat: 'social', name: 'Instagram', nameAr: 'انستغرام', color1: '#833AB4', color2: '#FD1D1D', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '📸' },
-  { id: 3, cat: 'social', name: 'Twitter/X', nameAr: 'تويتر', color1: '#000000', color2: '#1DA1F2', bg: '#ffffff', dots: 'classy', corner: 'extra-rounded', icon: '🐦' },
-  { id: 4, cat: 'social', name: 'WhatsApp', nameAr: 'واتساب', color1: '#25D366', color2: '#128C7E', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '💬' },
-  { id: 5, cat: 'social', name: 'TikTok', nameAr: 'تيك توك', color1: '#000000', color2: '#EE1D52', bg: '#ffffff', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🎵' },
-  { id: 6, cat: 'social', name: 'YouTube', nameAr: 'يوتيوب', color1: '#FF0000', color2: '#CC0000', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '▶️' },
-  { id: 7, cat: 'social', name: 'LinkedIn', nameAr: 'لينكدإن', color1: '#0077B5', color2: '#0A66C2', bg: '#ffffff', dots: 'square', corner: 'square', icon: '💼' },
-  { id: 8, cat: 'social', name: 'Snapchat', nameAr: 'سناب شات', color1: '#FFFC00', color2: '#000000', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '👻' },
-  { id: 9, cat: 'social', name: 'Telegram', nameAr: 'تيليجرام', color1: '#0088CC', color2: '#26A5E4', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '✈️' },
-  { id: 10, cat: 'social', name: 'Pinterest', nameAr: 'بنترست', color1: '#E60023', color2: '#BD081C', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '📌' },
-  { id: 11, cat: 'social', name: 'Discord', nameAr: 'ديسكورد', color1: '#5865F2', color2: '#7289DA', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '🎮' },
-  { id: 12, cat: 'social', name: 'Reddit', nameAr: 'ريديت', color1: '#FF4500', color2: '#FF5700', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '🤖' },
-  { id: 13, cat: 'social', name: 'Spotify', nameAr: 'سبوتيفاي', color1: '#1DB954', color2: '#191414', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '🎧' },
-  { id: 14, cat: 'social', name: 'Twitch', nameAr: 'تويتش', color1: '#9146FF', color2: '#6441A5', bg: '#ffffff', dots: 'classy', corner: 'extra-rounded', icon: '📺' },
-  { id: 15, cat: 'social', name: 'Threads', nameAr: 'ثريدز', color1: '#000000', color2: '#333333', bg: '#ffffff', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🧵' },
+  { id: 16, cat: 'social', name: 'Facebook', nameAr: 'فيسبوك', color1: '#1877F2', color2: '#1877F2', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '📘' },
+  { id: 17, cat: 'social', name: 'Instagram', nameAr: 'انستغرام', color1: '#833AB4', color2: '#FD1D1D', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '📸' },
+  { id: 18, cat: 'social', name: 'Twitter/X', nameAr: 'تويتر', color1: '#000000', color2: '#1DA1F2', bg: '#ffffff', dots: 'classy', corner: 'extra-rounded', icon: '🐦' },
+  { id: 19, cat: 'social', name: 'WhatsApp', nameAr: 'واتساب', color1: '#25D366', color2: '#128C7E', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '💬' },
+  { id: 20, cat: 'social', name: 'TikTok', nameAr: 'تيك توك', color1: '#000000', color2: '#EE1D52', bg: '#ffffff', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🎵' },
+  { id: 21, cat: 'social', name: 'YouTube', nameAr: 'يوتيوب', color1: '#FF0000', color2: '#CC0000', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '▶️' },
+  { id: 22, cat: 'social', name: 'LinkedIn', nameAr: 'لينكدإن', color1: '#0077B5', color2: '#0A66C2', bg: '#ffffff', dots: 'square', corner: 'square', icon: '💼' },
+  { id: 23, cat: 'social', name: 'Snapchat', nameAr: 'سناب شات', color1: '#FFFC00', color2: '#000000', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '👻' },
+  { id: 24, cat: 'social', name: 'Telegram', nameAr: 'تيليجرام', color1: '#0088CC', color2: '#26A5E4', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '✈️' },
+  { id: 25, cat: 'social', name: 'Pinterest', nameAr: 'بنترست', color1: '#E60023', color2: '#BD081C', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '📌' },
+  { id: 26, cat: 'social', name: 'Discord', nameAr: 'ديسكورد', color1: '#5865F2', color2: '#7289DA', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '🎮' },
+  { id: 27, cat: 'social', name: 'Reddit', nameAr: 'ريديت', color1: '#FF4500', color2: '#FF5700', bg: '#ffffff', dots: 'dots', corner: 'dot', icon: '🤖' },
+  { id: 28, cat: 'social', name: 'Spotify', nameAr: 'سبوتيفاي', color1: '#1DB954', color2: '#191414', bg: '#ffffff', dots: 'rounded', corner: 'extra-rounded', icon: '🎧' },
+  { id: 29, cat: 'social', name: 'Twitch', nameAr: 'تويتش', color1: '#9146FF', color2: '#6441A5', bg: '#ffffff', dots: 'classy', corner: 'extra-rounded', icon: '📺' },
+  { id: 30, cat: 'social', name: 'Threads', nameAr: 'ثريدز', color1: '#000000', color2: '#333333', bg: '#ffffff', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🧵' },
 
   // Business (15)
   { id: 16, cat: 'business', name: 'Corporate', nameAr: 'شركات', color1: '#2c3e50', color2: '#34495e', bg: '#ecf0f1', dots: 'square', corner: 'square', icon: '🏢' },
@@ -221,6 +238,7 @@ const templates: Template[] = [
 // الفئات
 const categories = [
   { id: 'all', name: 'All', nameAr: 'الكل' },
+  { id: 'gold', name: 'Gold ✨', nameAr: 'ذهبي ✨' },
   { id: 'social', name: 'Social', nameAr: 'سوشيال' },
   { id: 'business', name: 'Business', nameAr: 'أعمال' },
   { id: 'love', name: 'Love', nameAr: 'حب' },

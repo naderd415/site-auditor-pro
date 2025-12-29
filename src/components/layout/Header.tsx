@@ -134,43 +134,45 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-border animate-fade-in">
-            {/* Mobile Search */}
-            <form onSubmit={handleSearch} className="mb-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    onSearch?.(e.target.value);
-                  }}
-                  placeholder={t.hero.searchPlaceholder}
-                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
-                />
-                <Search className="absolute end-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              </div>
-            </form>
-
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    isActive(link.href)
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+        <div 
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            mobileMenuOpen ? 'max-h-96 opacity-100 mt-4 pt-4 border-t border-border' : 'max-h-0 opacity-0'
+          }`}
+        >
+          {/* Mobile Search */}
+          <form onSubmit={handleSearch} className="mb-4">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  onSearch?.(e.target.value);
+                }}
+                placeholder={t.hero.searchPlaceholder}
+                className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+              />
+              <Search className="absolute end-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             </div>
+          </form>
+
+          <div className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  isActive(link.href)
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-muted'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
-        )}
+        </div>
       </nav>
     </header>
   );
