@@ -882,6 +882,22 @@
   }
 }
 
+/* Christmas snowfall animation */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+.animate-snowfall {
+  animation: snowfall linear infinite;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

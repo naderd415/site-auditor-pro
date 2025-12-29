@@ -95,7 +95,7 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
             <div className="flex justify-center mt-3">
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground">
                 <Sparkles className="w-3 h-3 text-primary" />
-                <span>{isRTL ? 'بحث ذكي محلي - بدون إنترنت' : 'Local Smart Search - No Internet Required'}</span>
+                <span>{isRTL ? 'مدعوم بالذكاء الاصطناعي' : 'Powered by AI'}</span>
               </div>
             </div>
           </div>
