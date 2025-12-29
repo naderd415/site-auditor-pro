@@ -56,6 +56,7 @@ export interface SiteConfig {
   content: SiteContent;
   theme: 'light' | 'dark' | 'system';
   language: 'ar' | 'en' | 'fr';
+  christmasMode: boolean;
 }
 
 export const defaultConfig: SiteConfig = {
@@ -102,7 +103,8 @@ export const defaultConfig: SiteConfig = {
     termsContent: ''
   },
   theme: 'dark',
-  language: 'ar'
+  language: 'ar',
+  christmasMode: false
 };
 
 const CONFIG_KEY = 'bth_site_config';

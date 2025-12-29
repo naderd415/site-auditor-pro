@@ -300,6 +300,52 @@ export const qrCategories: QRCategory[] = [
       { id: 'events-20', name: 'Engagement', nameAr: 'خطوبة', primaryColor: '#FFD700', secondaryColor: '#FF69B4', gradient: true, category: 'events' },
     ]
   },
+  {
+    id: 'gold',
+    name: 'Gold ✨',
+    nameAr: 'ذهبي ✨',
+    icon: '✨',
+    templates: [
+      { id: 'gold-1', name: 'Pure Gold', nameAr: 'ذهب نقي', primaryColor: '#FFD700', pattern: 'classy', category: 'gold' },
+      { id: 'gold-2', name: 'Shiny Gold', nameAr: 'ذهب لامع', primaryColor: '#F4D03F', secondaryColor: '#D4AF37', gradient: true, pattern: 'classy-rounded', category: 'gold' },
+      { id: 'gold-3', name: 'Royal Gold', nameAr: 'ذهب ملكي', primaryColor: '#DAA520', secondaryColor: '#B8860B', gradient: true, pattern: 'extra-rounded', category: 'gold' },
+      { id: 'gold-4', name: 'Antique Gold', nameAr: 'ذهب عتيق', primaryColor: '#CFB53B', pattern: 'rounded', category: 'gold' },
+      { id: 'gold-5', name: 'Gold Rush', nameAr: 'حمى الذهب', primaryColor: '#FFD700', secondaryColor: '#FFA500', gradient: true, pattern: 'dots', category: 'gold' },
+      { id: 'gold-6', name: 'Champagne Gold', nameAr: 'ذهب شامبانيا', primaryColor: '#F7E7CE', secondaryColor: '#D4AF37', gradient: true, pattern: 'classy', category: 'gold' },
+      { id: 'gold-7', name: 'Rose Gold', nameAr: 'ذهب وردي', primaryColor: '#B76E79', secondaryColor: '#F4C2C2', gradient: true, pattern: 'extra-rounded', category: 'gold' },
+      { id: 'gold-8', name: 'White Gold', nameAr: 'ذهب أبيض', primaryColor: '#E8E4C9', secondaryColor: '#D4AF37', gradient: true, pattern: 'classy-rounded', category: 'gold' },
+      { id: 'gold-9', name: 'Dark Gold', nameAr: 'ذهب داكن', primaryColor: '#996515', secondaryColor: '#DAA520', gradient: true, pattern: 'squares', category: 'gold' },
+      { id: 'gold-10', name: 'Gold Sparkle', nameAr: 'ذهب متلألئ', primaryColor: '#FFD700', secondaryColor: '#FFFACD', gradient: true, pattern: 'star', category: 'gold' },
+      { id: 'gold-11', name: 'Sunset Gold', nameAr: 'ذهب غروب', primaryColor: '#FF8C00', secondaryColor: '#FFD700', gradient: true, pattern: 'diamond', category: 'gold' },
+      { id: 'gold-12', name: 'Bronze Gold', nameAr: 'ذهب برونزي', primaryColor: '#CD7F32', secondaryColor: '#DAA520', gradient: true, pattern: 'rounded', category: 'gold' },
+      { id: 'gold-13', name: 'Honey Gold', nameAr: 'ذهب عسلي', primaryColor: '#EB9605', secondaryColor: '#F4D03F', gradient: true, pattern: 'dots', category: 'gold' },
+      { id: 'gold-14', name: 'Premium Gold', nameAr: 'ذهب بريميوم', primaryColor: '#C5B358', secondaryColor: '#8B7500', gradient: true, pattern: 'classy', category: 'gold' },
+      { id: 'gold-15', name: 'Vintage Gold', nameAr: 'ذهب كلاسيكي', primaryColor: '#CFB53B', secondaryColor: '#996515', gradient: true, pattern: 'classy-rounded', category: 'gold' },
+    ]
+  },
+  {
+    id: '3d',
+    name: '3D Artistic',
+    nameAr: '3D فني',
+    icon: '🎨',
+    templates: [
+      { id: '3d-1', name: 'Ocean Wave', nameAr: 'موجة المحيط', primaryColor: '#0077B6', secondaryColor: '#00B4D8', gradient: true, pattern: 'extra-rounded', category: '3d' },
+      { id: '3d-2', name: 'Jungle Art', nameAr: 'فن الغابة', primaryColor: '#2D6A4F', secondaryColor: '#74C69D', gradient: true, pattern: 'dots', category: '3d' },
+      { id: '3d-3', name: 'Galaxy Night', nameAr: 'ليل المجرة', primaryColor: '#240046', secondaryColor: '#7B2CBF', gradient: true, pattern: 'star', category: '3d' },
+      { id: '3d-4', name: 'Sunset City', nameAr: 'غروب المدينة', primaryColor: '#FF6B35', secondaryColor: '#F7C59F', gradient: true, pattern: 'diamond', category: '3d' },
+      { id: '3d-5', name: 'Snow Village', nameAr: 'قرية ثلجية', primaryColor: '#2C3E50', secondaryColor: '#BDC3C7', gradient: true, pattern: 'classy-rounded', category: '3d' },
+      { id: '3d-6', name: 'Cherry Blossom', nameAr: 'زهر الكرز', primaryColor: '#FFB6C1', secondaryColor: '#8B4513', gradient: true, pattern: 'extra-rounded', category: '3d' },
+      { id: '3d-7', name: 'Neon City', nameAr: 'مدينة نيون', primaryColor: '#FF00FF', secondaryColor: '#00FFFF', gradient: true, pattern: 'squares', category: '3d' },
+      { id: '3d-8', name: 'Mountain Peak', nameAr: 'قمة الجبل', primaryColor: '#4A5568', secondaryColor: '#A0AEC0', gradient: true, pattern: 'diamond', category: '3d' },
+      { id: '3d-9', name: 'Desert Oasis', nameAr: 'واحة الصحراء', primaryColor: '#C19A6B', secondaryColor: '#228B22', gradient: true, pattern: 'dots', category: '3d' },
+      { id: '3d-10', name: 'Aurora Lights', nameAr: 'أضواء الشفق', primaryColor: '#00FF7F', secondaryColor: '#8A2BE2', gradient: true, pattern: 'star', category: '3d' },
+      { id: '3d-11', name: 'Tiger Art', nameAr: 'فن النمر', primaryColor: '#FF8C00', secondaryColor: '#000000', gradient: true, pattern: 'diamond', category: '3d' },
+      { id: '3d-12', name: 'Temple Style', nameAr: 'طراز المعبد', primaryColor: '#8B0000', secondaryColor: '#DAA520', gradient: true, pattern: 'classy', category: '3d' },
+      { id: '3d-13', name: 'Space Station', nameAr: 'محطة فضائية', primaryColor: '#1A1A2E', secondaryColor: '#00D4FF', gradient: true, pattern: 'squares', category: '3d' },
+      { id: '3d-14', name: 'Garden Art', nameAr: 'فن الحديقة', primaryColor: '#228B22', secondaryColor: '#FFD700', gradient: true, pattern: 'extra-rounded', category: '3d' },
+      { id: '3d-15', name: 'Crystal Glass', nameAr: 'زجاج كريستال', primaryColor: '#E0FFFF', secondaryColor: '#87CEEB', gradient: true, pattern: 'classy-rounded', category: '3d' },
+    ]
+  },
 ];
 
 // Get all templates flattened
