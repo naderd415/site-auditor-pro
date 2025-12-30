@@ -1021,7 +1021,7 @@ const Admin = () => {
                     />
                   </div>
                   <div>
-                    <Label>{isRTL ? 'رابط اللوجو' : 'Logo URL'}</Label>
+                    <Label>{isRTL ? 'رابط اللوجو أو رفع صورة' : 'Logo URL or Upload Image'}</Label>
                     <Input
                       className="mt-2"
                       value={config.siteIdentity.logoUrl}
@@ -1031,12 +1031,40 @@ const Admin = () => {
                       }))}
                       placeholder="https://..."
                     />
+                    <div className="mt-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        id="logo-upload"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              setConfig(prev => ({
+                                ...prev,
+                                siteIdentity: { ...prev.siteIdentity, logoUrl: reader.result as string }
+                              }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <label 
+                        htmlFor="logo-upload"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg cursor-pointer transition-colors text-sm"
+                      >
+                        <Image className="w-4 h-4" />
+                        {isRTL ? 'رفع صورة' : 'Upload Image'}
+                      </label>
+                    </div>
                     {config.siteIdentity.logoUrl && (
                       <div className="mt-2 p-4 bg-muted rounded-lg">
                         <img 
                           src={config.siteIdentity.logoUrl} 
                           alt="Logo Preview" 
-                          className="max-h-12 object-contain"
+                          className="max-h-16 object-contain"
                           onError={(e) => (e.currentTarget.style.display = 'none')}
                         />
                       </div>
