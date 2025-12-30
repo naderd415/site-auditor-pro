@@ -1077,26 +1077,67 @@ startxref
         : 'QR Code Generator at BestToolsHub is a free tool that helps you create QR codes quickly and professionally. Whether you want to put it on a business card, printed ad, restaurant menu, or social media link. You can customize colors, design, and add a logo in the center.'
       }
     >
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <h1 className="text-2xl font-bold mb-6 flex items-center gap-3">
-            <span className="text-2xl">📱</span>
-            {isRTL ? 'مولد QR Code الاحترافي' : 'Professional QR Code Generator'}
-          </h1>
-          
-          {/* QR Preview - في نفس الكارد */}
-          <div className="flex justify-center mb-6">
-            <div 
-              ref={qrRef}
-              className="bg-white p-4 rounded-xl shadow-sm"
-              style={{ 
-                backgroundColor: qrState.transparentBg ? 'transparent' : qrState.bg,
-                backgroundImage: qrState.transparentBg ? 'repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 16px 16px' : 'none'
-              }}
-            />
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Side - QR Preview */}
+          <div className="bg-card border border-border rounded-2xl p-6 sticky top-24">
+            <h1 className="text-xl font-bold mb-4 flex items-center gap-3">
+              <span className="text-2xl">📱</span>
+              {isRTL ? 'معاينة QR Code' : 'QR Code Preview'}
+            </h1>
+            
+            {/* QR Preview */}
+            <div className="flex justify-center mb-6">
+              <div 
+                ref={qrRef}
+                className="bg-white p-4 rounded-xl shadow-sm"
+                style={{ 
+                  backgroundColor: qrState.transparentBg ? 'transparent' : qrState.bg,
+                  backgroundImage: qrState.transparentBg ? 'repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 16px 16px' : 'none'
+                }}
+              />
+            </div>
+            
+            {/* Download Buttons */}
+            <div className="flex flex-wrap gap-2 justify-center mb-4">
+              <Button onClick={() => downloadQR('png')} className="gap-2" size="sm">
+                <Download className="w-4 h-4" />
+                PNG
+              </Button>
+              <Button onClick={() => downloadQR('svg')} variant="outline" size="sm">
+                SVG
+              </Button>
+              <Button onClick={() => downloadQR('jpeg')} variant="outline" size="sm">
+                JPEG
+              </Button>
+              <Button onClick={() => downloadQR('webp')} variant="outline" size="sm">
+                WEBP
+              </Button>
+              <Button onClick={() => downloadQR('pdf')} variant="secondary" size="sm">
+                PDF
+              </Button>
+            </div>
+            
+            {/* Quality Slider */}
+            <div className="flex items-center justify-center gap-2 bg-muted px-4 py-2 rounded-lg">
+              <span className="text-xs">{isRTL ? 'الجودة:' : 'Quality:'}</span>
+              <Slider
+                value={[quality]}
+                onValueChange={([v]) => setQuality(v)}
+                min={300}
+                max={2000}
+                step={100}
+                className="w-32"
+              />
+              <span className="text-xs font-mono w-14">{quality}px</span>
+            </div>
           </div>
           
-          {/* Download Buttons */}
+          {/* Right Side - All Settings */}
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h2 className="text-xl font-bold mb-4">
+              {isRTL ? 'إعدادات التخصيص' : 'Customization Settings'}
+            </h2>
           <div className="flex flex-wrap gap-2 justify-center mb-6">
             <Button onClick={() => downloadQR('png')} className="gap-2" size="sm">
               <Download className="w-4 h-4" />

@@ -51,10 +51,12 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Layers className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-xl text-foreground">
+            <img 
+              src="/assets/logo.png" 
+              alt="BestToolsHub" 
+              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+            />
+            <span className="font-bold text-xl text-foreground hidden sm:block">
               Best<span className="text-primary">Tools</span>Hub
             </span>
           </Link>
@@ -70,6 +72,26 @@ export function Header({ onSearch }: HeaderProps) {
                 {link.label}
               </Link>
             ))}
+          </div>
+
+          {/* Mobile Navigation - Direct Links */}
+          <div className="flex md:hidden items-center gap-2">
+            <Link
+              to="/"
+              className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                isActive('/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t.nav.home}
+            </Link>
+            <Link
+              to="/tools"
+              className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                isActive('/tools') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t.nav.tools}
+            </Link>
           </div>
 
           {/* Search & Controls */}
@@ -121,58 +143,10 @@ export function Header({ onSearch }: HeaderProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Mobile Menu Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden text-muted-foreground"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
+            {/* Mobile Menu Toggle - Hidden since we have direct links */}
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <div 
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            mobileMenuOpen ? 'max-h-96 opacity-100 mt-4 pt-4 border-t border-border' : 'max-h-0 opacity-0'
-          }`}
-        >
-          {/* Mobile Search */}
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  onSearch?.(e.target.value);
-                }}
-                placeholder={t.hero.searchPlaceholder}
-                className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
-              />
-              <Search className="absolute end-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-          </form>
-
-          <div className="flex flex-col gap-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  isActive(link.href)
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
       </nav>
     </header>
   );
