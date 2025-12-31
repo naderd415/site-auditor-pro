@@ -55,6 +55,8 @@ import WordToPDF from "./pages/tools/WordToPDF";
 import HTMLToPDF from "./pages/tools/HTMLToPDF";
 import ExcelToPDF from "./pages/tools/ExcelToPDF";
 import PDFToExcel from "./pages/tools/PDFToExcel";
+import WebsiteSpeedTest from "./pages/tools/WebsiteSpeedTest";
+import BrokenLinksChecker from "./pages/tools/BrokenLinksChecker";
 import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
@@ -130,6 +132,10 @@ const App = () => (
               {/* QR Tools */}
               <Route path="/tools/qr-generator" element={<QRGenerator />} />
               <Route path="/tools/qr-scanner" element={<QRScanner />} />
+              
+              {/* SEO Tools */}
+              <Route path="/tools/website-speed-test" element={<WebsiteSpeedTest />} />
+              <Route path="/tools/broken-links-checker" element={<BrokenLinksChecker />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
