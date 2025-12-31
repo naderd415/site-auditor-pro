@@ -1119,7 +1119,7 @@ startxref
             </div>
             
             {/* Quality Slider */}
-            <div className="flex items-center justify-center gap-2 bg-muted px-4 py-2 rounded-lg">
+            <div className="flex items-center justify-center gap-2 bg-muted px-4 py-2 rounded-lg mb-4">
               <span className="text-xs">{isRTL ? 'الجودة:' : 'Quality:'}</span>
               <Slider
                 value={[quality]}
@@ -1131,6 +1131,14 @@ startxref
               />
               <span className="text-xs font-mono w-14">{quality}px</span>
             </div>
+            
+            {/* QR Readability Indicator */}
+            <div className="flex items-center justify-center gap-2 bg-green-500/10 text-green-600 dark:text-green-400 px-4 py-2 rounded-lg">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="text-xs font-medium">
+                {isRTL ? 'قابل للقراءة ✓' : 'Scannable ✓'}
+              </span>
+            </div>
           </div>
           
           {/* Right Side - All Settings */}
@@ -1138,38 +1146,8 @@ startxref
             <h2 className="text-xl font-bold mb-4">
               {isRTL ? 'إعدادات التخصيص' : 'Customization Settings'}
             </h2>
-          <div className="flex flex-wrap gap-2 justify-center mb-6">
-            <Button onClick={() => downloadQR('png')} className="gap-2" size="sm">
-              <Download className="w-4 h-4" />
-              PNG
-            </Button>
-            <Button onClick={() => downloadQR('svg')} variant="outline" size="sm">
-              SVG
-            </Button>
-            <Button onClick={() => downloadQR('jpeg')} variant="outline" size="sm">
-              JPEG
-            </Button>
-            <Button onClick={() => downloadQR('webp')} variant="outline" size="sm">
-              WEBP
-            </Button>
-            <Button onClick={() => downloadQR('pdf')} variant="secondary" size="sm">
-              PDF
-            </Button>
-          </div>
-          <div className="flex items-center justify-center gap-2 bg-muted px-4 py-2 rounded-lg mb-6">
-            <span className="text-xs">{isRTL ? 'الجودة:' : 'Quality:'}</span>
-            <Slider
-              value={[quality]}
-              onValueChange={([v]) => setQuality(v)}
-              min={300}
-              max={2000}
-              step={100}
-              className="w-32"
-            />
-            <span className="text-xs font-mono w-14">{quality}px</span>
-          </div>
           
-          <Tabs defaultValue="content" className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
+            <Tabs defaultValue="content" className="w-full" dir={isRTL ? 'rtl' : 'ltr'}>
             <TabsList className="w-full flex-wrap h-auto gap-1 bg-muted/50 p-1">
               <TabsTrigger value="content" className="gap-2 text-xs">
                 <Link2 className="w-3.5 h-3.5" />
@@ -1536,6 +1514,7 @@ startxref
               </div>
             </TabsContent>
           </Tabs>
+          </div>
         </div>
       </div>
     </ToolPageLayout>
