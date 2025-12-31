@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/lib/i18n';
-import { Layers } from 'lucide-react';
+import { Layers, Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function Footer() {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
 
   const footerLinks = [
     { href: '/about', label: t.nav.about },
@@ -20,9 +21,14 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-border">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                <Layers className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img 
+                src="/assets/logo.png" 
+                alt="BestToolsHub" 
+                className="w-10 h-10 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
               <span className="font-bold text-xl text-foreground">
                 Best<span className="text-primary">Tools</span>Hub
               </span>
@@ -40,6 +46,46 @@ export function Footer() {
                 </Link>
               ))}
             </div>
+          </div>
+
+          {/* Language Toggle + GDPR */}
+          <div className="flex flex-wrap items-center justify-center gap-4 py-4 border-b border-border">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-muted-foreground" />
+              <div className="flex gap-1">
+                <Button
+                  variant={language === 'en' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setLanguage('en')}
+                  className="text-xs px-2 py-1 h-7"
+                >
+                  English
+                </Button>
+                <Button
+                  variant={language === 'ar' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setLanguage('ar')}
+                  className="text-xs px-2 py-1 h-7"
+                >
+                  عربي
+                </Button>
+                <Button
+                  variant={language === 'fr' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setLanguage('fr')}
+                  className="text-xs px-2 py-1 h-7"
+                >
+                  Français
+                </Button>
+              </div>
+            </div>
+            <span className="text-muted-foreground">|</span>
+            <Link 
+              to="/privacy" 
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              GDPR Privacy Policy
+            </Link>
           </div>
 
           {/* Bottom Section */}

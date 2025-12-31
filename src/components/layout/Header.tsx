@@ -55,8 +55,12 @@ export function Header({ onSearch }: HeaderProps) {
               src="/assets/logo.png" 
               alt="BestToolsHub" 
               className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+              onError={(e) => {
+                // Fallback to text logo if image fails
+                e.currentTarget.style.display = 'none';
+              }}
             />
-            <span className="font-bold text-xl text-foreground hidden sm:block">
+            <span className="font-bold text-xl text-foreground">
               Best<span className="text-primary">Tools</span>Hub
             </span>
           </Link>
