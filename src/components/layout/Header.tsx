@@ -50,17 +50,16 @@ export function Header({ onSearch }: HeaderProps) {
       <nav className="glass-card mx-4 mt-4 rounded-2xl border-none px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex flex-col items-center group">
             <img 
               src="/assets/logo.png" 
               alt="BestToolsHub" 
-              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+              className="w-12 h-12 object-contain group-hover:scale-105 transition-transform"
               onError={(e) => {
-                // Fallback to text logo if image fails
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <span className="font-bold text-xl text-foreground">
+            <span className="font-bold text-sm text-foreground mt-1">
               Best<span className="text-primary">Tools</span>Hub
             </span>
           </Link>

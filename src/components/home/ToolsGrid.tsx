@@ -36,6 +36,8 @@ import {
   Hash,
   FileCode,
   FileOutput,
+  Gauge,
+  Link,
 } from 'lucide-react';
 
 // All tools data
@@ -86,6 +88,10 @@ export const allTools: Tool[] = [
   // QR Tools
   { id: 'qr-generator', nameKey: 'tools.qrGenerator.name', descriptionKey: 'tools.qrGenerator.description', icon: QrCode, category: 'qr', href: '/tools/qr-generator', color: 'yellow' },
   { id: 'qr-scanner', nameKey: 'tools.qrScanner.name', descriptionKey: 'tools.qrScanner.description', icon: ScanLine, category: 'qr', href: '/tools/qr-scanner', color: 'yellow' },
+  
+  // SEO Tools (in QR category for now)
+  { id: 'website-speed-test', nameKey: 'tools.qrGenerator.name', descriptionKey: 'tools.qrGenerator.description', icon: Gauge, category: 'qr', href: '/tools/website-speed-test', color: 'cyan' },
+  { id: 'broken-links-checker', nameKey: 'tools.qrScanner.name', descriptionKey: 'tools.qrScanner.description', icon: Link, category: 'qr', href: '/tools/broken-links-checker', color: 'cyan' },
 ];
 
 interface ToolsGridProps {
