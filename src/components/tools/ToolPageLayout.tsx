@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AdSpace } from '@/components/home/AdSpace';
+import { AdsterraBanner } from '@/components/AdsterraBanner';
+import { FAQ } from '@/components/FAQ';
 import { useLanguage } from '@/lib/i18n';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -153,6 +155,13 @@ export function ToolPageLayout({ title, description, article, keywords, children
             </div>
           </section>
 
+          {/* Adsterra Banner - After Tool Output */}
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <AdsterraBanner />
+            </div>
+          </div>
+
           <div className="container mx-auto px-4 my-8">
             <AdSpace type="horizontal" />
           </div>
@@ -178,6 +187,9 @@ export function ToolPageLayout({ title, description, article, keywords, children
           <div className="container mx-auto px-4 my-8">
             <AdSpace type="horizontal" />
           </div>
+
+          {/* FAQ Section */}
+          <FAQ />
         </main>
 
         <Footer />

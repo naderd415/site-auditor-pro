@@ -1,5 +1,5 @@
 # Best Tools Hub - Robots.txt
-# Optimized for Search Engine Crawlers
+# Optimized for Search Engine & AI Crawlers
 
 # Google Bots
 User-agent: Googlebot
@@ -12,12 +12,37 @@ Allow: /
 User-agent: Googlebot-Mobile
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
 # Bing Bots
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
 User-agent: msnbot
+Allow: /
+
+# AI Search Crawlers (ChatGPT, Perplexity, etc.)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Bytespider
 Allow: /
 
 # Social Media Bots
@@ -57,5 +82,5 @@ Crawl-delay: 2
 # Sitemap Location
 Sitemap: https://besttoolshub.online/sitemap.xml
 
-# Disallow admin pages
+# Disallow admin pages only
 Disallow: /admin

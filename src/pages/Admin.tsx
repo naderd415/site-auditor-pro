@@ -323,16 +323,18 @@ const Admin = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-background flex">
+      <div className="min-h-screen bg-background flex w-full">
         {/* Sidebar */}
-        <aside className={`fixed lg:static inset-y-0 start-0 z-50 transition-transform duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-20'
-        } ${sidebarOpen ? 'w-64' : 'w-0 lg:w-20'}`}>
-          <div className="h-full glass-card rounded-none lg:rounded-e-2xl border-e border-border flex flex-col">
+        <aside className={`fixed lg:static inset-y-0 start-0 z-50 transition-all duration-300 ease-in-out ${
+          sidebarOpen 
+            ? 'translate-x-0 w-64' 
+            : '-translate-x-full lg:translate-x-0 lg:w-20'
+        }`}>
+          <div className="h-full w-full glass-card rounded-none lg:rounded-e-2xl border-e border-border flex flex-col">
             {/* Sidebar Header */}
-            <div className="p-4 border-b border-border flex items-center justify-between">
+            <div className="p-4 border-b border-border flex items-center justify-between min-h-[64px]">
               {sidebarOpen && (
-                <h1 className="font-bold text-xl text-foreground">
+                <h1 className="font-bold text-xl text-foreground whitespace-nowrap">
                   {isRTL ? 'لوحة التحكم' : 'Admin'}
                 </h1>
               )}
@@ -340,19 +342,25 @@ const Admin = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="text-muted-foreground"
+                className="text-muted-foreground flex-shrink-0"
               >
                 {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-2">
+            <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
               {sidebarItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth < 1024) {
+                      setSidebarOpen(false);
+                    }
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                     activeTab === item.id
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -360,20 +368,21 @@ const Admin = () => {
                 >
                   <item.icon className="w-5 h-5 flex-shrink-0" />
                   {sidebarOpen && (
-                    <span className="font-medium">{isRTL ? item.labelAr : item.label}</span>
+                    <span className="font-medium text-sm whitespace-nowrap">{isRTL ? item.labelAr : item.label}</span>
                   )}
                 </button>
               ))}
             </nav>
 
             {/* Sidebar Footer */}
-            <div className="p-4 border-t border-border">
+            <div className="p-3 border-t border-border">
               <Button
                 variant="destructive"
+                size="sm"
                 onClick={handleLogout}
-                className={`w-full ${sidebarOpen ? '' : 'px-0'}`}
+                className={`w-full ${sidebarOpen ? '' : 'px-0 justify-center'}`}
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
                 {sidebarOpen && <span className="ms-2">{isRTL ? 'خروج' : 'Logout'}</span>}
               </Button>
             </div>
@@ -389,7 +398,7 @@ const Admin = () => {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-8 overflow-auto">
+        <main className="flex-1 min-w-0 p-4 lg:p-6 overflow-auto">
           {/* Mobile Header */}
           <div className="lg:hidden flex items-center justify-between mb-6">
             <Button

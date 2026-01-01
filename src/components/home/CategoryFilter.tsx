@@ -1,5 +1,5 @@
 import { useLanguage } from '@/lib/i18n';
-import { Image, FileText, Type, Palette, Calculator, QrCode, LayoutGrid } from 'lucide-react';
+import { Image, FileText, Type, Palette, Calculator, QrCode, LayoutGrid, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CategoryFilterProps {
@@ -15,6 +15,7 @@ const categories = [
   { id: 'color', icon: Palette, labelKey: 'categories.color' },
   { id: 'calculator', icon: Calculator, labelKey: 'categories.calculator' },
   { id: 'qr', icon: QrCode, labelKey: 'categories.qr' },
+  { id: 'seo', icon: Search, labelKey: 'categories.seo' },
 ];
 
 export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
