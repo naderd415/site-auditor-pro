@@ -680,6 +680,18 @@
     box-shadow: 0 0 50px hsl(55 100% 55% / 0.45), 0 0 100px hsl(55 100% 50% / 0.25), 0 15px 40px hsl(220 30% 2% / 0.4);
   }
 
+  /* Blue category card (SEO) */
+  .category-card-blue {
+    border: 1px solid hsl(210 100% 55% / 0.25);
+  }
+  .category-card-blue:hover {
+    border-color: hsl(210 100% 55% / 0.6);
+    box-shadow: 0 0 40px hsl(210 100% 60% / 0.3), 0 0 80px hsl(210 100% 55% / 0.15), 0 8px 25px hsl(220 30% 6% / 0.15);
+  }
+  .dark .category-card-blue:hover {
+    box-shadow: 0 0 50px hsl(210 100% 60% / 0.4), 0 0 100px hsl(210 100% 55% / 0.2), 0 15px 40px hsl(220 30% 2% / 0.4);
+  }
+
   /* Tool item with mini stars effect */
   .tool-item {
     position: relative;

@@ -1,73 +1,377 @@
-# Welcome to your Lovable project
+# BestToolsHub - Free Online Tools Platform
 
-## Project info
+A comprehensive suite of browser-based tools for image editing, PDF manipulation, text processing, color utilities, calculators, QR codes, and SEO diagnostics. All processing happens client-side for maximum privacy and speed.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🌐 Live Site
+**URL**: [https://besttoolshub.online](https://besttoolshub.online)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+| Technology | Purpose |
+|------------|---------|
+| **Vite** | Build tool & dev server |
+| **React 18** | UI framework |
+| **TypeScript** | Type safety |
+| **Tailwind CSS** | Utility-first styling |
+| **shadcn/ui** | Component library |
+| **React Router** | Client-side routing |
+| **Lovable Cloud** | Backend (Edge Functions, Storage) |
+| **React Helmet** | SEO meta management |
+| **Lucide React** | Icon library |
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📁 Project Structure
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+├── public/
+│   ├── assets/           # Static assets (logos, favicons)
+│   ├── manifest.json     # PWA manifest
+│   ├── robots.txt        # SEO & AI crawler rules
+│   ├── sitemap.xml       # XML sitemap
+│   └── sw.js             # Service Worker for PWA
+│
+├── src/
+│   ├── components/
+│   │   ├── home/         # Homepage components
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── ToolsGrid.tsx
+│   │   │   ├── CategoryFilter.tsx
+│   │   │   ├── ToolCard.tsx
+│   │   │   └── AdSpace.tsx
+│   │   │
+│   │   ├── layout/       # Layout components
+│   │   │   ├── Header.tsx
+│   │   │   └── Footer.tsx
+│   │   │
+│   │   ├── tools/        # Tool-specific components
+│   │   │   └── ToolPageLayout.tsx  # Shared tool page wrapper
+│   │   │
+│   │   ├── ui/           # shadcn/ui components
+│   │   │
+│   │   ├── AdsterraBanner.tsx  # Ad integration
+│   │   ├── FAQ.tsx             # FAQ accordion
+│   │   └── NavLink.tsx         # Active nav link
+│   │
+│   ├── hooks/
+│   │   ├── use-mobile.tsx
+│   │   ├── use-toast.ts
+│   │   ├── useScrollDirection.ts
+│   │   └── useVisitorTracking.ts
+│   │
+│   ├── lib/
+│   │   ├── i18n/              # Internationalization
+│   │   │   ├── index.ts
+│   │   │   ├── translations.ts  # EN/AR/FR translations
+│   │   │   └── LanguageContext.tsx
+│   │   │
+│   │   ├── qr/                # QR code templates
+│   │   │   └── templates.ts
+│   │   │
+│   │   ├── seo/               # SEO configurations
+│   │   │   └── toolsSEO.ts
+│   │   │
+│   │   ├── siteConfig.ts      # Site configuration
+│   │   └── utils.ts           # Utility functions
+│   │
+│   ├── pages/
+│   │   ├── Index.tsx          # Homepage
+│   │   ├── Tools.tsx          # Tools listing
+│   │   ├── Admin.tsx          # Admin dashboard
+│   │   ├── About.tsx
+│   │   ├── Contact.tsx
+│   │   ├── Privacy.tsx
+│   │   ├── Terms.tsx
+│   │   ├── NotFound.tsx
+│   │   │
+│   │   └── tools/             # Individual tool pages
+│   │       ├── ImageCompressor.tsx
+│   │       ├── ImageConverter.tsx
+│   │       ├── PDFMerge.tsx
+│   │       ├── QRGenerator.tsx
+│   │       ├── WebsiteSpeedTest.tsx
+│   │       ├── BrokenLinksChecker.tsx
+│   │       └── ... (40+ tools)
+│   │
+│   ├── integrations/
+│   │   └── supabase/
+│   │       ├── client.ts      # Auto-generated Supabase client
+│   │       └── types.ts       # Auto-generated types
+│   │
+│   ├── App.tsx                # Main app with routing
+│   ├── main.tsx               # Entry point
+│   └── index.css              # Global styles & design tokens
+│
+├── supabase/
+│   └── config.toml            # Supabase configuration
+│
+├── vercel.json                # Vercel deployment config
+├── netlify.toml               # Netlify deployment config
+└── vite.config.ts             # Vite configuration
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🧭 Routing Logic
 
-**Use GitHub Codespaces**
+Routes are defined in `src/App.tsx` using React Router v6:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```tsx
+<Routes>
+  {/* Main Pages */}
+  <Route path="/" element={<Index />} />
+  <Route path="/tools" element={<Tools />} />
+  <Route path="/about" element={<About />} />
+  <Route path="/contact" element={<Contact />} />
+  <Route path="/privacy" element={<Privacy />} />
+  <Route path="/terms" element={<Terms />} />
+  <Route path="/admin" element={<Admin />} />
 
-## What technologies are used for this project?
+  {/* Tool Pages - Pattern: /tools/[tool-name] */}
+  <Route path="/tools/image-compressor" element={<ImageCompressor />} />
+  <Route path="/tools/qr-generator" element={<QRGenerator />} />
+  {/* ... 40+ tool routes */}
 
-This project is built with:
+  {/* 404 Fallback */}
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## ➕ How to Add a New Tool
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Step 1: Create the Tool Page
 
-## Can I connect a custom domain to my Lovable project?
+Create a new file in `src/pages/tools/`:
 
-Yes, you can!
+```tsx
+// src/pages/tools/MyNewTool.tsx
+import { ToolPageLayout } from '@/components/tools/ToolPageLayout';
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+const MyNewTool = () => {
+  return (
+    <ToolPageLayout
+      title="My New Tool AI"
+      description="A helpful tool that does X, Y, Z"
+      article="Detailed article about the tool for SEO..."
+      keywords="tool, keyword1, keyword2"
+    >
+      {/* Your tool UI here */}
+    </ToolPageLayout>
+  );
+};
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+export default MyNewTool;
+```
+
+### Step 2: Add Route in App.tsx
+
+```tsx
+import MyNewTool from './pages/tools/MyNewTool';
+
+// Inside Routes:
+<Route path="/tools/my-new-tool" element={<MyNewTool />} />
+```
+
+### Step 3: Add to ToolsGrid
+
+In `src/components/home/ToolsGrid.tsx`, add to `allTools` array:
+
+```tsx
+{
+  id: 'my-new-tool',
+  nameKey: 'tools.myNewTool.name',
+  descriptionKey: 'tools.myNewTool.description',
+  category: 'image', // or 'pdf', 'text', 'color', 'calculator', 'qr', 'seo'
+  href: '/tools/my-new-tool',
+}
+```
+
+### Step 4: Add Translations
+
+In `src/lib/i18n/translations.ts`, add for each language:
+
+```tsx
+myNewTool: {
+  name: 'My New Tool AI',
+  description: 'Description of what it does',
+}
+```
+
+---
+
+## ➕ How to Add a New Category
+
+### Step 1: Update Translations
+
+In `src/lib/i18n/translations.ts`:
+
+```tsx
+categories: {
+  // ... existing
+  newCategory: 'New Category',
+}
+```
+
+### Step 2: Update CategoryFilter
+
+In `src/components/home/CategoryFilter.tsx`:
+
+```tsx
+import { NewIcon } from 'lucide-react';
+
+const categories = [
+  // ... existing
+  { id: 'newCategory', icon: NewIcon, labelKey: 'categories.newCategory' },
+];
+```
+
+### Step 3: Update Index Page
+
+In `src/pages/Index.tsx`, add to categories array:
+
+```tsx
+{
+  id: 'newCategory',
+  name: t.categories.newCategory,
+  icon: NewIcon,
+  colorClass: 'category-card-newcolor',
+  textColor: 'text-[hsl(xxx,xx%,xx%)]',
+  darkTextColor: 'dark:text-[hsl(xxx,xx%,xx%)]'
+}
+```
+
+### Step 4: Update ToolCard Types
+
+In `src/components/home/ToolCard.tsx`:
+
+```tsx
+category: 'image' | 'pdf' | 'text' | 'color' | 'calculator' | 'qr' | 'seo' | 'newCategory';
+```
+
+---
+
+## 🌍 Internationalization (i18n)
+
+The app supports **English**, **Arabic**, and **French**.
+
+- Translations are in `src/lib/i18n/translations.ts`
+- Language context is provided by `src/lib/i18n/LanguageContext.tsx`
+- RTL support is automatic for Arabic
+
+Usage:
+```tsx
+const { t, isRTL, language, setLanguage } = useLanguage();
+```
+
+---
+
+## 🔐 Environment Variables
+
+These are auto-managed by Lovable Cloud:
+
+```env
+VITE_SUPABASE_URL=<auto>
+VITE_SUPABASE_PUBLISHABLE_KEY=<auto>
+VITE_SUPABASE_PROJECT_ID=<auto>
+```
+
+**Do NOT edit `.env` manually.**
+
+---
+
+## 📦 Deployment
+
+### Vercel
+- `vercel.json` handles SPA routing with rewrites
+- Push to main branch auto-deploys
+
+### Netlify
+- `netlify.toml` configures redirects
+- Push to main branch auto-deploys
+
+---
+
+## 🎨 Design System
+
+Colors are defined as CSS variables in `src/index.css`:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 180 100% 50%;
+  /* ... */
+}
+```
+
+Use semantic classes, not raw colors:
+- ✅ `bg-background`, `text-foreground`, `border-border`
+- ❌ `bg-white`, `text-black`
+
+---
+
+## 🔍 SEO Features
+
+- **JSON-LD Schema** on every tool page (WebApplication + BreadcrumbList)
+- **Open Graph & Twitter Cards** for social sharing
+- **Canonical URLs** to prevent duplicates
+- **robots.txt** with AI crawler support (GPTBot, CCBot, PerplexityBot)
+- **sitemap.xml** for search engine indexing
+- **PWA manifest** for mobile installation
+
+---
+
+## 🧪 Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+---
+
+## 📝 Admin Dashboard
+
+Access: `/admin`
+Password: Stored in `siteConfig.adminPass` (localStorage)
+
+Features:
+- Site identity management (logo, name)
+- Content editing (Hero, About, Contact)
+- SEO metadata configuration
+- Ad slot management
+- Analytics overview
+- Theme settings
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Follow existing patterns for new tools
+3. Ensure translations are added for all 3 languages
+4. Test on mobile and desktop
+5. Submit PR with clear description
+
+---
+
+## 📄 License
+
+This project is proprietary. All rights reserved.
+
+---
+
+**Built with ❤️ using Lovable**

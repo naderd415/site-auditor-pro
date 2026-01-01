@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/home/HeroSection';
 import { AdSpace } from '@/components/home/AdSpace';
+import { FAQ } from '@/components/FAQ';
 import { useLanguage } from '@/lib/i18n';
 import { allTools } from '@/components/home/ToolsGrid';
 import { 
@@ -12,7 +13,8 @@ import {
   Type, 
   Palette, 
   Calculator, 
-  QrCode
+  QrCode,
+  Search
 } from 'lucide-react';
 
 const Index = () => {
@@ -92,6 +94,14 @@ const Index = () => {
       colorClass: 'category-card-yellow',
       textColor: 'text-[hsl(45,90%,40%)]',
       darkTextColor: 'dark:text-[hsl(55,100%,55%)]'
+    },
+    { 
+      id: 'seo', 
+      name: t.categories.seo, 
+      icon: Search,
+      colorClass: 'category-card-blue',
+      textColor: 'text-[hsl(210,90%,50%)]',
+      darkTextColor: 'dark:text-[hsl(210,100%,65%)]'
     },
   ];
 
@@ -214,6 +224,9 @@ const Index = () => {
         <div className="container mx-auto px-4 my-12">
           <AdSpace type="horizontal" />
         </div>
+
+        {/* FAQ Section */}
+        <FAQ />
       </main>
 
       <Footer />
