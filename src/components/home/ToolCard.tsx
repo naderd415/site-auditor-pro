@@ -7,7 +7,7 @@ export interface Tool {
   nameKey: string;
   descriptionKey: string;
   icon: LucideIcon;
-  category: 'image' | 'pdf' | 'text' | 'color' | 'calculator' | 'qr';
+  category: 'image' | 'pdf' | 'text' | 'color' | 'calculator' | 'qr' | 'seo';
   href: string;
   color: 'cyan' | 'purple' | 'green' | 'pink' | 'orange' | 'yellow';
 }

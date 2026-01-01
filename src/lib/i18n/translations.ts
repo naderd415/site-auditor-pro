@@ -26,6 +26,7 @@ export interface Translation {
     color: string;
     calculator: string;
     qr: string;
+    seo: string;
   };
   // Common
   common: {
@@ -232,6 +233,16 @@ export interface Translation {
       description: string;
       article: string;
     };
+    websiteSpeedTest: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    brokenLinksChecker: {
+      name: string;
+      description: string;
+      article: string;
+    };
   };
   // Footer
   footer: {
@@ -281,6 +292,7 @@ export const translations: Record<Language, Translation> = {
       color: 'أدوات الألوان',
       calculator: 'الآلات الحاسبة',
       qr: 'أدوات QR',
+      seo: 'أدوات SEO',
     },
     common: {
       download: 'تحميل',
@@ -476,14 +488,24 @@ export const translations: Record<Language, Translation> = {
         article: 'حاسبة الإكرامية تساعدك على حساب الإكرامية المناسبة وتقسيم الفاتورة بين عدة أشخاص بسهولة.',
       },
       qrGenerator: {
-        name: 'مولد QR',
-        description: 'أنشئ رموز QR لروابطك ونصوصك',
+        name: 'مولد QR AI',
+        description: 'أنشئ رموز QR لروابطك ونصوصك - مدعوم بالذكاء الاصطناعي',
         article: 'مولد رموز QR يتيح لك إنشاء رموز QR لأي رابط أو نص. خصص الألوان والحجم وحمل الصورة بجودة عالية.',
       },
       qrScanner: {
-        name: 'ماسح QR',
-        description: 'امسح رموز QR من الصور',
+        name: 'ماسح QR AI',
+        description: 'امسح رموز QR من الصور - مدعوم بالذكاء الاصطناعي',
         article: 'ماسح رموز QR يقرأ رموز QR من الصور المرفوعة ويستخرج المحتوى. ارفع صورة واحصل على الرابط أو النص.',
+      },
+      websiteSpeedTest: {
+        name: 'اختبار سرعة الموقع AI',
+        description: 'تحقق من أداء وسرعة موقعك - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة اختبار سرعة الموقع تستخدم Google PageSpeed API لتحليل أداء موقعك وتقديم توصيات لتحسين السرعة وتجربة المستخدم.',
+      },
+      brokenLinksChecker: {
+        name: 'فاحص الروابط المكسورة AI',
+        description: 'اكتشف الروابط المعطلة في موقعك - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة فحص الروابط المكسورة تفحص موقعك وتكتشف جميع الروابط التي لا تعمل. حافظ على جودة SEO لموقعك.',
       },
     },
     footer: {
@@ -528,6 +550,7 @@ export const translations: Record<Language, Translation> = {
       color: 'Color Tools',
       calculator: 'Calculators',
       qr: 'QR Tools',
+      seo: 'SEO Tools',
     },
     common: {
       download: 'Download',
@@ -723,14 +746,24 @@ export const translations: Record<Language, Translation> = {
         article: 'The tip calculator helps you calculate the appropriate tip and split the bill between multiple people easily.',
       },
       qrGenerator: {
-        name: 'QR Generator',
-        description: 'Create QR codes for your links and text',
+        name: 'QR Generator AI',
+        description: 'Create QR codes for your links and text - AI Powered',
         article: 'The QR code generator allows you to create QR codes for any link or text. Customize colors and size and download in high quality.',
       },
       qrScanner: {
-        name: 'QR Scanner',
-        description: 'Scan QR codes from images',
+        name: 'QR Scanner AI',
+        description: 'Scan QR codes from images - AI Powered',
         article: 'The QR code scanner reads QR codes from uploaded images and extracts the content. Upload an image and get the link or text.',
+      },
+      websiteSpeedTest: {
+        name: 'Website Speed Test AI',
+        description: 'Check your website performance and speed - AI Powered',
+        article: 'The Website Speed Test tool uses Google PageSpeed API to analyze your site performance and provide recommendations to improve speed and user experience.',
+      },
+      brokenLinksChecker: {
+        name: 'Broken Links Checker AI',
+        description: 'Discover broken links on your website - AI Powered',
+        article: 'The Broken Links Checker scans your website and discovers all non-working links. Maintain your site SEO quality.',
       },
     },
     footer: {
@@ -775,6 +808,7 @@ export const translations: Record<Language, Translation> = {
       color: 'Outils de couleur',
       calculator: 'Calculatrices',
       qr: 'Outils QR',
+      seo: 'Outils SEO',
     },
     common: {
       download: 'Télécharger',
@@ -970,14 +1004,24 @@ export const translations: Record<Language, Translation> = {
         article: 'Le calculateur de pourboire vous aide à calculer le pourboire approprié et à diviser l\'addition.',
       },
       qrGenerator: {
-        name: 'Générateur QR',
-        description: 'Créez des codes QR pour vos liens et textes',
+        name: 'Générateur QR AI',
+        description: 'Créez des codes QR pour vos liens et textes - Propulsé par IA',
         article: 'Le générateur de codes QR vous permet de créer des codes QR pour n\'importe quel lien ou texte.',
       },
       qrScanner: {
-        name: 'Scanner QR',
-        description: 'Scannez les codes QR à partir d\'images',
+        name: 'Scanner QR AI',
+        description: 'Scannez les codes QR à partir d\'images - Propulsé par IA',
         article: 'Le scanner de codes QR lit les codes QR à partir d\'images téléchargées et extrait le contenu.',
+      },
+      websiteSpeedTest: {
+        name: 'Test de Vitesse Web AI',
+        description: 'Vérifiez les performances et la vitesse de votre site - Propulsé par IA',
+        article: 'L\'outil de test de vitesse utilise Google PageSpeed API pour analyser les performances de votre site et fournir des recommandations.',
+      },
+      brokenLinksChecker: {
+        name: 'Vérificateur de Liens Cassés AI',
+        description: 'Découvrez les liens cassés sur votre site - Propulsé par IA',
+        article: 'Le vérificateur de liens cassés analyse votre site et découvre tous les liens non fonctionnels.',
       },
     },
     footer: {
