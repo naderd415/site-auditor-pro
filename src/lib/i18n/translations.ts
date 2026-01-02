@@ -243,6 +243,16 @@ export interface Translation {
       description: string;
       article: string;
     };
+    metaTagGenerator: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    xmlSitemapGenerator: {
+      name: string;
+      description: string;
+      article: string;
+    };
   };
   // Footer
   footer: {
@@ -507,6 +517,16 @@ export const translations: Record<Language, Translation> = {
         description: 'اكتشف الروابط المعطلة في موقعك - مدعوم بالذكاء الاصطناعي',
         article: 'أداة فحص الروابط المكسورة تفحص موقعك وتكتشف جميع الروابط التي لا تعمل. حافظ على جودة SEO لموقعك.',
       },
+      metaTagGenerator: {
+        name: 'مولد وسوم الميتا AI',
+        description: 'أنشئ وسوم الميتا لتحسين ظهور موقعك - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة مولد وسوم الميتا تساعدك في إنشاء وسوم الميتا ووسوم Open Graph ووسوم Twitter Card لتحسين ظهور موقعك في محركات البحث ومنصات التواصل الاجتماعي. تعمل بالكامل في متصفحك.',
+      },
+      xmlSitemapGenerator: {
+        name: 'مولد خريطة الموقع XML AI',
+        description: 'أنشئ خريطة موقع XML لتحسين فهرسة موقعك - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة مولد خريطة الموقع تساعدك في إنشاء ملف sitemap.xml لتحسين فهرسة موقعك في محركات البحث مثل Google و Bing. تعمل بالكامل في متصفحك دون رفع بيانات.',
+      },
     },
     footer: {
       rights: 'جميع الحقوق محفوظة',
@@ -765,6 +785,16 @@ export const translations: Record<Language, Translation> = {
         description: 'Discover broken links on your website - AI Powered',
         article: 'The Broken Links Checker scans your website and discovers all non-working links. Maintain your site SEO quality.',
       },
+      metaTagGenerator: {
+        name: 'Meta Tag Generator AI',
+        description: 'Generate meta tags to improve your site visibility - AI Powered',
+        article: 'The Meta Tag Generator helps you create essential meta tags, Open Graph tags, and Twitter Card tags to improve your site visibility in search engines and social media. Works entirely in your browser.',
+      },
+      xmlSitemapGenerator: {
+        name: 'XML Sitemap Generator AI',
+        description: 'Create XML sitemap to improve your site indexing - AI Powered',
+        article: 'The XML Sitemap Generator helps you create a sitemap.xml file to improve your site indexing in search engines like Google and Bing. Works entirely in your browser without uploading data.',
+      },
     },
     footer: {
       rights: 'All rights reserved',
@@ -1022,6 +1052,16 @@ export const translations: Record<Language, Translation> = {
         name: 'Vérificateur de Liens Cassés AI',
         description: 'Découvrez les liens cassés sur votre site - Propulsé par IA',
         article: 'Le vérificateur de liens cassés analyse votre site et découvre tous les liens non fonctionnels.',
+      },
+      metaTagGenerator: {
+        name: 'Générateur de Balises Meta AI',
+        description: 'Générez des balises meta pour améliorer la visibilité de votre site - Propulsé par IA',
+        article: 'Le générateur de balises meta vous aide à créer des balises meta essentielles, des balises Open Graph et des balises Twitter Card pour améliorer la visibilité de votre site.',
+      },
+      xmlSitemapGenerator: {
+        name: 'Générateur de Sitemap XML AI',
+        description: 'Créez un sitemap XML pour améliorer l\'indexation de votre site - Propulsé par IA',
+        article: 'Le générateur de sitemap XML vous aide à créer un fichier sitemap.xml pour améliorer l\'indexation de votre site dans les moteurs de recherche.',
       },
     },
     footer: {

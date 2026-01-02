@@ -58,6 +58,8 @@ import ExcelToPDF from "./pages/tools/ExcelToPDF";
 import PDFToExcel from "./pages/tools/PDFToExcel";
 import WebsiteSpeedTest from "./pages/tools/WebsiteSpeedTest";
 import BrokenLinksChecker from "./pages/tools/BrokenLinksChecker";
+import MetaTagGenerator from "./pages/tools/MetaTagGenerator";
+import XMLSitemapGenerator from "./pages/tools/XMLSitemapGenerator";
 import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
@@ -138,6 +140,8 @@ const App = () => (
               {/* SEO Tools */}
               <Route path="/tools/website-speed-test" element={<WebsiteSpeedTest />} />
               <Route path="/tools/broken-links-checker" element={<BrokenLinksChecker />} />
+              <Route path="/tools/meta-tag-generator" element={<MetaTagGenerator />} />
+              <Route path="/tools/xml-sitemap-generator" element={<XMLSitemapGenerator />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
