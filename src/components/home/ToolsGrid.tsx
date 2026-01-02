@@ -38,6 +38,8 @@ import {
   FileOutput,
   Gauge,
   Link,
+  FileCode2,
+  Globe2,
 } from 'lucide-react';
 
 // All tools data
@@ -92,6 +94,8 @@ export const allTools: Tool[] = [
   // SEO Tools
   { id: 'website-speed-test', nameKey: 'tools.websiteSpeedTest.name', descriptionKey: 'tools.websiteSpeedTest.description', icon: Gauge, category: 'seo', href: '/tools/website-speed-test', color: 'cyan' },
   { id: 'broken-links-checker', nameKey: 'tools.brokenLinksChecker.name', descriptionKey: 'tools.brokenLinksChecker.description', icon: Link, category: 'seo', href: '/tools/broken-links-checker', color: 'cyan' },
+  { id: 'meta-tag-generator', nameKey: 'tools.metaTagGenerator.name', descriptionKey: 'tools.metaTagGenerator.description', icon: FileCode2, category: 'seo', href: '/tools/meta-tag-generator', color: 'cyan' },
+  { id: 'xml-sitemap-generator', nameKey: 'tools.xmlSitemapGenerator.name', descriptionKey: 'tools.xmlSitemapGenerator.description', icon: Globe2, category: 'seo', href: '/tools/xml-sitemap-generator', color: 'cyan' },
 ];
 
 interface ToolsGridProps {
