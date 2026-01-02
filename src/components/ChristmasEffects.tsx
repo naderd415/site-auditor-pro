@@ -23,7 +23,7 @@ export function ChristmasEffects() {
     <>
       {/* Snowflakes */}
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-        {Array.from({ length: 50 }).map((_, i) => (
+        {Array.from({ length: 40 }).map((_, i) => (
           <div
             key={i}
             className="absolute animate-snowfall"
@@ -34,10 +34,10 @@ export function ChristmasEffects() {
             }}
           >
             <span 
-              className="text-white/80"
+              className="text-white/70"
               style={{
-                fontSize: `${8 + Math.random() * 16}px`,
-                filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.5))'
+                fontSize: `${8 + Math.random() * 14}px`,
+                filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.6))'
               }}
             >
               ❄
@@ -46,17 +46,17 @@ export function ChristmasEffects() {
         ))}
       </div>
       
-      {/* Corner Decorations */}
-      <div className="fixed top-4 start-4 text-4xl animate-bounce pointer-events-none z-50">
+      {/* Corner Decorations - Smaller and less intrusive */}
+      <div className="fixed top-16 start-3 text-2xl sm:text-3xl animate-bounce pointer-events-none z-40" style={{ animationDuration: '2s' }}>
         🎄
       </div>
-      <div className="fixed top-4 end-4 text-4xl animate-bounce pointer-events-none z-50" style={{ animationDelay: '0.5s' }}>
+      <div className="fixed top-16 end-3 text-2xl sm:text-3xl animate-bounce pointer-events-none z-40" style={{ animationDelay: '0.5s', animationDuration: '2s' }}>
         🎅
       </div>
-      <div className="fixed bottom-4 start-4 text-3xl animate-pulse pointer-events-none z-50">
+      <div className="fixed bottom-20 start-3 text-xl sm:text-2xl animate-pulse pointer-events-none z-40">
         ⛄
       </div>
-      <div className="fixed bottom-4 end-4 text-3xl animate-pulse pointer-events-none z-50" style={{ animationDelay: '1s' }}>
+      <div className="fixed bottom-20 end-3 text-xl sm:text-2xl animate-pulse pointer-events-none z-40" style={{ animationDelay: '1s' }}>
         🎁
       </div>
     </>

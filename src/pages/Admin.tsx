@@ -66,20 +66,20 @@ interface StatCardProps {
 }
 
 const StatCard = ({ title, value, change, changeType, icon }: StatCardProps) => (
-  <div className="glass-card p-6 rounded-2xl">
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-sm text-muted-foreground mb-1">{title}</p>
-        <p className="text-3xl font-bold text-foreground">{value}</p>
-        <p className={`text-sm mt-2 flex items-center gap-1 ${
+  <div className="glass-card p-4 sm:p-6 rounded-2xl">
+    <div className="flex items-start justify-between gap-2">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">{title}</p>
+        <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums">{value}</p>
+        <p className={`text-xs sm:text-sm mt-2 flex items-center gap-1 ${
           changeType === 'positive' ? 'text-green-500' : 
           changeType === 'negative' ? 'text-red-500' : 'text-muted-foreground'
         }`}>
-          <TrendingUp className="w-3 h-3" />
-          {change}
+          <TrendingUp className="w-3 h-3 flex-shrink-0" />
+          <span className="truncate">{change}</span>
         </p>
       </div>
-      <div className="p-3 bg-primary/10 rounded-xl text-primary">
+      <div className="p-2 sm:p-3 bg-primary/10 rounded-xl text-primary flex-shrink-0">
         {icon}
       </div>
     </div>
@@ -417,18 +417,63 @@ const Admin = () => {
           {/* Dashboard Tab */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 className="text-2xl font-bold text-foreground">
                   {isRTL ? 'الرئيسية' : 'Dashboard'}
                 </h2>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button variant="outline" onClick={() => setStats(getStats())} className="gap-2">
                     <RefreshCw className="w-4 h-4" />
-                    {isRTL ? 'تحديث' : 'Refresh'}
+                    <span className="hidden sm:inline">{isRTL ? 'تحديث' : 'Refresh'}</span>
                   </Button>
                   <Button onClick={openGoogleAnalytics} className="gap-2">
                     <ExternalLink className="w-4 h-4" />
-                    Google Analytics
+                    <span className="hidden sm:inline">Google Analytics</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="glass-card rounded-2xl p-4">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                  {isRTL ? 'إجراءات سريعة' : 'Quick Actions'}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveTab('ads')}
+                    className="gap-2"
+                  >
+                    <Megaphone className="w-4 h-4" />
+                    {isRTL ? 'إدارة الإعلانات' : 'Manage Ads'}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveTab('seo')}
+                    className="gap-2"
+                  >
+                    <Globe className="w-4 h-4" />
+                    {isRTL ? 'إعدادات SEO' : 'SEO Settings'}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveTab('analytics')}
+                    className="gap-2"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    {isRTL ? 'التحليلات' : 'View Analytics'}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveTab('appearance')}
+                    className="gap-2"
+                  >
+                    <Snowflake className="w-4 h-4" />
+                    {isRTL ? 'وضع الاحتفالات' : 'Festive Mode'}
                   </Button>
                 </div>
               </div>

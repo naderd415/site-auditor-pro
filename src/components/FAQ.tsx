@@ -27,28 +27,40 @@ const faqItems: FAQItem[] = [
     answerAr: "بالتأكيد! تتم جميع عمليات معالجة الملفات مباشرة في متصفحك (من جانب العميل). لا تغادر ملفاتك جهازك أبداً ولا يتم تحميلها على أي خادم. هذا يعني أن مستنداتك وصورك وبياناتك الحساسة تظل خاصة وآمنة تماماً على جهاز الكمبيوتر الخاص بك."
   },
   {
-    question: "How do I use the tools on this website?",
-    questionAr: "كيف أستخدم الأدوات في هذا الموقع؟",
-    answer: "Simply navigate to the tool you need, upload your file or enter your data, adjust any settings if needed, and click the action button. The result will be ready instantly for download or copy. No registration or software installation required!",
-    answerAr: "ما عليك سوى الانتقال إلى الأداة التي تحتاجها، وتحميل ملفك أو إدخال بياناتك، وضبط أي إعدادات إذا لزم الأمر، ثم النقر على زر التنفيذ. ستكون النتيجة جاهزة فوراً للتنزيل أو النسخ. لا يلزم التسجيل أو تثبيت أي برنامج!"
+    question: "How do I use the PDF tools?",
+    questionAr: "كيف أستخدم أدوات PDF؟",
+    answer: "Our PDF tools let you merge, split, compress, rotate, add watermarks, protect with passwords, and convert PDFs to/from Word, Excel, PowerPoint, and images. Simply select the tool, upload your PDF, choose your options, and download the result - all processed in your browser!",
+    answerAr: "تتيح لك أدوات PDF الدمج والتقسيم والضغط والتدوير وإضافة العلامات المائية والحماية بكلمة مرور وتحويل PDF من وإلى Word وExcel وPowerPoint والصور. ما عليك سوى اختيار الأداة، رفع ملف PDF، اختيار الخيارات، وتنزيل النتيجة - كل ذلك يتم في متصفحك!"
   },
   {
-    question: "Do I need to create an account?",
-    questionAr: "هل أحتاج إلى إنشاء حساب؟",
-    answer: "No account is needed! You can use all tools immediately without signing up. We believe in providing instant access to useful tools without barriers.",
-    answerAr: "لا حاجة لإنشاء حساب! يمكنك استخدام جميع الأدوات فوراً دون التسجيل. نحن نؤمن بتوفير وصول فوري للأدوات المفيدة دون عوائق."
+    question: "What image editing tools are available?",
+    questionAr: "ما هي أدوات تحرير الصور المتاحة؟",
+    answer: "We offer comprehensive image tools: Image Compressor (reduce file size), Image Converter (change formats like PNG to JPG), Image Resizer (change dimensions), Image Cropper (cut specific parts), and Image to Base64 converter. All tools support batch processing for multiple files.",
+    answerAr: "نقدم أدوات صور شاملة: ضاغط الصور (تقليل حجم الملف)، محول الصور (تغيير الصيغ مثل PNG إلى JPG)، معدل أبعاد الصور، قاطع الصور، ومحول الصور إلى Base64. جميع الأدوات تدعم المعالجة المتعددة لعدة ملفات."
   },
   {
-    question: "What types of tools are available?",
-    questionAr: "ما هي أنواع الأدوات المتوفرة؟",
-    answer: "We offer a comprehensive suite of tools including: Image tools (converter, compressor, resizer, cropper), PDF tools (merge, split, compress, convert), Text tools (counter, formatter, diff checker), Color tools (picker, palette generator, contrast checker), Calculators (age, BMI, percentage, unit converter), QR code tools, and SEO diagnostic tools.",
-    answerAr: "نقدم مجموعة شاملة من الأدوات تشمل: أدوات الصور (محول، ضاغط، معدل حجم، قاطع)، أدوات PDF (دمج، تقسيم، ضغط، تحويل)، أدوات النص (عداد، منسق، مقارن)، أدوات الألوان (منتقي، مولد لوحات، فاحص تباين)، الحاسبات (العمر، مؤشر الكتلة، النسب المئوية، محول الوحدات)، أدوات رمز QR، وأدوات تشخيص SEO."
+    question: "How do QR Code tools work?",
+    questionAr: "كيف تعمل أدوات رمز QR؟",
+    answer: "Our QR Generator creates custom QR codes for URLs, text, WiFi networks, contact cards, and more. You can customize colors, add logos, and choose different styles. The QR Scanner reads QR codes using your device's camera. Both work entirely offline in your browser.",
+    answerAr: "يُنشئ مولد QR أكواد QR مخصصة للروابط والنصوص وشبكات WiFi وبطاقات الاتصال والمزيد. يمكنك تخصيص الألوان وإضافة الشعارات واختيار أنماط مختلفة. ماسح QR يقرأ أكواد QR باستخدام كاميرا جهازك. كلاهما يعمل بالكامل دون اتصال في متصفحك."
+  },
+  {
+    question: "What are the SEO diagnostic tools?",
+    questionAr: "ما هي أدوات تشخيص SEO؟",
+    answer: "Our AI-powered SEO tools include Website Speed Test (analyzes performance using Google PageSpeed API) and Broken Links Checker (scans your site for dead links). These help you optimize your website for better search engine rankings and user experience.",
+    answerAr: "تشمل أدوات SEO المدعومة بالذكاء الاصطناعي اختبار سرعة الموقع (يحلل الأداء باستخدام Google PageSpeed API) وفاحص الروابط المعطلة (يفحص موقعك بحثاً عن الروابط الميتة). تساعدك هذه الأدوات على تحسين موقعك لترتيب أفضل في محركات البحث وتجربة مستخدم أفضل."
   },
   {
     question: "Can I use these tools on mobile devices?",
     questionAr: "هل يمكنني استخدام هذه الأدوات على الأجهزة المحمولة؟",
-    answer: "Yes! BestToolsHub is fully responsive and works seamlessly on smartphones, tablets, and desktop computers. You can even install it as a Progressive Web App (PWA) on your mobile device for quick access.",
-    answerAr: "نعم! موقع BestToolsHub متجاوب بالكامل ويعمل بسلاسة على الهواتف الذكية والأجهزة اللوحية وأجهزة الكمبيوتر المكتبية. يمكنك حتى تثبيته كتطبيق ويب تقدمي (PWA) على جهازك المحمول للوصول السريع."
+    answer: "Yes! BestToolsHub is fully responsive and works seamlessly on smartphones, tablets, and desktop computers. You can even install it as a Progressive Web App (PWA) on your mobile device for quick access and offline capabilities.",
+    answerAr: "نعم! موقع BestToolsHub متجاوب بالكامل ويعمل بسلاسة على الهواتف الذكية والأجهزة اللوحية وأجهزة الكمبيوتر المكتبية. يمكنك حتى تثبيته كتطبيق ويب تقدمي (PWA) على جهازك المحمول للوصول السريع والعمل بدون اتصال."
+  },
+  {
+    question: "What text and color tools are available?",
+    questionAr: "ما هي أدوات النصوص والألوان المتاحة؟",
+    answer: "Text tools include: Text Counter (words, characters, sentences), Text Formatter (case conversion), Text Diff (compare two texts), Lorem Generator, and Slug Generator. Color tools include: Color Picker, Color Palette Generator, Contrast Checker, Color Converter (HEX, RGB, HSL), and Gradient Generator.",
+    answerAr: "أدوات النصوص تشمل: عداد النص، منسق النص، مقارن النصوص، مولد Lorem، ومولد Slug. أدوات الألوان تشمل: منتقي الألوان، مولد لوحات الألوان، فاحص التباين، محول الألوان، ومولد التدرجات."
   }
 ];
 

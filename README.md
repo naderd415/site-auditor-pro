@@ -1,9 +1,33 @@
 # BestToolsHub - Free Online Tools Platform
 
+🎉 **2026 New Year Ready!** | Fully optimized for **GEO (Generative Engine Optimization)**
+
 A comprehensive suite of browser-based tools for image editing, PDF manipulation, text processing, color utilities, calculators, QR codes, and SEO diagnostics. All processing happens client-side for maximum privacy and speed.
 
 ## 🌐 Live Site
 **URL**: [https://besttoolshub.online](https://besttoolshub.online)
+
+---
+
+## ✨ New Features (2026)
+
+### 🎄 Christmas/New Year Mode
+- Toggle via Admin Dashboard → Appearance → Christmas Mode
+- When ON: Displays "Happy New Year 2026!" banner with confetti animation
+- Snowfall effects and festive decorations across the site
+- When OFF: All decorations completely hidden, professional look restored
+
+### 📢 Dynamic Ad Management
+- Admin Dashboard → Ads section allows pasting ad scripts
+- Four slots: Header Ad, Sidebar Ad, Footer Ad, In-Content Ad
+- Scripts are dynamically injected and rendered live on the site
+- Fixed container sizes prevent layout shift (CLS optimization)
+
+### 🔍 SEO & AI Optimization (GEO)
+- JSON-LD Schema markup on all tool pages (WebApplication + BreadcrumbList)
+- robots.txt allows AI crawlers (GPTBot, CCBot, PerplexityBot, Claude-Web)
+- Descriptive meta tags optimized for AI search engines
+- Vercel Speed Insights integration for performance monitoring
 
 ---
 
@@ -20,6 +44,7 @@ A comprehensive suite of browser-based tools for image editing, PDF manipulation
 | **Lovable Cloud** | Backend (Edge Functions, Storage) |
 | **React Helmet** | SEO meta management |
 | **Lucide React** | Icon library |
+| **Vercel Speed Insights** | Performance monitoring |
 
 ---
 
@@ -51,9 +76,12 @@ A comprehensive suite of browser-based tools for image editing, PDF manipulation
 │   │   │
 │   │   ├── ui/           # shadcn/ui components
 │   │   │
-│   │   ├── AdsterraBanner.tsx  # Ad integration
-│   │   ├── FAQ.tsx             # FAQ accordion
-│   │   └── NavLink.tsx         # Active nav link
+│   │   ├── AdsterraBanner.tsx   # Adsterra ad integration
+│   │   ├── DynamicAdSlot.tsx    # Dynamic ad injection from Admin
+│   │   ├── NewYearBanner.tsx    # 2026 New Year celebratory banner
+│   │   ├── ChristmasEffects.tsx # Snowfall & festive decorations
+│   │   ├── FAQ.tsx              # FAQ accordion
+│   │   └── NavLink.tsx          # Active nav link
 │   │
 │   ├── hooks/
 │   │   ├── use-mobile.tsx
@@ -349,12 +377,13 @@ Access: `/admin`
 Password: Stored in `siteConfig.adminPass` (localStorage)
 
 Features:
-- Site identity management (logo, name)
-- Content editing (Hero, About, Contact)
-- SEO metadata configuration
-- Ad slot management
-- Analytics overview
-- Theme settings
+- **Site identity management** (logo, name)
+- **Content editing** (Hero, About, Contact)
+- **SEO metadata configuration**
+- **Dynamic Ad slot management** - Paste ad scripts, they render live on the site
+- **Analytics overview** - Real-time stats with quick action buttons
+- **Theme settings** with Christmas/New Year 2026 mode
+- **Quick Actions** - Fast access to common tasks
 
 ---
 

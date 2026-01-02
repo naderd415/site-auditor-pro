@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "@/lib/i18n";
 import { ChristmasEffects } from "@/components/ChristmasEffects";
+import { NewYearBanner } from "@/components/NewYearBanner";
 import Index from "./pages/Index";
 import Tools from "./pages/Tools";
 import About from "./pages/About";
@@ -68,6 +69,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <NewYearBanner />
           <ChristmasEffects />
           <BrowserRouter>
             <Routes>
