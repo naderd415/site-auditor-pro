@@ -253,6 +253,21 @@ export interface Translation {
       description: string;
       article: string;
     };
+    robotsTxtGenerator: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    openGraphPreview: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    keywordDensityAnalyzer: {
+      name: string;
+      description: string;
+      article: string;
+    };
   };
   // Footer
   footer: {
@@ -527,6 +542,21 @@ export const translations: Record<Language, Translation> = {
         description: 'أنشئ خريطة موقع XML لتحسين فهرسة موقعك - مدعوم بالذكاء الاصطناعي',
         article: 'أداة مولد خريطة الموقع تساعدك في إنشاء ملف sitemap.xml لتحسين فهرسة موقعك في محركات البحث مثل Google و Bing. تعمل بالكامل في متصفحك دون رفع بيانات.',
       },
+      robotsTxtGenerator: {
+        name: 'مولد ملف Robots.txt AI',
+        description: 'أنشئ ملف robots.txt للتحكم في فهرسة موقعك - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة مولد ملف Robots.txt تساعدك في إنشاء ملف robots.txt للتحكم في كيفية فهرسة محركات البحث وروبوتات الذكاء الاصطناعي لموقعك.',
+      },
+      openGraphPreview: {
+        name: 'معاينة Open Graph AI',
+        description: 'عاين كيف يظهر رابط موقعك على السوشيال ميديا - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة معاينة Open Graph تتيح لك إنشاء ومعاينة وسوم Open Graph لتحسين ظهور روابط موقعك على فيسبوك وتويتر ولينكدإن وواتساب.',
+      },
+      keywordDensityAnalyzer: {
+        name: 'محلل كثافة الكلمات المفتاحية AI',
+        description: 'حلل كثافة الكلمات المفتاحية في محتواك - مدعوم بالذكاء الاصطناعي',
+        article: 'أداة محلل كثافة الكلمات المفتاحية تساعدك في تحليل محتواك واكتشاف الكلمات الأكثر استخداماً وتحسين SEO.',
+      },
     },
     footer: {
       rights: 'جميع الحقوق محفوظة',
@@ -795,6 +825,21 @@ export const translations: Record<Language, Translation> = {
         description: 'Create XML sitemap to improve your site indexing - AI Powered',
         article: 'The XML Sitemap Generator helps you create a sitemap.xml file to improve your site indexing in search engines like Google and Bing. Works entirely in your browser without uploading data.',
       },
+      robotsTxtGenerator: {
+        name: 'Robots.txt Generator AI',
+        description: 'Create robots.txt file to control site indexing - AI Powered',
+        article: 'The Robots.txt Generator helps you create a professional robots.txt file to control how search engines and AI crawlers index your website.',
+      },
+      openGraphPreview: {
+        name: 'Open Graph Preview AI',
+        description: 'Preview how your links appear on social media - AI Powered',
+        article: 'The Open Graph Preview tool lets you create and preview Open Graph meta tags to improve how your links appear on Facebook, Twitter, LinkedIn, and WhatsApp.',
+      },
+      keywordDensityAnalyzer: {
+        name: 'Keyword Density Analyzer AI',
+        description: 'Analyze keyword density in your content - AI Powered',
+        article: 'The Keyword Density Analyzer helps you analyze your content and discover the most frequently used keywords to optimize your SEO.',
+      },
     },
     footer: {
       rights: 'All rights reserved',
@@ -1062,6 +1107,21 @@ export const translations: Record<Language, Translation> = {
         name: 'Générateur de Sitemap XML AI',
         description: 'Créez un sitemap XML pour améliorer l\'indexation de votre site - Propulsé par IA',
         article: 'Le générateur de sitemap XML vous aide à créer un fichier sitemap.xml pour améliorer l\'indexation de votre site dans les moteurs de recherche.',
+      },
+      robotsTxtGenerator: {
+        name: 'Générateur Robots.txt AI',
+        description: 'Créez un fichier robots.txt pour contrôler l\'indexation - Propulsé par IA',
+        article: 'Le générateur Robots.txt vous aide à créer un fichier robots.txt professionnel pour contrôler comment les moteurs de recherche et les robots IA indexent votre site.',
+      },
+      openGraphPreview: {
+        name: 'Aperçu Open Graph AI',
+        description: 'Prévisualisez l\'apparence de vos liens sur les réseaux sociaux - Propulsé par IA',
+        article: 'L\'outil d\'aperçu Open Graph vous permet de créer et prévisualiser les balises Open Graph pour améliorer l\'apparence de vos liens sur Facebook, Twitter, LinkedIn et WhatsApp.',
+      },
+      keywordDensityAnalyzer: {
+        name: 'Analyseur de Densité de Mots-Clés AI',
+        description: 'Analysez la densité des mots-clés dans votre contenu - Propulsé par IA',
+        article: 'L\'analyseur de densité de mots-clés vous aide à analyser votre contenu et découvrir les mots les plus fréquemment utilisés pour optimiser votre SEO.',
       },
     },
     footer: {
