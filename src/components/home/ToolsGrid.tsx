@@ -40,6 +40,9 @@ import {
   Link,
   FileCode2,
   Globe2,
+  Bot,
+  Eye,
+  BarChart3,
 } from 'lucide-react';
 
 // All tools data
@@ -96,6 +99,9 @@ export const allTools: Tool[] = [
   { id: 'broken-links-checker', nameKey: 'tools.brokenLinksChecker.name', descriptionKey: 'tools.brokenLinksChecker.description', icon: Link, category: 'seo', href: '/tools/broken-links-checker', color: 'cyan' },
   { id: 'meta-tag-generator', nameKey: 'tools.metaTagGenerator.name', descriptionKey: 'tools.metaTagGenerator.description', icon: FileCode2, category: 'seo', href: '/tools/meta-tag-generator', color: 'cyan' },
   { id: 'xml-sitemap-generator', nameKey: 'tools.xmlSitemapGenerator.name', descriptionKey: 'tools.xmlSitemapGenerator.description', icon: Globe2, category: 'seo', href: '/tools/xml-sitemap-generator', color: 'cyan' },
+  { id: 'robots-txt-generator', nameKey: 'tools.robotsTxtGenerator.name', descriptionKey: 'tools.robotsTxtGenerator.description', icon: Bot, category: 'seo', href: '/tools/robots-txt-generator', color: 'cyan' },
+  { id: 'open-graph-preview', nameKey: 'tools.openGraphPreview.name', descriptionKey: 'tools.openGraphPreview.description', icon: Eye, category: 'seo', href: '/tools/open-graph-preview', color: 'cyan' },
+  { id: 'keyword-density-analyzer', nameKey: 'tools.keywordDensityAnalyzer.name', descriptionKey: 'tools.keywordDensityAnalyzer.description', icon: BarChart3, category: 'seo', href: '/tools/keyword-density-analyzer', color: 'cyan' },
 ];
 
 interface ToolsGridProps {
