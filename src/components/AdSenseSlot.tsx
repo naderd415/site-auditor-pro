@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getConfig } from '@/lib/siteConfig';
+import { validateAdCode } from '@/lib/adCodeValidator';
 
 interface AdSlotProps {
   type: 'header' | 'sidebar' | 'footer' | 'inContent';
@@ -10,6 +11,7 @@ interface AdSlotProps {
 export const AdSlot = ({ type, className = '', fallbackText }: AdSlotProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [adCode, setAdCode] = useState<string>('');
+  const [validationError, setValidationError] = useState<string>('');
 
   useEffect(() => {
     const config = getConfig();
@@ -30,14 +32,23 @@ export const AdSlot = ({ type, className = '', fallbackText }: AdSlotProps) => {
         break;
     }
     
-    setAdCode(code);
+    // Validate ad code before setting
+    const validation = validateAdCode(code);
+    if (validation.isValid) {
+      setAdCode(code);
+      setValidationError('');
+    } else {
+      setAdCode('');
+      setValidationError(validation.error || 'Invalid ad code');
+      console.warn(`[AdSlot] Blocked invalid ad code for ${type}:`, validation.error);
+    }
   }, [type]);
 
   useEffect(() => {
     if (adCode && containerRef.current) {
       containerRef.current.innerHTML = adCode;
       
-      // Execute any scripts in the ad code
+      // Execute any scripts in the ad code (already validated)
       const scripts = containerRef.current.querySelectorAll('script');
       scripts.forEach((script) => {
         const newScript = document.createElement('script');
@@ -49,6 +60,11 @@ export const AdSlot = ({ type, className = '', fallbackText }: AdSlotProps) => {
       });
     }
   }, [adCode]);
+
+  if (validationError) {
+    console.error(`[AdSlot ${type}] Validation error:`, validationError);
+    return null;
+  }
 
   if (!adCode) {
     if (fallbackText) {

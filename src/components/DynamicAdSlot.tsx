@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getConfig } from '@/lib/siteConfig';
 import { useLanguage } from '@/lib/i18n';
+import { validateAdCode } from '@/lib/adCodeValidator';
 
 interface DynamicAdSlotProps {
   type: 'header' | 'sidebar' | 'footer' | 'inContent';
@@ -12,6 +13,7 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [adCode, setAdCode] = useState('');
   const [shouldLoad, setShouldLoad] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   // Fixed sizes to prevent CLS (Cumulative Layout Shift)
   const sizeClasses = {
@@ -60,7 +62,16 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
           break;
       }
       
-      setAdCode(code);
+      // Validate ad code before setting
+      const validation = validateAdCode(code);
+      if (validation.isValid) {
+        setAdCode(code);
+        setValidationError('');
+      } else {
+        setAdCode('');
+        setValidationError(validation.error || 'Invalid ad code');
+        console.warn(`[DynamicAdSlot] Blocked invalid ad code for ${type}:`, validation.error);
+      }
     };
 
     loadAdCode();
@@ -82,7 +93,7 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = adCode;
     
-    // Execute any scripts in the ad code
+    // Execute any scripts in the ad code (already validated)
     const scripts = wrapper.querySelectorAll('script');
     scripts.forEach((script) => {
       const newScript = document.createElement('script');
@@ -110,6 +121,12 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
       container.appendChild(wrapper);
     }
   }, [adCode]);
+
+  // Log validation errors but don't show UI error
+  if (validationError) {
+    console.error(`[DynamicAdSlot ${type}] Validation error:`, validationError);
+    return null;
+  }
 
   // Show placeholder while loading for CLS prevention
   if (!adCode) {
