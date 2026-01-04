@@ -70,9 +70,12 @@ export function validateAdCode(code: string): { isValid: boolean; error?: string
         }
       }
       
-      // Inline scripts are allowed but logged for audit
-      if (!src && script.textContent) {
-        console.info('[Ad Validator] Inline script detected in ad code');
+      // Block all inline scripts to prevent XSS - most ad networks use external scripts
+      if (!src && script.textContent?.trim()) {
+        return {
+          isValid: false,
+          error: 'Inline scripts are not allowed in ad code. Please use external ad network scripts only (e.g., from Google AdSense, Adsterra). Most ad networks provide external script tags.'
+        };
       }
     }
     
