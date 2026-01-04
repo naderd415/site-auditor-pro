@@ -3,6 +3,8 @@
  * Prevents XSS by only allowing scripts from trusted ad network domains
  */
 
+import DOMPurify from 'dompurify';
+
 // Trusted ad network domains - add new ad networks here as needed
 const ALLOWED_AD_DOMAINS = [
   // Google AdSense
@@ -32,6 +34,26 @@ const ALLOWED_AD_DOMAINS = [
   'www.google-analytics.com',
 ];
 
+// Forbidden tags that could be used for XSS
+const FORBIDDEN_TAGS = ['iframe', 'object', 'embed', 'link', 'meta', 'base', 'form', 'input', 'svg'];
+
+// Dangerous URL protocols
+const FORBIDDEN_PROTOCOLS = ['javascript:', 'data:', 'vbscript:'];
+
+// Comprehensive list of dangerous event handlers (case-insensitive check)
+const DANGEROUS_EVENT_HANDLERS = [
+  'onclick', 'ondblclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout', 'onmouseenter', 'onmouseleave',
+  'onkeydown', 'onkeypress', 'onkeyup',
+  'onfocus', 'onblur', 'onchange', 'onsubmit', 'onreset', 'oninput',
+  'onload', 'onerror', 'onunload', 'onresize', 'onscroll',
+  'onanimationstart', 'onanimationend', 'onanimationiteration',
+  'ontransitionend', 'ontransitionstart', 'ontransitioncancel', 'ontransitionrun',
+  'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop',
+  'oncopy', 'oncut', 'onpaste',
+  'oncontextmenu', 'onwheel', 'ontouchstart', 'ontouchend', 'ontouchmove', 'ontouchcancel',
+  'onpointerdown', 'onpointerup', 'onpointermove', 'onpointerenter', 'onpointerleave', 'onpointerover', 'onpointerout', 'onpointercancel',
+];
+
 /**
  * Validates ad code to ensure all script sources are from trusted domains
  * @param code - The HTML ad code to validate
@@ -45,6 +67,30 @@ export function validateAdCode(code: string): { isValid: boolean; error?: string
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(code, 'text/html');
+    
+    // Check for forbidden tags
+    for (const tag of FORBIDDEN_TAGS) {
+      if (doc.body.querySelector(tag)) {
+        return {
+          isValid: false,
+          error: `Forbidden tag <${tag}> found. This tag is not allowed in ad code for security reasons.`
+        };
+      }
+    }
+    
+    // Check all src/href attributes for dangerous protocols
+    const elementsWithUrls = doc.body.querySelectorAll('[src], [href]');
+    for (const el of elementsWithUrls) {
+      const src = el.getAttribute('src') || el.getAttribute('href') || '';
+      const srcLower = src.toLowerCase().trim();
+      if (FORBIDDEN_PROTOCOLS.some(proto => srcLower.startsWith(proto))) {
+        return {
+          isValid: false,
+          error: `Dangerous protocol detected in URL attribute. javascript:, data:, and vbscript: protocols are not allowed.`
+        };
+      }
+    }
+    
     const scripts = doc.querySelectorAll('script');
     
     for (const script of scripts) {
@@ -79,16 +125,17 @@ export function validateAdCode(code: string): { isValid: boolean; error?: string
       }
     }
     
-    // Check for dangerous event handlers in HTML elements
+    // Check for dangerous event handlers in HTML elements (case-insensitive)
     const allElements = doc.body.querySelectorAll('*');
-    const dangerousAttrs = ['onclick', 'onerror', 'onload', 'onmouseover', 'onfocus', 'onblur'];
     
     for (const element of allElements) {
-      for (const attr of dangerousAttrs) {
-        if (element.hasAttribute(attr)) {
+      const attrs = element.attributes;
+      for (let i = 0; i < attrs.length; i++) {
+        const attrName = attrs[i].name.toLowerCase();
+        if (DANGEROUS_EVENT_HANDLERS.includes(attrName)) {
           return {
             isValid: false,
-            error: `Dangerous event handler "${attr}" found. Inline event handlers are not allowed in ad code.`
+            error: `Dangerous event handler "${attrName}" found. Inline event handlers are not allowed in ad code.`
           };
         }
       }
@@ -102,6 +149,28 @@ export function validateAdCode(code: string): { isValid: boolean; error?: string
       error: 'Failed to parse ad code. Please check the HTML syntax.'
     };
   }
+}
+
+/**
+ * Sanitize ad code using DOMPurify for additional XSS protection
+ * This should be used in combination with validateAdCode
+ * @param code - The HTML ad code to sanitize
+ * @returns Sanitized HTML string
+ */
+export function sanitizeAdCode(code: string): string {
+  if (!code || code.trim() === '') {
+    return '';
+  }
+  
+  // Configure DOMPurify to allow specific ad-related elements and attributes
+  return DOMPurify.sanitize(code, {
+    ALLOWED_TAGS: ['div', 'ins', 'script', 'span', 'a', 'img'],
+    ALLOWED_ATTR: ['class', 'id', 'style', 'data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-full-width-responsive', 'src', 'href', 'alt', 'width', 'height', 'async'],
+    ALLOW_DATA_ATTR: true,
+    // Keep scripts but they'll be validated separately
+    ADD_TAGS: ['script'],
+    ADD_ATTR: ['async'],
+  });
 }
 
 /**

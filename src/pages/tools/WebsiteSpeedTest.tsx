@@ -30,6 +30,27 @@ interface PerformanceResult {
 const RATE_LIMIT_KEY = 'pagespeed_last_request';
 const MIN_INTERVAL_MS = 60000; // 1 minute between requests
 
+// Patterns for private/internal IP addresses and hostnames
+const BLOCKED_HOSTNAME_PATTERNS = [
+  /^localhost$/i,
+  /^127\.\d+\.\d+\.\d+$/,
+  /^192\.168\.\d+\.\d+$/,
+  /^10\.\d+\.\d+\.\d+$/,
+  /^172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+$/,
+  /\.local$/i,
+  /^169\.254\.\d+\.\d+$/, // Link-local
+  /^0\.0\.0\.0$/,
+  /^\[::1\]$/, // IPv6 localhost
+  /^::1$/,
+  /^fc[0-9a-f]{2}:/i, // IPv6 unique local
+  /^fd[0-9a-f]{2}:/i, // IPv6 unique local
+  /^fe80:/i, // IPv6 link-local
+];
+
+const isBlockedHostname = (hostname: string): boolean => {
+  return BLOCKED_HOSTNAME_PATTERNS.some(pattern => pattern.test(hostname));
+};
+
 const canMakeRequest = (): boolean => {
   const lastRequest = localStorage.getItem(RATE_LIMIT_KEY);
   if (!lastRequest) return true;
@@ -77,7 +98,13 @@ const WebsiteSpeedTest = () => {
     }
 
     try {
-      new URL(testUrl);
+      const parsedUrl = new URL(testUrl);
+      
+      // Block private/internal URLs to prevent SSRF
+      if (isBlockedHostname(parsedUrl.hostname)) {
+        toast.error(isRTL ? 'لا يمكن اختبار عناوين IP الداخلية أو المحلية' : 'Cannot test private or internal URLs');
+        return;
+      }
     } catch {
       toast.error(isRTL ? 'رابط غير صالح' : 'Invalid URL');
       return;
