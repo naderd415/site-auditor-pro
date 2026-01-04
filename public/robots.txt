@@ -1,5 +1,6 @@
-# Best Tools Hub - Robots.txt
-# Optimized for Search Engine & AI Crawlers
+# BestToolsHub - Robots.txt
+# Optimized for Search Engine & AI Crawlers (GEO - Generative Engine Optimization)
+# Last Updated: January 2026
 
 # Google Bots
 User-agent: Googlebot
@@ -23,7 +24,7 @@ Crawl-delay: 1
 User-agent: msnbot
 Allow: /
 
-# AI Search Crawlers (ChatGPT, Perplexity, etc.)
+# AI Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
 User-agent: GPTBot
 Allow: /
 
@@ -42,7 +43,19 @@ Allow: /
 User-agent: Claude-Web
 Allow: /
 
+User-agent: ClaudeBot
+Allow: /
+
 User-agent: Bytespider
+Allow: /
+
+User-agent: Cohere-ai
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Applebot
 Allow: /
 
 # Social Media Bots
@@ -56,6 +69,9 @@ User-agent: LinkedInBot
 Allow: /
 
 User-agent: Pinterest
+Allow: /
+
+User-agent: Slackbot
 Allow: /
 
 # Yahoo

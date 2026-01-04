@@ -1079,8 +1079,8 @@ startxref
     >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Side - Settings (First on mobile) */}
-          <div className="lg:col-span-8 order-1">
+          {/* RIGHT Side - Settings (First on mobile, Second on desktop) */}
+          <div className="lg:col-span-8 order-1 lg:order-2">
             <div className="bg-card border border-border rounded-2xl p-6">
               <h2 className="text-xl font-bold mb-4">
                 {isRTL ? 'إعدادات التخصيص' : 'Customization Settings'}
@@ -1456,8 +1456,8 @@ startxref
             </div>
           </div>
           
-          {/* Right Side - QR Preview (Sticky, Second on mobile) */}
-          <div className="lg:col-span-4 order-2">
+          {/* LEFT Side - QR Preview (Sticky, Second on mobile) */}
+          <div className="lg:col-span-4 order-2 lg:order-1">
             <div className="bg-card border border-border rounded-2xl p-6 lg:sticky lg:top-24">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-3">
                 <span className="text-2xl">📱</span>

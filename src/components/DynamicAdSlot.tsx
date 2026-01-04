@@ -11,6 +11,7 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
   const { isRTL } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const [adCode, setAdCode] = useState('');
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   // Fixed sizes to prevent CLS (Cumulative Layout Shift)
   const sizeClasses = {
@@ -20,7 +21,26 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
     inContent: 'min-h-[250px] max-w-full',
   };
 
+  // Delayed loading - wait 5 seconds or first scroll for better performance
   useEffect(() => {
+    const timer = setTimeout(() => setShouldLoad(true), 5000);
+    
+    const handleScroll = () => {
+      setShouldLoad(true);
+      window.removeEventListener('scroll', handleScroll);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true, once: true });
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoad) return;
+    
     const loadAdCode = () => {
       const config = getConfig();
       let code = '';
@@ -48,7 +68,7 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
     // Check for config changes periodically
     const interval = setInterval(loadAdCode, 2000);
     return () => clearInterval(interval);
-  }, [type]);
+  }, [type, shouldLoad]);
 
   useEffect(() => {
     if (!containerRef.current || !adCode) return;
@@ -91,7 +111,17 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
     }
   }, [adCode]);
 
-  if (!adCode) return null;
+  // Show placeholder while loading for CLS prevention
+  if (!adCode) {
+    return (
+      <div className={`my-4 ${className}`}>
+        <div 
+          className={`flex justify-center items-center mx-auto rounded-lg overflow-hidden bg-muted/20 ${sizeClasses[type]}`}
+          style={{ maxWidth: '100%' }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`my-4 ${className}`}>
