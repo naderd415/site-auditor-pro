@@ -91,9 +91,9 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <NewYearBanner />
-          <ChristmasEffects />
           <BrowserRouter>
+            <NewYearBanner />
+            <ChristmasEffects />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
