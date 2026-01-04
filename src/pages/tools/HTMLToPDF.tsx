@@ -5,6 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FileDown, Code, Eye } from 'lucide-react';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
+
+// Configure DOMPurify with safe defaults
+const sanitizeHTML = (html: string): string => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'b', 'i', 'u', 
+                   'ul', 'ol', 'li', 'a', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 
+                   'div', 'span', 'br', 'hr', 'img', 'blockquote', 'pre', 'code'],
+    ALLOWED_ATTR: ['href', 'class', 'id', 'style', 'src', 'alt', 'width', 'height', 
+                   'border', 'cellpadding', 'cellspacing', 'align', 'valign'],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button'],
+    FORBID_ATTR: ['onerror', 'onclick', 'onload', 'onmouseover', 'onfocus', 'onblur'],
+  });
+};
 
 const HTMLToPDF = () => {
   const { t, isRTL } = useLanguage();
@@ -21,6 +35,9 @@ const HTMLToPDF = () => {
     setIsConverting(true);
     
     try {
+      // Sanitize HTML before rendering
+      const sanitizedHTML = sanitizeHTML(htmlContent);
+      
       // Create a printable HTML document
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
@@ -47,7 +64,7 @@ const HTMLToPDF = () => {
           </style>
         </head>
         <body>
-          ${htmlContent}
+          ${sanitizedHTML}
         </body>
         </html>
       `);
@@ -61,7 +78,6 @@ const HTMLToPDF = () => {
 
       toast.success(isRTL ? 'استخدم نافذة الطباعة لحفظ كـ PDF' : 'Use print dialog to save as PDF');
     } catch (error) {
-      console.error('Conversion error:', error);
       toast.error(isRTL ? 'حدث خطأ أثناء التحويل' : 'Error during conversion');
     } finally {
       setIsConverting(false);
@@ -90,6 +106,9 @@ const HTMLToPDF = () => {
     <td>200</td>
   </tr>
 </table>`;
+
+  // Sanitize for preview display
+  const sanitizedPreview = sanitizeHTML(htmlContent);
 
   return (
     <ToolPageLayout
@@ -135,12 +154,12 @@ const HTMLToPDF = () => {
           />
         </div>
 
-        {/* Preview */}
+        {/* Preview - Now sanitized */}
         {showPreview && htmlContent && (
           <div className="border border-border rounded-lg p-4 bg-white">
             <div 
               className="prose prose-sm max-w-none text-black"
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
+              dangerouslySetInnerHTML={{ __html: sanitizedPreview }}
             />
           </div>
         )}

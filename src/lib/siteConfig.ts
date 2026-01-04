@@ -47,7 +47,8 @@ export interface SiteContent {
 }
 
 export interface SiteConfig {
-  adminPass: string;
+  adminPass: string; // Deprecated - kept for backwards compatibility
+  adminPassHash?: string; // SHA-256 hash of password
   siteIdentity: SiteIdentity;
   ads: AdsConfig;
   analytics: AnalyticsConfig;
@@ -59,8 +60,40 @@ export interface SiteConfig {
   christmasMode: boolean;
 }
 
+const CONFIG_KEY = 'bth_site_config';
+const STATS_KEY = 'bth_stats';
+
+// Password hashing utility using Web Crypto API
+export const hashPassword = async (password: string): Promise<string> => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+// Verify password against stored hash
+export const verifyPassword = async (password: string, hash: string): Promise<boolean> => {
+  const passwordHash = await hashPassword(password);
+  return passwordHash === hash;
+};
+
+// Check if password setup is required (no password hash stored)
+export const isPasswordSetupRequired = (): boolean => {
+  try {
+    const stored = localStorage.getItem(CONFIG_KEY);
+    if (stored) {
+      const config = JSON.parse(stored);
+      return !config.adminPassHash;
+    }
+  } catch (e) {
+    // Config doesn't exist yet
+  }
+  return true;
+};
+
 export const defaultConfig: SiteConfig = {
-  adminPass: 'Na@01024926212',
+  adminPass: '', // No default password - must be set by user
   siteIdentity: {
     logoUrl: '',
     faviconUrl: '',
@@ -107,8 +140,7 @@ export const defaultConfig: SiteConfig = {
   christmasMode: false
 };
 
-const CONFIG_KEY = 'bth_site_config';
-const STATS_KEY = 'bth_stats';
+// Get current config from localStorage
 
 // Get current config from localStorage
 export const getConfig = (): SiteConfig => {
