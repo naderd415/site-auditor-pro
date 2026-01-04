@@ -44,7 +44,11 @@ import {
   Menu,
   X,
   RefreshCw,
-  Snowflake
+  Snowflake,
+  Mail,
+  KeyRound,
+  UserPlus,
+  Shield
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
 import { toast } from 'sonner';
@@ -55,10 +59,13 @@ import {
   getStats, 
   downloadConfig,
   VisitorStats,
-  hashPassword,
-  verifyPassword,
-  isPasswordSetupRequired
 } from '@/lib/siteConfig';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { z } from 'zod';
+
+// Validation schemas
+const emailSchema = z.string().trim().email({ message: "Invalid email address" }).max(255);
+const passwordSchema = z.string().min(8, { message: "Password must be at least 8 characters" }).max(128);
 
 interface StatCardProps {
   title: string;
@@ -131,22 +138,27 @@ const sidebarItems = [
 
 const Admin = () => {
   const { isRTL } = useLanguage();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const {
+    user,
+    isAdmin,
+    isLoading,
+    needsFirstAdmin,
+    signUp,
+    signIn,
+    signOut,
+    claimFirstAdmin,
+    refreshAdminStatus,
+  } = useAdminAuth();
+
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [config, setConfig] = useState<SiteConfig>(getConfig());
   const [stats, setStats] = useState<VisitorStats>(getStats());
-  const [newPassword, setNewPassword] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [needsSetup, setNeedsSetup] = useState(false);
-
-  // Check if first-time setup is required
-  useEffect(() => {
-    setNeedsSetup(isPasswordSetupRequired());
-  }, []);
 
   // Load config from localStorage
   useEffect(() => {
@@ -163,18 +175,12 @@ const Admin = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Check auth on mount
+  // Auto-enable signup mode if no admin exists
   useEffect(() => {
-    const authToken = sessionStorage.getItem('admin_auth');
-    if (authToken) {
-      const tokenData = JSON.parse(authToken);
-      if (tokenData.expiry > Date.now()) {
-        setIsAuthenticated(true);
-      } else {
-        sessionStorage.removeItem('admin_auth');
-      }
+    if (needsFirstAdmin && !isLoading) {
+      setIsSignUpMode(true);
     }
-  }, []);
+  }, [needsFirstAdmin, isLoading]);
 
   const applyTheme = (theme: 'light' | 'dark' | 'system') => {
     const root = document.documentElement;
@@ -186,88 +192,79 @@ const Admin = () => {
     }
   };
 
-  // Handle first-time password setup
-  const handleSetupPassword = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password.length < 8) {
-      toast.error(isRTL ? 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' : 'Password must be at least 8 characters');
+    // Validate inputs
+    const emailResult = emailSchema.safeParse(email);
+    if (!emailResult.success) {
+      toast.error(emailResult.error.errors[0]?.message || 'Invalid email');
       return;
     }
-    
-    if (password !== confirmPassword) {
+
+    const passwordResult = passwordSchema.safeParse(password);
+    if (!passwordResult.success) {
+      toast.error(passwordResult.error.errors[0]?.message || 'Invalid password');
+      return;
+    }
+
+    if (isSignUpMode && password !== confirmPassword) {
       toast.error(isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
       return;
     }
 
-    setIsLoading(true);
-    
+    setIsSubmitting(true);
+
     try {
-      const hashedPassword = await hashPassword(password);
-      const updatedConfig = { 
-        ...getConfig(), 
-        adminPass: '', // Clear plaintext password
-        adminPassHash: hashedPassword 
-      };
-      saveSiteConfig(updatedConfig);
-      setConfig(updatedConfig);
-      setNeedsSetup(false);
-      
-      // Auto-login after setup
-      const authToken = {
-        authenticated: true,
-        expiry: Date.now() + (60 * 60 * 1000),
-        hash: hashedPassword.substring(0, 16) // Store partial hash for validation
-      };
-      sessionStorage.setItem('admin_auth', JSON.stringify(authToken));
-      setIsAuthenticated(true);
-      toast.success(isRTL ? 'تم إنشاء كلمة المرور بنجاح' : 'Password created successfully');
-    } catch (error) {
-      toast.error(isRTL ? 'حدث خطأ' : 'An error occurred');
+      if (isSignUpMode) {
+        const { error } = await signUp(email, password);
+        if (error) {
+          if (error.message.includes('already registered')) {
+            toast.error(isRTL ? 'هذا البريد مسجل بالفعل' : 'This email is already registered');
+          } else {
+            toast.error(error.message);
+          }
+        } else {
+          toast.success(isRTL ? 'تم إنشاء الحساب بنجاح' : 'Account created successfully');
+          // If this is first admin, try to claim admin role
+          if (needsFirstAdmin) {
+            setTimeout(async () => {
+              const claimed = await claimFirstAdmin();
+              if (claimed) {
+                await refreshAdminStatus();
+                toast.success(isRTL ? 'تم منحك صلاحيات المسؤول' : 'You have been granted admin privileges');
+              }
+            }, 500);
+          }
+        }
+      } else {
+        const { error } = await signIn(email, password);
+        if (error) {
+          if (error.message.includes('Invalid login')) {
+            toast.error(isRTL ? 'بيانات الدخول غير صحيحة' : 'Invalid login credentials');
+          } else {
+            toast.error(error.message);
+          }
+        } else {
+          toast.success(isRTL ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+        }
+      }
+    } catch (err) {
+      toast.error(isRTL ? 'حدث خطأ غير متوقع' : 'An unexpected error occurred');
     }
-    
-    setIsLoading(false);
+
+    setIsSubmitting(false);
     setPassword('');
     setConfirmPassword('');
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const storedConfig = getConfig();
-      let isValid = false;
-      
-      // Check against hashed password (secure)
-      if (storedConfig.adminPassHash) {
-        isValid = await verifyPassword(password, storedConfig.adminPassHash);
-      }
-      
-      if (isValid) {
-        const authToken = {
-          authenticated: true,
-          expiry: Date.now() + (60 * 60 * 1000),
-          hash: storedConfig.adminPassHash?.substring(0, 16)
-        };
-        sessionStorage.setItem('admin_auth', JSON.stringify(authToken));
-        setIsAuthenticated(true);
-        toast.success(isRTL ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
-      } else {
-        toast.error(isRTL ? 'كلمة المرور غير صحيحة' : 'Invalid password');
-      }
-    } catch (error) {
-      toast.error(isRTL ? 'حدث خطأ' : 'An error occurred');
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success(isRTL ? 'تم تسجيل الخروج' : 'Logged out successfully');
     }
-
-    setIsLoading(false);
-    setPassword('');
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('admin_auth');
-    setIsAuthenticated(false);
-    toast.success(isRTL ? 'تم تسجيل الخروج' : 'Logged out successfully');
   };
 
   const handleSaveConfig = () => {
@@ -281,137 +278,21 @@ const Admin = () => {
     toast.success(isRTL ? 'تم تنزيل ملف الإعدادات' : 'Config file downloaded');
   };
 
-  const updatePassword = async () => {
-    if (newPassword.length < 8) {
-      toast.error(isRTL ? 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل' : 'New password must be at least 8 characters');
-      return;
-    }
-
-    try {
-      // Verify current password
-      const storedConfig = getConfig();
-      const isCurrentValid = storedConfig.adminPassHash 
-        ? await verifyPassword(currentPassword, storedConfig.adminPassHash)
-        : false;
-      
-      if (!isCurrentValid) {
-        toast.error(isRTL ? 'كلمة المرور الحالية غير صحيحة' : 'Current password is incorrect');
-        return;
-      }
-
-      // Hash and save new password
-      const newHash = await hashPassword(newPassword);
-      const updatedConfig = { 
-        ...config, 
-        adminPass: '', // Clear any legacy plaintext
-        adminPassHash: newHash 
-      };
-      setConfig(updatedConfig);
-      saveSiteConfig(updatedConfig);
-      toast.success(isRTL ? 'تم تحديث كلمة المرور' : 'Password updated');
-      setNewPassword('');
-      setCurrentPassword('');
-    } catch (error) {
-      toast.error(isRTL ? 'حدث خطأ' : 'An error occurred');
-    }
-  };
-
   const openGoogleAnalytics = () => {
     window.open('https://analytics.google.com/', '_blank');
   };
 
-  // First-time Setup Page
-  if (needsSetup) {
+  // Loading state
+  if (isLoading) {
     return (
-      <>
-        <Helmet>
-          <title>{isRTL ? 'إعداد كلمة المرور | لوحة التحكم' : 'Setup Password | Admin Dashboard'}</title>
-          <meta name="robots" content="noindex, nofollow" />
-        </Helmet>
-
-        <div className="min-h-screen bg-background flex items-center justify-center p-4">
-          <div className="w-full max-w-md">
-            <div className="glass-card p-8 rounded-2xl">
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 mx-auto mb-4 bg-green-500/10 rounded-2xl flex items-center justify-center">
-                  <Lock className="w-8 h-8 text-green-500" />
-                </div>
-                <h1 className="text-2xl font-bold text-foreground">
-                  {isRTL ? 'إعداد كلمة المرور' : 'Setup Admin Password'}
-                </h1>
-                <p className="text-muted-foreground mt-2">
-                  {isRTL ? 'قم بإنشاء كلمة مرور آمنة للوحة التحكم' : 'Create a secure password for the admin dashboard'}
-                </p>
-              </div>
-
-              <form onSubmit={handleSetupPassword} className="space-y-4">
-                <div>
-                  <Label htmlFor="setup-password">
-                    {isRTL ? 'كلمة المرور الجديدة' : 'New Password'}
-                  </Label>
-                  <Input
-                    id="setup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={isRTL ? '8 أحرف على الأقل' : 'At least 8 characters'}
-                    className="mt-2"
-                    autoComplete="new-password"
-                    minLength={8}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="confirm-password">
-                    {isRTL ? 'تأكيد كلمة المرور' : 'Confirm Password'}
-                  </Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="mt-2"
-                    autoComplete="new-password"
-                    minLength={8}
-                    required
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-green-600 hover:bg-green-700"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      {isRTL ? 'جاري الإعداد...' : 'Setting up...'}
-                    </span>
-                  ) : (
-                    <>
-                      <Lock className="w-4 h-4 me-2" />
-                      {isRTL ? 'إنشاء كلمة المرور' : 'Create Password'}
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              <p className="text-xs text-muted-foreground text-center mt-6">
-                {isRTL 
-                  ? 'سيتم تشفير كلمة المرور ولن يتم تخزينها كنص عادي'
-                  : 'Password will be encrypted and not stored in plain text'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
     );
   }
 
-  // Login Page
-  if (!isAuthenticated) {
+  // Auth page (login/signup)
+  if (!user) {
     return (
       <>
         <Helmet>
@@ -423,20 +304,50 @@ const Admin = () => {
           <div className="w-full max-w-md">
             <div className="glass-card p-8 rounded-2xl">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <Lock className="w-8 h-8 text-primary" />
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${
+                  needsFirstAdmin ? 'bg-green-500/10' : 'bg-primary/10'
+                }`}>
+                  {needsFirstAdmin ? (
+                    <Shield className="w-8 h-8 text-green-500" />
+                  ) : (
+                    <Lock className="w-8 h-8 text-primary" />
+                  )}
                 </div>
                 <h1 className="text-2xl font-bold text-foreground">
-                  {isRTL ? 'لوحة التحكم' : 'Admin Dashboard'}
+                  {needsFirstAdmin 
+                    ? (isRTL ? 'إعداد حساب المسؤول' : 'Setup Admin Account')
+                    : (isRTL ? 'لوحة التحكم' : 'Admin Dashboard')}
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                  {isRTL ? 'أدخل كلمة المرور للمتابعة' : 'Enter password to continue'}
+                  {needsFirstAdmin
+                    ? (isRTL ? 'قم بإنشاء أول حساب مسؤول' : 'Create the first admin account')
+                    : (isSignUpMode 
+                        ? (isRTL ? 'إنشاء حساب جديد' : 'Create a new account')
+                        : (isRTL ? 'أدخل بياناتك للمتابعة' : 'Enter your credentials to continue'))}
                 </p>
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleAuth} className="space-y-4">
                 <div>
-                  <Label htmlFor="password">
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    {isRTL ? 'البريد الإلكتروني' : 'Email'}
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@example.com"
+                    className="mt-2"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="password" className="flex items-center gap-2">
+                    <KeyRound className="w-4 h-4" />
                     {isRTL ? 'كلمة المرور' : 'Password'}
                   </Label>
                   <Input
@@ -444,23 +355,50 @@ const Admin = () => {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
+                    placeholder="••••••••"
                     className="mt-2"
-                    autoComplete="current-password"
+                    autoComplete={isSignUpMode ? 'new-password' : 'current-password'}
+                    minLength={8}
                     required
                   />
                 </div>
 
+                {isSignUpMode && (
+                  <div>
+                    <Label htmlFor="confirm-password">
+                      {isRTL ? 'تأكيد كلمة المرور' : 'Confirm Password'}
+                    </Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="mt-2"
+                      autoComplete="new-password"
+                      minLength={8}
+                      required
+                    />
+                  </div>
+                )}
+
                 <Button 
                   type="submit" 
-                  className="w-full"
-                  disabled={isLoading}
+                  className={`w-full ${needsFirstAdmin ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                  disabled={isSubmitting}
                 >
-                  {isLoading ? (
+                  {isSubmitting ? (
                     <span className="flex items-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      {isRTL ? 'جاري التحقق...' : 'Verifying...'}
+                      {isRTL ? 'جاري المعالجة...' : 'Processing...'}
                     </span>
+                  ) : isSignUpMode ? (
+                    <>
+                      <UserPlus className="w-4 h-4 me-2" />
+                      {needsFirstAdmin 
+                        ? (isRTL ? 'إنشاء حساب المسؤول' : 'Create Admin Account')
+                        : (isRTL ? 'إنشاء حساب' : 'Sign Up')}
+                    </>
                   ) : (
                     <>
                       <Lock className="w-4 h-4 me-2" />
@@ -470,11 +408,62 @@ const Admin = () => {
                 </Button>
               </form>
 
+              {!needsFirstAdmin && (
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setIsSignUpMode(!isSignUpMode)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {isSignUpMode 
+                      ? (isRTL ? 'لديك حساب؟ تسجيل الدخول' : 'Already have an account? Login')
+                      : (isRTL ? 'ليس لديك حساب؟ إنشاء حساب' : "Don't have an account? Sign Up")}
+                  </button>
+                </div>
+              )}
+
               <p className="text-xs text-muted-foreground text-center mt-6">
                 {isRTL 
                   ? 'هذه المنطقة مخصصة للمسؤولين فقط'
                   : 'This area is for administrators only'}
               </p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // User is logged in but not admin
+  if (!isAdmin) {
+    return (
+      <>
+        <Helmet>
+          <title>{isRTL ? 'غير مصرح' : 'Unauthorized'}</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <div className="glass-card p-8 rounded-2xl text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-2">
+                {isRTL ? 'غير مصرح بالوصول' : 'Access Denied'}
+              </h1>
+              <p className="text-muted-foreground mb-6">
+                {isRTL 
+                  ? 'ليس لديك صلاحيات للوصول إلى لوحة التحكم'
+                  : 'You do not have permission to access the admin dashboard'}
+              </p>
+              <p className="text-sm text-muted-foreground mb-6">
+                {isRTL ? 'البريد الإلكتروني: ' : 'Email: '}{user.email}
+              </p>
+              <Button onClick={handleLogout} variant="outline" className="gap-2">
+                <LogOut className="w-4 h-4" />
+                {isRTL ? 'تسجيل الخروج' : 'Sign Out'}
+              </Button>
             </div>
           </div>
         </div>
@@ -494,6 +483,7 @@ const Admin = () => {
     percentage: Math.round((d.count / totalDevices) * 100)
   })) || [];
 
+  // Admin dashboard
   return (
     <>
       <Helmet>
@@ -526,6 +516,25 @@ const Admin = () => {
               </Button>
             </div>
 
+            {/* User info */}
+            {sidebarOpen && (
+              <div className="p-4 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {isRTL ? 'مسؤول' : 'Admin'}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Navigation */}
             <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
               {sidebarItems.map((item) => (
@@ -533,7 +542,6 @@ const Admin = () => {
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
-                    // Close sidebar on mobile after selection
                     if (window.innerWidth < 1024) {
                       setSidebarOpen(false);
                     }
@@ -766,7 +774,7 @@ const Admin = () => {
             </div>
           )}
 
-          {/* Content Tab - Control all text */}
+          {/* Content Tab */}
           {activeTab === 'content' && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
@@ -1494,35 +1502,30 @@ const Admin = () => {
                 </div>
               </div>
 
-              {/* Change Password */}
+              {/* Account Info */}
               <div className="glass-card rounded-2xl p-6">
                 <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Lock className="w-5 h-5" />
-                  {isRTL ? 'تغيير كلمة المرور' : 'Change Password'}
+                  <Shield className="w-5 h-5" />
+                  {isRTL ? 'معلومات الحساب' : 'Account Information'}
                 </h3>
                 <div className="space-y-4 max-w-md">
                   <div>
-                    <Label>{isRTL ? 'كلمة المرور الحالية' : 'Current Password'}</Label>
+                    <Label>{isRTL ? 'البريد الإلكتروني' : 'Email'}</Label>
                     <Input
-                      type="password"
+                      type="email"
                       className="mt-2"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      value={user.email || ''}
+                      disabled
                     />
                   </div>
                   <div>
-                    <Label>{isRTL ? 'كلمة المرور الجديدة' : 'New Password'}</Label>
+                    <Label>{isRTL ? 'الصلاحية' : 'Role'}</Label>
                     <Input
-                      type="password"
                       className="mt-2"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      value={isRTL ? 'مسؤول' : 'Admin'}
+                      disabled
                     />
                   </div>
-                  <Button onClick={updatePassword} variant="outline" className="gap-2">
-                    <Lock className="w-4 h-4" />
-                    {isRTL ? 'تحديث كلمة المرور' : 'Update Password'}
-                  </Button>
                 </div>
               </div>
 
