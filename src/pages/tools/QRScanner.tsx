@@ -87,8 +87,9 @@ const QRScanner = () => {
 
   const isUrl = (str: string) => {
     try {
-      new URL(str);
-      return true;
+      const url = new URL(str);
+      // Only allow http and https protocols to prevent javascript: and data: XSS
+      return url.protocol === 'http:' || url.protocol === 'https:';
     } catch {
       return false;
     }
@@ -96,7 +97,8 @@ const QRScanner = () => {
 
   const openLink = () => {
     if (scannedData && isUrl(scannedData)) {
-      window.open(scannedData, '_blank');
+      // Add noopener and noreferrer for security
+      window.open(scannedData, '_blank', 'noopener,noreferrer');
     }
   };
 
