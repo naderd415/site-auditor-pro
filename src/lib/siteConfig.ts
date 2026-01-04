@@ -286,23 +286,41 @@ export const trackUniqueVisitor = (): boolean => {
   }
   return false;
 };
+// Validate Google Analytics ID format
+// Supports: G-XXXXXXXXXX (GA4), UA-XXXXXXXX-X (Universal Analytics), AW-XXXXXXXXXX (Ads), DC-XXXXXXXXXX (DoubleClick)
+const GA_ID_REGEX = /^(G|UA|AW|DC)-[A-Z0-9-]+$/i;
 
-// Inject Google Analytics
+export const isValidGAId = (gaId: string): boolean => {
+  if (!gaId) return false;
+  return GA_ID_REGEX.test(gaId.trim());
+};
+
+// Inject Google Analytics with validation to prevent XSS
 export const injectGoogleAnalytics = (gaId: string): void => {
   if (!gaId || document.getElementById('ga-script')) return;
+  
+  // Validate GA ID format to prevent script injection
+  const trimmedId = gaId.trim();
+  if (!isValidGAId(trimmedId)) {
+    console.error('[Security] Invalid Google Analytics ID format. Expected format: G-XXXXXXXXXX, UA-XXXXXXXX-X, AW-XXXXXXXXXX, or DC-XXXXXXXXXX');
+    return;
+  }
   
   const script = document.createElement('script');
   script.id = 'ga-script';
   script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(trimmedId)}`;
   document.head.appendChild(script);
   
+  // Use textContent instead of innerHTML for the inline script configuration
+  // The GA ID is validated above, so safe to use in template literal
   const inlineScript = document.createElement('script');
-  inlineScript.innerHTML = `
+  inlineScript.id = 'ga-inline-script';
+  inlineScript.textContent = `
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', '${gaId}');
+    gtag('config', '${trimmedId}');
   `;
   document.head.appendChild(inlineScript);
 };
