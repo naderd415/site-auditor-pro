@@ -93,33 +93,37 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = adCode;
     
-    // Execute any scripts in the ad code (already validated)
-    const scripts = wrapper.querySelectorAll('script');
+    // Execute only external scripts from validated trusted domains
+    // Note: Inline scripts are already blocked by adCodeValidator
+    const scripts = wrapper.querySelectorAll('script[src]');
+    const scriptsToAppend: HTMLScriptElement[] = [];
+    
     scripts.forEach((script) => {
       const newScript = document.createElement('script');
       
-      // Copy attributes
+      // Copy attributes only
       Array.from(script.attributes).forEach(attr => {
         newScript.setAttribute(attr.name, attr.value);
       });
       
-      // Copy content
-      newScript.textContent = script.textContent;
+      // Do NOT copy textContent - we only execute external scripts
       
-      // Remove original script
+      // Remove original script from wrapper
       script.remove();
       
-      // Append the rest of the content first
-      container.appendChild(wrapper);
-      
-      // Then append the script
-      container.appendChild(newScript);
+      // Store script for later appending
+      scriptsToAppend.push(newScript);
     });
     
-    // If no scripts, just append the content
-    if (scripts.length === 0 && wrapper.innerHTML) {
+    // Append the content first
+    if (wrapper.innerHTML) {
       container.appendChild(wrapper);
     }
+    
+    // Then append external scripts
+    scriptsToAppend.forEach(script => {
+      container.appendChild(script);
+    });
   }, [adCode]);
 
   // Log validation errors but don't show UI error

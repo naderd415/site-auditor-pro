@@ -48,14 +48,15 @@ export const AdSlot = ({ type, className = '', fallbackText }: AdSlotProps) => {
     if (adCode && containerRef.current) {
       containerRef.current.innerHTML = adCode;
       
-      // Execute any scripts in the ad code (already validated)
-      const scripts = containerRef.current.querySelectorAll('script');
+      // Execute only external scripts from validated trusted domains
+      // Note: Inline scripts are already blocked by adCodeValidator
+      const scripts = containerRef.current.querySelectorAll('script[src]');
       scripts.forEach((script) => {
         const newScript = document.createElement('script');
         Array.from(script.attributes).forEach((attr) => {
           newScript.setAttribute(attr.name, attr.value);
         });
-        newScript.textContent = script.textContent;
+        // Do NOT copy textContent - we only execute external scripts
         script.parentNode?.replaceChild(newScript, script);
       });
     }
