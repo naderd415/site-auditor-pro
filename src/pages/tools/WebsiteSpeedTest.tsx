@@ -26,6 +26,26 @@ interface PerformanceResult {
   }[];
 }
 
+// Rate limiting constants
+const RATE_LIMIT_KEY = 'pagespeed_last_request';
+const MIN_INTERVAL_MS = 60000; // 1 minute between requests
+
+const canMakeRequest = (): boolean => {
+  const lastRequest = localStorage.getItem(RATE_LIMIT_KEY);
+  if (!lastRequest) return true;
+  
+  const timeSince = Date.now() - parseInt(lastRequest, 10);
+  return timeSince >= MIN_INTERVAL_MS;
+};
+
+const getRemainingCooldown = (): number => {
+  const lastRequest = localStorage.getItem(RATE_LIMIT_KEY);
+  if (!lastRequest) return 0;
+  
+  const timeSince = Date.now() - parseInt(lastRequest, 10);
+  return Math.max(0, Math.ceil((MIN_INTERVAL_MS - timeSince) / 1000));
+};
+
 const WebsiteSpeedTest = () => {
   const { isRTL } = useLanguage();
   const [url, setUrl] = useState('');
@@ -36,6 +56,17 @@ const WebsiteSpeedTest = () => {
   const runSpeedTest = async () => {
     if (!url) {
       toast.error(isRTL ? 'الرجاء إدخال رابط الموقع' : 'Please enter a website URL');
+      return;
+    }
+
+    // Check rate limiting
+    if (!canMakeRequest()) {
+      const remaining = getRemainingCooldown();
+      toast.error(
+        isRTL 
+          ? `يرجى الانتظار ${remaining} ثانية قبل الطلب التالي` 
+          : `Please wait ${remaining} seconds before the next request`
+      );
       return;
     }
 
@@ -51,6 +82,9 @@ const WebsiteSpeedTest = () => {
       toast.error(isRTL ? 'رابط غير صالح' : 'Invalid URL');
       return;
     }
+
+    // Record the request time for rate limiting
+    localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
 
     setLoading(true);
     setError('');
