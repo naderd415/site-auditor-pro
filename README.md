@@ -29,6 +29,56 @@ A comprehensive suite of browser-based tools for image editing, PDF manipulation
 - Descriptive meta tags optimized for AI search engines
 - Vercel Speed Insights integration for performance monitoring
 
+### 🔒 Security Hardening (January 2026)
+
+#### 1. XSS Protection for Ad Code (`src/lib/adCodeValidator.ts`)
+- **Inline Script Blocking**: All inline scripts are blocked - only external scripts from trusted domains allowed
+- **Trusted Domain Whitelist**: Google AdSense, Adsterra, Media.net, and other verified ad networks
+- **Forbidden Tags**: Blocks `<iframe>`, `<object>`, `<embed>`, `<form>`, `<input>`, `<svg>`, `<link>`, `<meta>`, `<base>`, etc.
+- **Dangerous Protocols**: Blocks `javascript:`, `data:`, `vbscript:`, `file:`, `ftp:`, `blob:`
+- **Event Handler Blocking**: Blocks 100+ event handlers (`onclick`, `onerror`, `onload`, etc.)
+- **DOMPurify Sanitization**: Additional layer of HTML sanitization
+
+#### 2. Google Analytics Security (`src/lib/siteConfig.ts`)
+- **GA ID Validation**: Regex validation for G-XXXXXXXXXX, UA-XXXXXXXX-X, AW-XXXXXXXXXX formats
+- **URL Encoding**: Uses `encodeURIComponent()` for GA ID in script URL
+- **Safe Script Injection**: Uses `textContent` instead of `innerHTML` for inline configuration
+
+#### 3. Website Speed Test Protection (`src/pages/tools/WebsiteSpeedTest.tsx`)
+- **Rate Limiting**: Maximum 1 request per minute using localStorage timestamp
+- **SSRF Protection**: Blocks private IP addresses and internal hostnames:
+  - `localhost`, `127.x.x.x`, `192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`
+  - IPv6 localhost (`::1`, `[::1]`)
+  - IPv6 private ranges (`fc00::/7`, `fe80::/10`)
+  - `.local` domains
+- **Cooldown Display**: Shows remaining seconds before next request allowed
+
+#### 4. Ad Slot Script Execution (`AdSenseSlot.tsx` & `DynamicAdSlot.tsx`)
+- **External Scripts Only**: Only executes `<script src="...">` from validated domains
+- **No textContent Copy**: Prevents execution of malicious inline code
+- **DOM Validation**: Scripts validated before DOM insertion
+
+#### 5. Secure Authentication System
+- **Separate Roles Table**: `user_roles` table isolated from `profiles` (prevents privilege escalation)
+- **RLS Policies**: Row Level Security on all sensitive tables
+- **SECURITY DEFINER Functions**: `has_role()` function prevents RLS recursion
+- **Server-side Validation**: No client-side admin checks (localStorage/hardcoded)
+
+---
+
+## 🛡️ Security Checklist
+
+| Protection | Status | Implementation |
+|------------|--------|----------------|
+| XSS Prevention | ✅ | DOMPurify + Content Validation |
+| SSRF Protection | ✅ | Private IP/Hostname Blocking |
+| Rate Limiting | ✅ | 1 req/min for Speed Test |
+| Script Injection | ✅ | Whitelist-only External Scripts |
+| SQL Injection | ✅ | Supabase SDK + Prepared Statements |
+| Auth Security | ✅ | Server-side RLS + Separate Roles |
+| GA ID Injection | ✅ | Regex Validation + Encoding |
+| Ad Code XSS | ✅ | Multi-layer Validation |
+
 ---
 
 ## 🛠️ Tech Stack
