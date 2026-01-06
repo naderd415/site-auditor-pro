@@ -491,7 +491,7 @@ const Admin = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-background flex w-full">
+      <div className="min-h-screen bg-background text-foreground flex w-full">
         {/* Sidebar */}
         <aside className={`fixed lg:static inset-y-0 start-0 z-50 transition-all duration-300 ease-in-out ${
           sidebarOpen 
