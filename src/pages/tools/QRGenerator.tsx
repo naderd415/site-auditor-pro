@@ -17,10 +17,9 @@ import {
   Wifi, User, MessageSquare, MapPin, Calendar, Send, Bitcoin
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { templates, categories, type InternalTemplate as Template, type DotsType, type CornersType } from '@/lib/qr/internalTemplates';
 
-// أنواع النقاط والزوايا
-type DotsType = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded';
-type CornersType = 'square' | 'dot' | 'extra-rounded';
+// أنواع المحتوى
 type ContentType = 'url' | 'text' | 'email' | 'phone' | 'wifi' | 'vcard' | 'sms' | 'location' | 'event' | 'whatsapp' | 'crypto';
 
 interface WifiData {
