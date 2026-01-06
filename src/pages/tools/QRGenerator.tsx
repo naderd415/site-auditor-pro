@@ -233,12 +233,45 @@ const templates: Template[] = [
   { id: 98, cat: 'nature', name: 'Aurora', nameAr: 'شفق', color1: '#00FF00', color2: '#FF00FF', bg: '#0a0a2e', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🌌' },
   { id: 99, cat: 'nature', name: 'Beach', nameAr: 'شاطئ', color1: '#FFD700', color2: '#00CED1', bg: '#FFF8DC', dots: 'dots', corner: 'dot', icon: '🏖️' },
   { id: 100, cat: 'nature', name: 'Autumn', nameAr: 'خريف', color1: '#FF8C00', color2: '#8B4513', bg: '#FFF8DC', dots: 'classy', corner: 'extra-rounded', icon: '🍂' },
+
+  // 3D Artistic Templates (30+) - قوالب ثلاثية الأبعاد
+  { id: 101, cat: '3d', name: '3D Chrome', nameAr: '3D كروم', color1: '#C0C0C0', color2: '#808080', bg: '#1a1a1a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🔮' },
+  { id: 102, cat: '3d', name: '3D Gold Metallic', nameAr: '3D ذهبي معدني', color1: '#FFD700', color2: '#B8860B', bg: '#0a0505', dots: 'classy', corner: 'extra-rounded', icon: '🥇' },
+  { id: 103, cat: '3d', name: '3D Crystal Blue', nameAr: '3D كريستال أزرق', color1: '#00BFFF', color2: '#1E90FF', bg: '#0a1929', dots: 'extra-rounded', corner: 'extra-rounded', icon: '💎' },
+  { id: 104, cat: '3d', name: '3D Hologram', nameAr: '3D هولوجرام', color1: '#FF00FF', color2: '#00FFFF', bg: '#0f0f0f', dots: 'dots', corner: 'dot', icon: '🌈' },
+  { id: 105, cat: '3d', name: '3D Emerald', nameAr: '3D زمردي', color1: '#50C878', color2: '#00A86B', bg: '#0a1a0a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '💚' },
+  { id: 106, cat: '3d', name: '3D Ruby', nameAr: '3D ياقوتي', color1: '#E0115F', color2: '#9B111E', bg: '#1a0a0a', dots: 'classy', corner: 'extra-rounded', icon: '❤️' },
+  { id: 107, cat: '3d', name: '3D Sapphire', nameAr: '3D ياقوت أزرق', color1: '#0F52BA', color2: '#082567', bg: '#0a0a1a', dots: 'extra-rounded', corner: 'extra-rounded', icon: '💙' },
+  { id: 108, cat: '3d', name: '3D Amethyst', nameAr: '3D جمشت', color1: '#9966CC', color2: '#7851A9', bg: '#0f0a1a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '💜' },
+  { id: 109, cat: '3d', name: '3D Neon Glow', nameAr: '3D نيون متوهج', color1: '#39FF14', color2: '#00FF00', bg: '#000000', dots: 'dots', corner: 'dot', icon: '✨' },
+  { id: 110, cat: '3d', name: '3D Copper', nameAr: '3D نحاسي', color1: '#B87333', color2: '#8B4513', bg: '#1a1510', dots: 'classy', corner: 'extra-rounded', icon: '🟤' },
+  { id: 111, cat: '3d', name: '3D Platinum', nameAr: '3D بلاتيني', color1: '#E5E4E2', color2: '#A8A9AD', bg: '#1a1a1a', dots: 'rounded', corner: 'extra-rounded', icon: '⚪' },
+  { id: 112, cat: '3d', name: '3D Bronze', nameAr: '3D برونزي', color1: '#CD7F32', color2: '#8B4513', bg: '#0a0805', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🥉' },
+  { id: 113, cat: '3d', name: '3D Diamond', nameAr: '3D ماسي', color1: '#B9F2FF', color2: '#89CFF0', bg: '#0a0a0a', dots: 'dots', corner: 'dot', icon: '💠' },
+  { id: 114, cat: '3d', name: '3D Pearl', nameAr: '3D لؤلؤي', color1: '#FDEEF4', color2: '#EAE0C8', bg: '#1a1a1a', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🔵' },
+  { id: 115, cat: '3d', name: '3D Obsidian', nameAr: '3D أوبسيديان', color1: '#3D3D3D', color2: '#1a1a1a', bg: '#ffffff', dots: 'square', corner: 'square', icon: '⬛' },
+  { id: 116, cat: '3d', name: '3D Rose Quartz', nameAr: '3D كوارتز وردي', color1: '#F7CAC9', color2: '#E8A0A0', bg: '#1a0a0a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🌸' },
+  { id: 117, cat: '3d', name: '3D Topaz', nameAr: '3D توباز', color1: '#FFC87C', color2: '#FF9966', bg: '#0a0805', dots: 'classy', corner: 'extra-rounded', icon: '🟡' },
+  { id: 118, cat: '3d', name: '3D Turquoise', nameAr: '3D فيروزي', color1: '#40E0D0', color2: '#00CED1', bg: '#0a1a1a', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🩵' },
+  { id: 119, cat: '3d', name: '3D Onyx', nameAr: '3D أونيكس', color1: '#353935', color2: '#0a0a0a', bg: '#E0E0E0', dots: 'square', corner: 'square', icon: '🖤' },
+  { id: 120, cat: '3d', name: '3D Opal', nameAr: '3D أوبال', color1: '#A8C3BC', color2: '#D4E4ED', bg: '#0f0f0f', dots: 'dots', corner: 'dot', icon: '🪨' },
+  { id: 121, cat: '3d', name: '3D Titanium', nameAr: '3D تيتانيوم', color1: '#878681', color2: '#545454', bg: '#0a0a0a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🛡️' },
+  { id: 122, cat: '3d', name: '3D Lava', nameAr: '3D حمم بركانية', color1: '#CF1020', color2: '#FF4500', bg: '#0a0505', dots: 'classy', corner: 'extra-rounded', icon: '🌋' },
+  { id: 123, cat: '3d', name: '3D Ice', nameAr: '3D جليدي', color1: '#A5F2F3', color2: '#70D6FF', bg: '#0a1a2a', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🧊' },
+  { id: 124, cat: '3d', name: '3D Sunset Glow', nameAr: '3D توهج الغروب', color1: '#FF6B6B', color2: '#FFE66D', bg: '#1a0a1a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🌇' },
+  { id: 125, cat: '3d', name: '3D Aurora', nameAr: '3D شفق قطبي', color1: '#4FFFB0', color2: '#7B68EE', bg: '#0a0a1a', dots: 'dots', corner: 'dot', icon: '🌌' },
+  { id: 126, cat: '3d', name: '3D Midnight', nameAr: '3D منتصف الليل', color1: '#191970', color2: '#000080', bg: '#ffffff', dots: 'classy', corner: 'extra-rounded', icon: '🌃' },
+  { id: 127, cat: '3d', name: '3D Sunrise', nameAr: '3D شروق', color1: '#FF7F50', color2: '#FFD700', bg: '#0a0508', dots: 'extra-rounded', corner: 'extra-rounded', icon: '🌅' },
+  { id: 128, cat: '3d', name: '3D Ocean Deep', nameAr: '3D عمق المحيط', color1: '#006994', color2: '#00008B', bg: '#0a0a1a', dots: 'classy-rounded', corner: 'extra-rounded', icon: '🌊' },
+  { id: 129, cat: '3d', name: '3D Forest Mist', nameAr: '3D ضباب الغابة', color1: '#228B22', color2: '#355E3B', bg: '#0a1a0a', dots: 'rounded', corner: 'extra-rounded', icon: '🌲' },
+  { id: 130, cat: '3d', name: '3D Cyber Pink', nameAr: '3D سايبر وردي', color1: '#FF1493', color2: '#FF69B4', bg: '#0a0a0a', dots: 'dots', corner: 'dot', icon: '🩷' },
 ];
 
 // الفئات
 const categories = [
   { id: 'all', name: 'All', nameAr: 'الكل' },
   { id: 'gold', name: 'Gold ✨', nameAr: 'ذهبي ✨' },
+  { id: '3d', name: '3D 🔮', nameAr: '3D 🔮' },
   { id: 'social', name: 'Social', nameAr: 'سوشيال' },
   { id: 'business', name: 'Business', nameAr: 'أعمال' },
   { id: 'love', name: 'Love', nameAr: 'حب' },
@@ -1079,8 +1112,8 @@ startxref
     >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* RIGHT Side - Settings (First on mobile, Second on desktop) */}
-          <div className="lg:col-span-8 order-1 lg:order-2">
+          {/* RIGHT Side - Settings (First on both mobile and desktop for better UX) */}
+          <div className="lg:col-span-8 order-2 lg:order-2">
             <div className="bg-card border border-border rounded-2xl p-6">
               <h2 className="text-xl font-bold mb-4">
                 {isRTL ? 'إعدادات التخصيص' : 'Customization Settings'}
@@ -1456,9 +1489,9 @@ startxref
             </div>
           </div>
           
-          {/* LEFT Side - QR Preview (Sticky, Second on mobile) */}
-          <div className="lg:col-span-4 order-2 lg:order-1">
-            <div className="bg-card border border-border rounded-2xl p-6 lg:sticky lg:top-24">
+          {/* LEFT Side - QR Preview (Sticky on desktop, First on mobile for immediate visibility) */}
+          <div className="lg:col-span-4 order-1 lg:order-1">
+            <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 lg:sticky lg:top-24">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-3">
                 <span className="text-2xl">📱</span>
                 {isRTL ? 'معاينة QR Code' : 'QR Code Preview'}

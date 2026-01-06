@@ -136,10 +136,19 @@ export function DynamicAdSlot({ type, className = '' }: DynamicAdSlotProps) {
   if (!adCode) {
     return (
       <div className={`my-4 ${className}`}>
+        <div className="text-center mb-1">
+          <span className="inline-block px-2 py-0.5 text-xs font-medium text-muted-foreground/50 bg-muted/30 rounded-full">
+            {isRTL ? 'مساحة إعلانية' : 'Ad Space'}
+          </span>
+        </div>
         <div 
-          className={`flex justify-center items-center mx-auto rounded-lg overflow-hidden bg-muted/20 ${sizeClasses[type]}`}
+          className={`flex justify-center items-center mx-auto rounded-lg overflow-hidden border border-dashed border-border/50 bg-muted/10 ${sizeClasses[type]}`}
           style={{ maxWidth: '100%' }}
-        />
+        >
+          <span className="text-xs text-muted-foreground/40">
+            {isRTL ? 'قم بتكوين الإعلانات من لوحة الأدمن' : 'Configure ads in Admin panel'}
+          </span>
+        </div>
       </div>
     );
   }

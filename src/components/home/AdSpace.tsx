@@ -23,9 +23,9 @@ export function AdSpace({ type = 'horizontal', className = '' }: AdSpaceProps) {
   };
 
   return (
-    <div className={`${typeClasses[type]} ${className}`}>
+    <div className={`w-full flex justify-center ${typeClasses[type]} ${className}`}>
       {/* Try to render dynamic ad first */}
-      <DynamicAdSlot type={slotMapping[type]} />
+      <DynamicAdSlot type={slotMapping[type]} className="w-full" />
     </div>
   );
 }
