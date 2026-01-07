@@ -69,29 +69,49 @@ export function useAdminAuth() {
 
   // Update auth state based on session
   const updateAuthState = useCallback(async (session: Session | null) => {
-    if (!session?.user) {
-      // Check if we need first admin setup
-      const adminExists = await checkAnyAdminExists();
+    try {
+      if (!session?.user) {
+        // Check if we need first admin setup
+        let adminExists = false;
+        try {
+          adminExists = await checkAnyAdminExists();
+        } catch (e) {
+          console.error('Error checking admin exists:', e);
+        }
+        setState({
+          user: null,
+          session: null,
+          isAdmin: false,
+          isLoading: false,
+          needsFirstAdmin: !adminExists,
+        });
+        return;
+      }
+
+      let isAdmin = false;
+      let adminExists = false;
+      
+      try {
+        isAdmin = await checkAdminRole(session.user.id);
+        adminExists = await checkAnyAdminExists();
+      } catch (e) {
+        console.error('Error checking roles:', e);
+      }
+
       setState({
-        user: null,
-        session: null,
-        isAdmin: false,
+        user: session.user,
+        session,
+        isAdmin,
         isLoading: false,
         needsFirstAdmin: !adminExists,
       });
-      return;
+    } catch (e) {
+      console.error('Error in updateAuthState:', e);
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+      }));
     }
-
-    const isAdmin = await checkAdminRole(session.user.id);
-    const adminExists = await checkAnyAdminExists();
-
-    setState({
-      user: session.user,
-      session,
-      isAdmin,
-      isLoading: false,
-      needsFirstAdmin: !adminExists,
-    });
   }, [checkAdminRole, checkAnyAdminExists]);
 
   useEffect(() => {
