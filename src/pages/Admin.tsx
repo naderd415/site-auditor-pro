@@ -44,7 +44,6 @@ import {
   Menu,
   X,
   RefreshCw,
-  Snowflake,
   Mail,
   KeyRound,
   UserPlus,
@@ -651,15 +650,6 @@ const Admin = () => {
                   >
                     <BarChart3 className="w-4 h-4" />
                     {isRTL ? 'التحليلات' : 'View Analytics'}
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setActiveTab('appearance')}
-                    className="gap-2"
-                  >
-                    <Snowflake className="w-4 h-4" />
-                    {isRTL ? 'وضع الاحتفالات' : 'Festive Mode'}
                   </Button>
                 </div>
               </div>
@@ -1383,37 +1373,6 @@ const Admin = () => {
                 </div>
               </div>
 
-              {/* Christmas Mode */}
-              <div className="glass-card rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Snowflake className="w-5 h-5 text-blue-400" />
-                  {isRTL ? 'وضع الكريسماس/رأس السنة 🎄' : 'Christmas/New Year Mode 🎄'}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {isRTL 
-                    ? 'تفعيل تأثيرات الثلج والاحتفالات على الموقع'
-                    : 'Enable snow effects and festive decorations on the site'}
-                </p>
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => setConfig(prev => ({ ...prev, christmasMode: !prev.christmasMode }))}
-                    className={`relative w-14 h-7 rounded-full transition-all ${
-                      config.christmasMode 
-                        ? 'bg-gradient-to-r from-red-500 to-green-500' 
-                        : 'bg-muted'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-all ${
-                      config.christmasMode ? 'end-1' : 'start-1'
-                    }`} />
-                  </button>
-                  <span className="text-sm text-foreground">
-                    {config.christmasMode 
-                      ? (isRTL ? 'مفعّل 🎄❄️' : 'Enabled 🎄❄️') 
-                      : (isRTL ? 'معطّل' : 'Disabled')}
-                  </span>
-                </div>
-              </div>
 
               {/* Language Selection */}
               <div className="glass-card rounded-2xl p-6">

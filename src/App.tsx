@@ -6,8 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "@/lib/i18n";
-import { ChristmasEffects } from "@/components/ChristmasEffects";
-import { NewYearBanner } from "@/components/NewYearBanner";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (
@@ -92,9 +91,8 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <NewYearBanner />
-            <ChristmasEffects />
             <Suspense fallback={<PageLoader />}>
+              <Routes>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/tools" element={<Tools />} />
@@ -131,7 +129,7 @@ const App = () => (
                 <Route path="/tools/pdf-to-excel" element={<PDFToExcel />} />
                 
                 {/* Admin */}
-                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
                 
                 {/* Text Tools */}
                 <Route path="/tools/text-counter" element={<TextCounter />} />
