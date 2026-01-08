@@ -187,7 +187,7 @@ export const getStats = (): VisitorStats => {
   } catch (e) {
     console.error('Error loading stats:', e);
   }
-  
+
   // Initialize with default values
   const defaultStats: VisitorStats = {
     totalVisits: 0,
@@ -199,10 +199,16 @@ export const getStats = (): VisitorStats => {
     dailyData: [],
     countries: [],
     devices: [],
-    browsers: []
+    browsers: [],
   };
-  
-  localStorage.setItem(STATS_KEY, JSON.stringify(defaultStats));
+
+  // IMPORTANT: localStorage can throw (quota, privacy mode). Never crash the app.
+  try {
+    localStorage.setItem(STATS_KEY, JSON.stringify(defaultStats));
+  } catch (e) {
+    console.error('Error initializing stats storage:', e);
+  }
+
   return defaultStats;
 };
 
@@ -213,10 +219,10 @@ export const trackVisit = (path: string): void => {
     const now = new Date();
     const today = now.toISOString().split('T')[0];
     const hour = now.getHours();
-    
+
     // Increment total visits
     stats.totalVisits += 1;
-    
+
     // Check if it's a new day
     const lastDate = stats.lastUpdated.split('T')[0];
     if (lastDate !== today) {
@@ -231,25 +237,25 @@ export const trackVisit = (path: string): void => {
       stats.todayVisits = 0;
       stats.hourlyData = Array(24).fill(0);
     }
-    
+
     stats.todayVisits += 1;
     stats.hourlyData[hour] = (stats.hourlyData[hour] || 0) + 1;
-    
+
     // Track page views
     stats.pageViews[path] = (stats.pageViews[path] || 0) + 1;
-    
+
     // Detect device type
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const isTablet = /iPad|Android/i.test(navigator.userAgent) && !/Mobile/i.test(navigator.userAgent);
     const deviceType = isTablet ? 'Tablet' : isMobile ? 'Mobile' : 'Desktop';
-    
+
     const deviceIndex = stats.devices.findIndex(d => d.type === deviceType);
     if (deviceIndex >= 0) {
       stats.devices[deviceIndex].count += 1;
     } else {
       stats.devices.push({ type: deviceType, count: 1 });
     }
-    
+
     // Detect browser
     const userAgent = navigator.userAgent;
     let browser = 'Other';
@@ -257,16 +263,16 @@ export const trackVisit = (path: string): void => {
     else if (userAgent.includes('Firefox')) browser = 'Firefox';
     else if (userAgent.includes('Safari')) browser = 'Safari';
     else if (userAgent.includes('Edge')) browser = 'Edge';
-    
+
     const browserIndex = stats.browsers.findIndex(b => b.name === browser);
     if (browserIndex >= 0) {
       stats.browsers[browserIndex].count += 1;
     } else {
       stats.browsers.push({ name: browser, count: 1 });
     }
-    
+
     stats.lastUpdated = now.toISOString();
-    
+
     localStorage.setItem(STATS_KEY, JSON.stringify(stats));
   } catch (e) {
     console.error('Error tracking visit:', e);
@@ -276,15 +282,22 @@ export const trackVisit = (path: string): void => {
 // Check unique visitor
 export const trackUniqueVisitor = (): boolean => {
   const visitorKey = 'bth_visitor_id';
-  const stats = getStats();
-  
-  if (!localStorage.getItem(visitorKey)) {
-    localStorage.setItem(visitorKey, `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
-    stats.uniqueVisitors += 1;
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-    return true;
+
+  try {
+    const stats = getStats();
+
+    if (!localStorage.getItem(visitorKey)) {
+      localStorage.setItem(visitorKey, `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+      stats.uniqueVisitors += 1;
+      localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    console.error('Error tracking unique visitor:', e);
+    return false;
   }
-  return false;
 };
 // Validate Google Analytics ID format
 // Supports: G-XXXXXXXXXX (GA4), UA-XXXXXXXX-X (Universal Analytics), AW-XXXXXXXXXX (Ads), DC-XXXXXXXXXX (DoubleClick)
