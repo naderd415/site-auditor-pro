@@ -93,7 +93,6 @@ const App = () => (
           <BrowserRouter>
             <Suspense fallback={<PageLoader />}>
               <Routes>
-              <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/about" element={<About />} />
