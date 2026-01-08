@@ -17,8 +17,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true, error };
   }
 
-  componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
-    // Intentionally no console spam; UI fallback is enough.
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log for debugging (users can screenshot console)
+    console.error('[ErrorBoundary] Page crashed:', error, errorInfo);
   }
 
   render() {
@@ -31,6 +32,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <p className="text-sm text-muted-foreground mt-2">
                 حاول تحديث الصفحة. لو المشكلة مستمرة ابعتلي لقطة من Console.
               </p>
+              {this.state.error?.message ? (
+                <details className="mt-4">
+                  <summary className="text-sm text-primary cursor-pointer">عرض سبب الخطأ</summary>
+                  <pre className="mt-2 text-xs whitespace-pre-wrap break-words text-muted-foreground">
+                    {this.state.error.message}
+                  </pre>
+                </details>
+              ) : null}
             </div>
           </div>
         )
