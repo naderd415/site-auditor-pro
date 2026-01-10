@@ -2,6 +2,34 @@
 # Optimized for Search Engine & AI Crawlers (GEO - Generative Engine Optimization)
 # Last Updated: January 2026
 
+# ===========================================
+# TOOL PAGES - Priority Indexing
+# ===========================================
+# Calculator Tools (Including NEW Work Hours Calculator)
+# /tools/work-hours-calculator - Freelance income & tax calculator
+# /tools/percentage-calculator - Percentage calculations
+# /tools/age-calculator - Age calculations with zodiac
+# /tools/bmi-calculator - BMI health calculator
+# /tools/unit-converter - Unit conversions
+# /tools/tip-calculator - Tip and bill splitting
+
+# Image Tools
+# /tools/image-converter, /tools/image-compressor, /tools/image-resizer
+# /tools/image-cropper, /tools/image-to-base64
+
+# PDF Tools
+# /tools/pdf-merge, /tools/pdf-split, /tools/pdf-compress
+# /tools/pdf-to-image, /tools/image-to-pdf, /tools/pdf-rotate
+# /tools/pdf-sign, /tools/pdf-watermark, /tools/pdf-protect
+
+# SEO Tools
+# /tools/website-speed-test, /tools/broken-links-checker
+# /tools/meta-tag-generator, /tools/xml-sitemap-generator
+
+# ===========================================
+# CRAWLER RULES
+# ===========================================
+
 # Google Bots
 User-agent: Googlebot
 Allow: /

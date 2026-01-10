@@ -223,6 +223,11 @@ export interface Translation {
       description: string;
       article: string;
     };
+    workHoursCalculator: {
+      name: string;
+      description: string;
+      article: string;
+    };
     qrGenerator: {
       name: string;
       description: string;
@@ -512,6 +517,11 @@ export const translations: Record<Language, Translation> = {
         description: 'احسب الإكرامية وقسم الفاتورة',
         article: 'حاسبة الإكرامية تساعدك على حساب الإكرامية المناسبة وتقسيم الفاتورة بين عدة أشخاص بسهولة.',
       },
+      workHoursCalculator: {
+        name: 'حاسبة ساعات العمل والدخل',
+        description: 'احسب سعر الساعة، الدخل، الضرائب، وأرباح المشاريع الحرة',
+        article: 'حاسبة ساعات العمل والدخل هي أداة شاملة للموظفين والمستقلين وأصحاب الأعمال الحرة. احسب سعر الساعة الفعلي، الدخل من ساعات العمل مع الوقت الإضافي، الضرائب المستحقة وصافي الدخل، وأرباح مشاريعك الحرة بعد خصم الضرائب والمصاريف.',
+      },
       qrGenerator: {
         name: 'مولد QR AI',
         description: 'أنشئ رموز QR لروابطك ونصوصك - مدعوم بالذكاء الاصطناعي',
@@ -795,6 +805,11 @@ export const translations: Record<Language, Translation> = {
         description: 'Calculate tips and split bills',
         article: 'The tip calculator helps you calculate the appropriate tip and split the bill between multiple people easily.',
       },
+      workHoursCalculator: {
+        name: 'Work Hours & Income Calculator',
+        description: 'Calculate hourly rate, income, taxes, and freelance project profits',
+        article: 'The Work Hours & Income Calculator is a comprehensive tool for employees, freelancers, and business owners. Calculate your effective hourly rate, income from work hours with overtime, taxes due and net income, and freelance project profits after taxes and expenses.',
+      },
       qrGenerator: {
         name: 'QR Generator AI',
         description: 'Create QR codes for your links and text - AI Powered',
@@ -1077,6 +1092,11 @@ export const translations: Record<Language, Translation> = {
         name: 'Calculateur de pourboire',
         description: 'Calculez les pourboires et divisez les factures',
         article: 'Le calculateur de pourboire vous aide à calculer le pourboire approprié et à diviser l\'addition.',
+      },
+      workHoursCalculator: {
+        name: 'Calculateur d\'heures de travail et revenus',
+        description: 'Calculez le taux horaire, les revenus, les taxes et les bénéfices des projets freelance',
+        article: 'Le calculateur d\'heures de travail et de revenus est un outil complet pour les employés, les freelancers et les entrepreneurs. Calculez votre taux horaire effectif, vos revenus avec heures supplémentaires, les taxes et les bénéfices de vos projets.',
       },
       qrGenerator: {
         name: 'Générateur QR AI',

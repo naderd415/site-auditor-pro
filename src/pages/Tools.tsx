@@ -49,7 +49,7 @@ const Tools = () => {
 
   // Group tools by category
   const toolsByCategory = useMemo(() => {
-    const categories = ['image', 'pdf', 'text', 'color', 'calculator', 'qr'];
+    const categories = ['image', 'pdf', 'text', 'color', 'calculator', 'qr', 'seo'];
     return categories.map(cat => ({
       id: cat,
       name: t.categories[cat as keyof typeof t.categories],
@@ -64,6 +64,7 @@ const Tools = () => {
     color: 'text-[hsl(280,100%,60%)]',
     calculator: 'text-[hsl(25,100%,55%)]',
     qr: 'text-[hsl(55,100%,55%)]',
+    seo: 'text-[hsl(200,100%,55%)]',
   };
 
   return (

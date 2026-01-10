@@ -9,13 +9,22 @@ A comprehensive suite of browser-based tools for image editing, PDF manipulation
 
 ---
 
-## ✨ New Features (2026)
+## ✨ Latest Updates (January 2026)
 
-### 🎄 Christmas/New Year Mode
-- Toggle via Admin Dashboard → Appearance → Christmas Mode
-- When ON: Displays "Happy New Year 2026!" banner with confetti animation
-- Snowfall effects and festive decorations across the site
-- When OFF: All decorations completely hidden, professional look restored
+### 🧮 Work Hours & Income Calculator (NEW!)
+A comprehensive financial calculator for freelancers, employees, and business owners:
+- **Hourly Rate Calculator**: Calculate your effective hourly rate from total income
+- **Income Calculator**: Compute earnings from hourly rate with overtime support (1.5x after 40 hrs)
+- **Tax Calculator**: Determine taxes owed and net income after deductions
+- **Freelance Project Calculator**: Calculate project profits after taxes and expenses
+- Full SEO optimization targeting Western freelance/gig economy markets
+- Available at `/tools/work-hours-calculator`
+
+### 🔐 Enhanced Admin Error Logging
+- `useAdminAuth` hook now logs all authentication errors to localStorage
+- Error logs can be retrieved with `getAdminErrorLogs()` function
+- Last 20 errors stored for debugging purposes
+- Helps diagnose admin page issues without console access
 
 ### 📢 Dynamic Ad Management
 - Admin Dashboard → Ads section allows pasting ad scripts
