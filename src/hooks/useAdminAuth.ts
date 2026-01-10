@@ -2,6 +2,60 @@ import { useState, useEffect, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+// Error logging storage key
+const ADMIN_ERROR_LOG_KEY = 'bth_admin_error_log';
+
+// Log admin errors to localStorage for debugging
+export function logAdminError(context: string, error: unknown): void {
+  try {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      context,
+      message: errorMessage,
+      stack: errorStack,
+    };
+    
+    // Get existing logs
+    const existingLogs = JSON.parse(localStorage.getItem(ADMIN_ERROR_LOG_KEY) || '[]');
+    
+    // Keep only last 20 entries
+    const updatedLogs = [...existingLogs, logEntry].slice(-20);
+    
+    localStorage.setItem(ADMIN_ERROR_LOG_KEY, JSON.stringify(updatedLogs));
+    
+    console.error(`[AdminAuth:${context}]`, errorMessage, errorStack);
+  } catch (e) {
+    // Silently fail if localStorage is unavailable
+    console.error(`[AdminAuth:${context}]`, error);
+  }
+}
+
+// Get admin error logs for display
+export function getAdminErrorLogs(): Array<{
+  timestamp: string;
+  context: string;
+  message: string;
+  stack?: string;
+}> {
+  try {
+    return JSON.parse(localStorage.getItem(ADMIN_ERROR_LOG_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+// Clear admin error logs
+export function clearAdminErrorLogs(): void {
+  try {
+    localStorage.removeItem(ADMIN_ERROR_LOG_KEY);
+  } catch {
+    // Silently fail
+  }
+}
+
 interface AdminAuthState {
   user: User | null;
   session: Session | null;
@@ -27,12 +81,12 @@ export function useAdminAuth() {
         _role: 'admin',
       });
       if (error) {
-        console.error('Error checking admin role:', error);
+        logAdminError('checkAdminRole', error);
         return false;
       }
       return data === true;
     } catch (err) {
-      console.error('Error in checkAdminRole:', err);
+      logAdminError('checkAdminRole:catch', err);
       return false;
     }
   }, []);
@@ -42,12 +96,12 @@ export function useAdminAuth() {
     try {
       const { data, error } = await supabase.rpc('any_admin_exists');
       if (error) {
-        console.error('Error checking if admin exists:', error);
+        logAdminError('checkAnyAdminExists', error);
         return false;
       }
       return data === true;
     } catch (err) {
-      console.error('Error in checkAnyAdminExists:', err);
+      logAdminError('checkAnyAdminExists:catch', err);
       return false;
     }
   }, []);
@@ -57,12 +111,12 @@ export function useAdminAuth() {
     try {
       const { data, error } = await supabase.rpc('claim_first_admin');
       if (error) {
-        console.error('Error claiming first admin:', error);
+        logAdminError('claimFirstAdmin', error);
         return false;
       }
       return data === true;
     } catch (err) {
-      console.error('Error in claimFirstAdmin:', err);
+      logAdminError('claimFirstAdmin:catch', err);
       return false;
     }
   }, []);
@@ -76,7 +130,7 @@ export function useAdminAuth() {
         try {
           adminExists = await checkAnyAdminExists();
         } catch (e) {
-          console.error('Error checking admin exists:', e);
+          logAdminError('updateAuthState:noSession', e);
         }
         setState({
           user: null,
@@ -95,7 +149,7 @@ export function useAdminAuth() {
         isAdmin = await checkAdminRole(session.user.id);
         adminExists = await checkAnyAdminExists();
       } catch (e) {
-        console.error('Error checking roles:', e);
+        logAdminError('updateAuthState:checkRoles', e);
       }
 
       setState({
@@ -106,7 +160,7 @@ export function useAdminAuth() {
         needsFirstAdmin: !adminExists,
       });
     } catch (e) {
-      console.error('Error in updateAuthState:', e);
+      logAdminError('updateAuthState:catch', e);
       setState(prev => ({
         ...prev,
         isLoading: false,
