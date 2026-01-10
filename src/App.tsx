@@ -48,6 +48,7 @@ const AgeCalculator = lazy(() => import("./pages/tools/AgeCalculator"));
 const BMICalculator = lazy(() => import("./pages/tools/BMICalculator"));
 const UnitConverter = lazy(() => import("./pages/tools/UnitConverter"));
 const TipCalculator = lazy(() => import("./pages/tools/TipCalculator"));
+const WorkHoursCalculator = lazy(() => import("./pages/tools/WorkHoursCalculator"));
 const PDFMerge = lazy(() => import("./pages/tools/PDFMerge"));
 const PDFSplit = lazy(() => import("./pages/tools/PDFSplit"));
 const PDFCompress = lazy(() => import("./pages/tools/PDFCompress"));
@@ -150,6 +151,7 @@ const App = () => (
                 <Route path="/tools/bmi-calculator" element={<BMICalculator />} />
                 <Route path="/tools/unit-converter" element={<UnitConverter />} />
                 <Route path="/tools/tip-calculator" element={<TipCalculator />} />
+                <Route path="/tools/work-hours-calculator" element={<WorkHoursCalculator />} />
                 
                 {/* QR Tools */}
                 <Route path="/tools/qr-generator" element={<QRGenerator />} />
