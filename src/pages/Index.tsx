@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/home/HeroSection';
-import { AdSpace } from '@/components/home/AdSpace';
+import { AdsterraTop } from '@/components/ads/AdsterraTop';
+import { AdsterraSidebar } from '@/components/ads/AdsterraSidebar';
 import { FAQ } from '@/components/FAQ';
 import { useLanguage } from '@/lib/i18n';
 import { allTools } from '@/components/home/ToolsGrid';
@@ -130,8 +131,9 @@ const Index = () => {
       <main className="flex-grow relative z-10">
         <HeroSection onSearch={handleSearch} />
 
+        {/* Top Ad - Adsterra */}
         <div className="container mx-auto px-4 mb-8">
-          <AdSpace type="horizontal" />
+          <AdsterraTop />
         </div>
 
         {/* Category Blocks */}
@@ -182,8 +184,9 @@ const Index = () => {
           </div>
         </section>
 
-        <div className="container mx-auto px-4 my-12">
-          <AdSpace type="horizontal" />
+        {/* Middle Ad - Adsterra Sidebar */}
+        <div className="container mx-auto px-4 my-12 flex justify-center">
+          <AdsterraSidebar />
         </div>
 
         {/* Article Section */}
@@ -221,8 +224,9 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Bottom Ad - Adsterra */}
         <div className="container mx-auto px-4 my-12">
-          <AdSpace type="horizontal" />
+          <AdsterraTop />
         </div>
 
         {/* FAQ Section */}

@@ -3,8 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { AdSpace } from '@/components/home/AdSpace';
-import { AdsterraBanner } from '@/components/AdsterraBanner';
+import { AdsterraTop } from '@/components/ads/AdsterraTop';
+import { AdsterraSidebar } from '@/components/ads/AdsterraSidebar';
 import { FAQ } from '@/components/FAQ';
 import { useLanguage } from '@/lib/i18n';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -142,8 +142,9 @@ export function ToolPageLayout({ title, description, article, keywords, children
             </div>
           </section>
 
+          {/* Top Ad */}
           <div className="container mx-auto px-4 mb-8">
-            <AdSpace type="horizontal" />
+            <AdsterraTop />
           </div>
 
           {/* Tool Content */}
@@ -155,15 +156,14 @@ export function ToolPageLayout({ title, description, article, keywords, children
             </div>
           </section>
 
-          {/* Adsterra Banner - After Tool Output */}
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <AdsterraBanner />
-            </div>
+          {/* Sidebar Ad - After Tool Output */}
+          <div className="container mx-auto px-4 flex justify-center">
+            <AdsterraSidebar />
           </div>
 
+          {/* Bottom Top Ad */}
           <div className="container mx-auto px-4 my-8">
-            <AdSpace type="horizontal" />
+            <AdsterraTop />
           </div>
 
           {/* Article Section - SEO Content */}
@@ -185,7 +185,7 @@ export function ToolPageLayout({ title, description, article, keywords, children
           </article>
 
           <div className="container mx-auto px-4 my-8">
-            <AdSpace type="horizontal" />
+            <AdsterraTop />
           </div>
 
           {/* FAQ Section */}

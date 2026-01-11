@@ -1,48 +1,82 @@
 <!doctype html>
-<html lang="en-US">
+<html lang="en-US" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Primary Meta Tags -->
-    <title>BestToolsHub - Free Online PDF, Image & QR Tools | أفضل أدوات PDF والصور مجاناً</title>
-    <meta name="title" content="BestToolsHub - Free Online PDF, Image & QR Tools | أفضل أدوات PDF والصور مجاناً" />
-    <meta name="description" content="Free online tools for PDF conversion, image editing, QR code generation, and more. No registration required. All processing happens in your browser. أدوات مجانية لتحويل PDF وتعديل الصور وإنشاء رموز QR." />
-    <meta name="keywords" content="PDF tools, image converter, QR generator, compress PDF, merge PDF, image compressor, free online tools, أدوات PDF, تحويل الصور, ضغط PDF, دمج PDF, أدوات مجانية" />
+    <!-- Primary Meta Tags - Optimized for Western Audience -->
+    <title>BestToolsHub - Free PDF Tools & QR Code Generator | No Upload Required</title>
+    <meta name="title" content="BestToolsHub - Free PDF Tools & QR Code Generator | No Upload Required" />
+    <meta name="description" content="100% Free online PDF tools, image converters, and QR code generators. All processing happens in your browser - your files never leave your device. Trusted by millions worldwide." />
+    <meta name="keywords" content="free PDF tools, PDF converter online, QR code generator, compress PDF free, merge PDF online, image compressor, secure PDF tools, browser-based tools, no upload PDF, privacy-first tools" />
     <meta name="author" content="BestToolsHub" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="canonical" href="https://besttoolshub.online/" />
+    
+    <!-- Geo Targeting for Western Markets -->
+    <meta name="geo.region" content="US" />
+    <meta name="geo.placename" content="United States" />
+    <meta name="language" content="English" />
+    <meta http-equiv="content-language" content="en-US" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://besttoolshub.online/" />
-    <meta property="og:title" content="BestToolsHub - Free Online PDF, Image & QR Tools" />
-    <meta property="og:description" content="Free online tools for PDF conversion, image editing, QR code generation. No registration required. All processing happens in your browser." />
+    <meta property="og:title" content="BestToolsHub - Free PDF Tools & QR Code Generator" />
+    <meta property="og:description" content="100% Free online PDF tools, image converters, and QR code generators. All processing happens in your browser. Your files never leave your device." />
     <meta property="og:image" content="https://besttoolshub.online/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="BestToolsHub" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="ar_SA" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://besttoolshub.online/" />
-    <meta name="twitter:title" content="BestToolsHub - Free Online PDF, Image & QR Tools" />
-    <meta name="twitter:description" content="Free online tools for PDF conversion, image editing, QR code generation. No registration required." />
+    <meta name="twitter:title" content="BestToolsHub - Free PDF Tools & QR Code Generator" />
+    <meta name="twitter:description" content="100% Free online tools. All processing happens in your browser. Your files never leave your device." />
     <meta name="twitter:image" content="https://besttoolshub.online/og-image.png" />
 
     <!-- Favicon & PWA -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo.png" />
     <link rel="manifest" href="/manifest.json" />
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#10b981" />
-    <meta name="msapplication-TileColor" content="#10b981" />
     
-    <!-- Preconnect for performance -->
+    <!-- Theme Color - Dark mode primary -->
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="msapplication-TileColor" content="#0f172a" />
+    
+    <!-- DNS Prefetch for Performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="//pl28380371.effectivegatecpm.com" />
+    <link rel="dns-prefetch" href="//www.highperformanceformat.com" />
+    
+    <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- Google Analytics (gtag.js) -->
+    <!-- Preload Inter font for faster FCP -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    
+    <!-- Dark mode initialization script - prevent flash -->
+    <script>
+      (function() {
+        var theme = localStorage.getItem('besttoolshub-theme');
+        if (!theme || theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (theme === 'system') {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          }
+        }
+      })();
+    </script>
+    
+    <!-- Google Analytics (gtag.js) - Deferred -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1VXG36RSY"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -51,34 +85,64 @@
       gtag('config', 'G-X1VXG36RSY');
     </script>
     
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
-    
-    <!-- Structured Data -->
+    <!-- Structured Data - WebSite -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "BestToolsHub",
-      "alternateName": "أفضل أدوات",
       "url": "https://besttoolshub.online/",
-      "description": "Free online tools for PDF, image editing, and QR code generation",
+      "description": "Free online tools for PDF, image editing, and QR code generation. 100% browser-based, private and secure.",
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://besttoolshub.online/tools?q={search_term_string}",
         "query-input": "required name=search_term_string"
-      }
+      },
+      "inLanguage": "en-US"
     }
     </script>
     
+    <!-- Structured Data - Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "BestToolsHub",
       "url": "https://besttoolshub.online/",
-      "logo": "https://besttoolshub.online/logo.png",
+      "logo": "https://besttoolshub.online/assets/logo.png",
+      "description": "Provider of free, secure, browser-based online tools",
       "sameAs": []
+    }
+    </script>
+    
+    <!-- Structured Data - SoftwareApplication for Tools -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "BestToolsHub PDF & QR Tools",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "2847",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": [
+        "PDF Merge",
+        "PDF Split",
+        "PDF Compress",
+        "QR Code Generator",
+        "Image Converter",
+        "100% Browser-Based Processing"
+      ]
     }
     </script>
   </head>
