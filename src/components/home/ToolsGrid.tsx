@@ -90,6 +90,8 @@ export const allTools: Tool[] = [
   { id: 'unit-converter', nameKey: 'tools.unitConverter.name', descriptionKey: 'tools.unitConverter.description', icon: Ruler, category: 'calculator', href: '/tools/unit-converter', color: 'orange' },
   { id: 'tip-calculator', nameKey: 'tools.tipCalculator.name', descriptionKey: 'tools.tipCalculator.description', icon: Calculator, category: 'calculator', href: '/tools/tip-calculator', color: 'orange' },
   { id: 'work-hours-calculator', nameKey: 'tools.workHoursCalculator.name', descriptionKey: 'tools.workHoursCalculator.description', icon: Calculator, category: 'calculator', href: '/tools/work-hours-calculator', color: 'orange' },
+  { id: 'currency-converter', nameKey: 'tools.currencyConverter.name', descriptionKey: 'tools.currencyConverter.description', icon: Calculator, category: 'calculator', href: '/tools/currency-converter', color: 'orange' },
+  { id: 'discount-calculator', nameKey: 'tools.discountCalculator.name', descriptionKey: 'tools.discountCalculator.description', icon: Percent, category: 'calculator', href: '/tools/discount-calculator', color: 'orange' },
   
   // QR Tools
   { id: 'qr-generator', nameKey: 'tools.qrGenerator.name', descriptionKey: 'tools.qrGenerator.description', icon: QrCode, category: 'qr', href: '/tools/qr-generator', color: 'yellow' },
