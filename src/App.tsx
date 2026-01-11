@@ -49,6 +49,8 @@ const BMICalculator = lazy(() => import("./pages/tools/BMICalculator"));
 const UnitConverter = lazy(() => import("./pages/tools/UnitConverter"));
 const TipCalculator = lazy(() => import("./pages/tools/TipCalculator"));
 const WorkHoursCalculator = lazy(() => import("./pages/tools/WorkHoursCalculator"));
+const CurrencyConverter = lazy(() => import("./pages/tools/CurrencyConverter"));
+const DiscountCalculator = lazy(() => import("./pages/tools/DiscountCalculator"));
 const PDFMerge = lazy(() => import("./pages/tools/PDFMerge"));
 const PDFSplit = lazy(() => import("./pages/tools/PDFSplit"));
 const PDFCompress = lazy(() => import("./pages/tools/PDFCompress"));
@@ -152,6 +154,8 @@ const App = () => (
                 <Route path="/tools/unit-converter" element={<UnitConverter />} />
                 <Route path="/tools/tip-calculator" element={<TipCalculator />} />
                 <Route path="/tools/work-hours-calculator" element={<WorkHoursCalculator />} />
+                <Route path="/tools/currency-converter" element={<CurrencyConverter />} />
+                <Route path="/tools/discount-calculator" element={<DiscountCalculator />} />
                 
                 {/* QR Tools */}
                 <Route path="/tools/qr-generator" element={<QRGenerator />} />

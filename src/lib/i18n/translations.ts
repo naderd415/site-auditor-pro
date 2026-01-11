@@ -228,6 +228,16 @@ export interface Translation {
       description: string;
       article: string;
     };
+    currencyConverter: {
+      name: string;
+      description: string;
+      article: string;
+    };
+    discountCalculator: {
+      name: string;
+      description: string;
+      article: string;
+    };
     qrGenerator: {
       name: string;
       description: string;
@@ -520,7 +530,17 @@ export const translations: Record<Language, Translation> = {
       workHoursCalculator: {
         name: 'حاسبة ساعات العمل والدخل',
         description: 'احسب سعر الساعة، الدخل، الضرائب، وأرباح المشاريع الحرة',
-        article: 'حاسبة ساعات العمل والدخل هي أداة شاملة للموظفين والمستقلين وأصحاب الأعمال الحرة. احسب سعر الساعة الفعلي، الدخل من ساعات العمل مع الوقت الإضافي، الضرائب المستحقة وصافي الدخل، وأرباح مشاريعك الحرة بعد خصم الضرائب والمصاريف.',
+        article: 'حاسبة ساعات العمل والدخل هي أداة شاملة للموظفين والمستقلين وأصحاب الأعمال الحرة.',
+      },
+      currencyConverter: {
+        name: 'محول العملات',
+        description: 'حول بين العملات العالمية بأسعار صرف محدثة',
+        article: 'محول العملات المجاني يحول بين أكثر من 20 عملة عالمية.',
+      },
+      discountCalculator: {
+        name: 'حاسبة الخصومات',
+        description: 'احسب الخصومات والتخفيضات والضرائب بسهولة',
+        article: 'حاسبة الخصومات تحسب الخصومات والضرائب والتوفير.',
       },
       qrGenerator: {
         name: 'مولد QR AI',
@@ -808,6 +828,18 @@ export const translations: Record<Language, Translation> = {
       workHoursCalculator: {
         name: 'Work Hours & Income Calculator',
         description: 'Calculate hourly rate, income, taxes, and freelance project profits',
+        article: 'The Work Hours & Income Calculator is a comprehensive tool for employees, freelancers, and business owners.',
+      },
+      currencyConverter: {
+        name: 'Currency Converter',
+        description: 'Convert between global currencies with updated exchange rates',
+        article: 'Free currency converter supporting 20+ global currencies.',
+      },
+      discountCalculator: {
+        name: 'Discount Calculator',
+        description: 'Calculate discounts, savings, and taxes easily',
+        article: 'The discount calculator helps you find final prices after discounts and taxes.',
+      },
         article: 'The Work Hours & Income Calculator is a comprehensive tool for employees, freelancers, and business owners. Calculate your effective hourly rate, income from work hours with overtime, taxes due and net income, and freelance project profits after taxes and expenses.',
       },
       qrGenerator: {
@@ -1096,7 +1128,17 @@ export const translations: Record<Language, Translation> = {
       workHoursCalculator: {
         name: 'Calculateur d\'heures de travail et revenus',
         description: 'Calculez le taux horaire, les revenus, les taxes et les bénéfices des projets freelance',
-        article: 'Le calculateur d\'heures de travail et de revenus est un outil complet pour les employés, les freelancers et les entrepreneurs. Calculez votre taux horaire effectif, vos revenus avec heures supplémentaires, les taxes et les bénéfices de vos projets.',
+        article: 'Le calculateur d\'heures de travail et de revenus est un outil complet.',
+      },
+      currencyConverter: {
+        name: 'Convertisseur de devises',
+        description: 'Convertissez entre les devises mondiales avec des taux de change mis à jour',
+        article: 'Convertisseur de devises gratuit prenant en charge plus de 20 devises mondiales.',
+      },
+      discountCalculator: {
+        name: 'Calculateur de réduction',
+        description: 'Calculez facilement les réductions, économies et taxes',
+        article: 'Le calculateur de réduction vous aide à trouver les prix finaux après réductions et taxes.',
       },
       qrGenerator: {
         name: 'Générateur QR AI',
