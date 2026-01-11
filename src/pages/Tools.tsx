@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CategoryFilter } from '@/components/home/CategoryFilter';
-import { AdSpace } from '@/components/home/AdSpace';
+import { AdsterraTop } from '@/components/ads/AdsterraTop';
 import { useLanguage } from '@/lib/i18n';
 import { allTools } from '@/components/home/ToolsGrid';
 import { ChevronRight } from 'lucide-react';
@@ -110,7 +110,7 @@ const Tools = () => {
           </div>
 
           <div className="container mx-auto px-4 mb-8">
-            <AdSpace type="horizontal" />
+            <AdsterraTop />
           </div>
 
           {/* Tools List */}
@@ -180,7 +180,7 @@ const Tools = () => {
           </section>
 
           <div className="container mx-auto px-4 my-12">
-            <AdSpace type="horizontal" />
+            <AdsterraTop />
           </div>
 
           {/* Article Section */}
@@ -259,7 +259,7 @@ const Tools = () => {
           </section>
 
           <div className="container mx-auto px-4 my-12">
-            <AdSpace type="horizontal" />
+            <AdsterraTop />
           </div>
         </main>
 
