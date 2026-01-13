@@ -840,8 +840,6 @@ export const translations: Record<Language, Translation> = {
         description: 'Calculate discounts, savings, and taxes easily',
         article: 'The discount calculator helps you find final prices after discounts and taxes.',
       },
-        article: 'The Work Hours & Income Calculator is a comprehensive tool for employees, freelancers, and business owners. Calculate your effective hourly rate, income from work hours with overtime, taxes due and net income, and freelance project profits after taxes and expenses.',
-      },
       qrGenerator: {
         name: 'QR Generator AI',
         description: 'Create QR codes for your links and text - AI Powered',
