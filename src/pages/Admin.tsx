@@ -60,6 +60,7 @@ import {
   VisitorStats,
 } from '@/lib/siteConfig';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { ErrorLogViewer } from '@/components/admin/ErrorLogViewer';
 import { z } from 'zod';
 
 // Validation schemas
@@ -142,13 +143,14 @@ const Admin = () => {
     isAdmin,
     isLoading,
     needsFirstAdmin,
+    backendConfigured,
+    backendError,
     signUp,
     signIn,
     signOut,
     claimFirstAdmin,
     refreshAdminStatus,
   } = useAdminAuth();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -287,6 +289,40 @@ const Admin = () => {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
+    );
+  }
+
+  // Backend not configured (avoid hard crash)
+  if (!backendConfigured) {
+    return (
+      <>
+        <Helmet>
+          <title>{isRTL ? 'لوحة التحكم | BestToolsHub' : 'Admin Dashboard | BestToolsHub'}</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+
+        <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl space-y-6">
+            <div className="glass-card p-6 rounded-2xl">
+              <h1 className="text-xl font-bold text-foreground">
+                {isRTL ? 'تعذر تحميل لوحة التحكم' : 'Admin Dashboard Unavailable'}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-2">
+                {isRTL
+                  ? 'إعدادات الـBackend غير مكتملة في هذه البيئة، لذلك تم إيقاف تحميل لوحة التحكم لمنع حدوث انهيار.'
+                  : 'Backend configuration is missing in this environment, so the admin dashboard was stopped from loading to prevent a crash.'}
+              </p>
+              {backendError ? (
+                <p className="text-xs text-muted-foreground mt-3 font-mono break-words">
+                  {backendError}
+                </p>
+              ) : null}
+            </div>
+
+            <ErrorLogViewer />
+          </div>
+        </div>
+      </>
     );
   }
 
@@ -1503,6 +1539,8 @@ const Admin = () => {
                   {isRTL ? 'تنزيل الإعدادات' : 'Download Settings'}
                 </Button>
               </div>
+
+              <ErrorLogViewer />
             </div>
           )}
         </main>
