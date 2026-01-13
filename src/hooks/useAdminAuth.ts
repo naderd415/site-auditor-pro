@@ -172,9 +172,21 @@ export function useAdminAuth() {
   );
 
   useEffect(() => {
+    // In React 18 dev StrictMode, effects can run twice — avoid log spam.
+    const alreadyLogged =
+      typeof sessionStorage !== "undefined" &&
+      sessionStorage.getItem("bth_admin_backend_missing_logged") === "1";
+
     if (!isBackendConfigured()) {
       const msg = "Missing backend env vars (URL / key)";
-      logAdminError("init:backend", new Error(msg));
+      if (!alreadyLogged) {
+        try {
+          sessionStorage.setItem("bth_admin_backend_missing_logged", "1");
+        } catch {
+          // ignore
+        }
+        logAdminError("init:backend", new Error(msg));
+      }
       setState((prev) => ({
         ...prev,
         isLoading: false,
