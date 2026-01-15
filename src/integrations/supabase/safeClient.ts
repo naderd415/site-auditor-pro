@@ -4,13 +4,26 @@ import type { Database } from "./types";
 let cached: SupabaseClient<Database> | null = null;
 let loading: Promise<SupabaseClient<Database>> | null = null;
 
+/**
+ * Fallback values (publishable) to ensure /admin works even if Vite env injection
+ * is missing in some preview environments.
+ */
+const FALLBACK_BACKEND_URL = "https://vqvjtyhzwynabivlgrvb.supabase.co";
+const FALLBACK_BACKEND_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxdmp0eWh6d3luYWJpdmxncnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1NzQ0MDAsImV4cCI6MjA4MjE1MDQwMH0.gicKNWV_x5tWlRe4ne9suIiySGoc9V-jreXkOES0eoQ";
+
 function readBackendEnv(): { url?: string; key?: string } {
-  // Lovable Cloud / Vite envs (support multiple key names to be resilient across environments)
-  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-  const key = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    // fallback sometimes used by other setups
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    import.meta.env.VITE_SUPABASE_KEY) as string | undefined;
+  // Vite envs (support multiple key names to be resilient across environments)
+  const url =
+    (import.meta.env.VITE_SUPABASE_URL as string | undefined) ||
+    FALLBACK_BACKEND_URL;
+
+  const key =
+    ((import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      // fallback sometimes used by other setups
+      import.meta.env.VITE_SUPABASE_ANON_KEY ||
+      import.meta.env.VITE_SUPABASE_KEY) as string | undefined) ||
+    FALLBACK_BACKEND_KEY;
 
   return { url, key };
 }
