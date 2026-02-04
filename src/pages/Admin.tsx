@@ -42,7 +42,10 @@ import {
   X,
   RefreshCw,
   KeyRound,
-  Shield
+  Shield,
+  Cloud,
+  CloudOff,
+  Loader2
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
 import { toast } from 'sonner';
@@ -54,6 +57,7 @@ import {
   downloadConfig,
   VisitorStats,
 } from '@/lib/siteConfig';
+import { useCloudConfig } from '@/hooks/useCloudConfig';
 import { useSimpleAdminAuth } from '@/hooks/useSimpleAdminAuth';
 import { ErrorLogViewer } from '@/components/admin/ErrorLogViewer';
 import { AdsManager } from '@/components/admin/AdsManager';
@@ -132,20 +136,21 @@ const sidebarItems = [
 
 const Admin = () => {
   const { isRTL } = useLanguage();
-  const { isLoggedIn, isLoading, login, logout } = useSimpleAdminAuth();
+  const { isLoggedIn, isLoading: authLoading, login, logout } = useSimpleAdminAuth();
+  const { config, setConfig, saveConfig: saveCloudConfig, isLoading: configLoading, isSaving, error: configError, refresh: refreshConfig } = useCloudConfig();
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [config, setConfig] = useState<SiteConfig>(getConfig());
   const [stats, setStats] = useState<VisitorStats>(getStats());
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
-  // Load config from localStorage
+  // Apply theme when config loads
   useEffect(() => {
-    const savedConfig = getConfig();
-    setConfig(savedConfig);
-    applyTheme(savedConfig.theme);
-  }, []);
+    if (config.theme) {
+      applyTheme(config.theme);
+    }
+  }, [config.theme]);
 
   // Refresh stats periodically
   useEffect(() => {
@@ -192,10 +197,24 @@ const Admin = () => {
     toast.success(isRTL ? 'تم تسجيل الخروج' : 'Logged out successfully');
   };
 
-  const handleSaveConfig = () => {
-    saveSiteConfig(config);
-    applyTheme(config.theme);
-    toast.success(isRTL ? 'تم حفظ الإعدادات بنجاح' : 'Settings saved successfully');
+  const handleSaveConfig = async () => {
+    setSaveStatus('saving');
+    const success = await saveCloudConfig();
+    if (success) {
+      setSaveStatus('saved');
+      // Also save locally as backup
+      saveSiteConfig(config);
+      applyTheme(config.theme);
+      toast.success(isRTL ? 'تم حفظ الإعدادات للموقع كله ✓' : 'Settings saved globally ✓');
+      // Reset status after 3 seconds
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } else {
+      setSaveStatus('error');
+      // Fallback to local save
+      saveSiteConfig(config);
+      toast.warning(isRTL ? 'تم الحفظ محلياً فقط (مشكلة في الاتصال)' : 'Saved locally only (connection issue)');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
   };
 
   const handleDownloadConfig = () => {
@@ -208,10 +227,13 @@ const Admin = () => {
   };
 
   // Loading state
-  if (isLoading) {
+  if (authLoading || (isLoggedIn && configLoading)) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center flex-col gap-4">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-muted-foreground text-sm">
+          {isRTL ? 'جاري تحميل الإعدادات...' : 'Loading settings...'}
+        </p>
       </div>
     );
   }
@@ -728,7 +750,9 @@ const Admin = () => {
             <AdsManager 
               config={config} 
               setConfig={setConfig} 
-              onSave={handleSaveConfig} 
+              onSave={handleSaveConfig}
+              isSaving={isSaving}
+              saveStatus={saveStatus}
             />
           )}
 

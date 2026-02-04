@@ -5,6 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { 
   Code, 
   Megaphone, 
@@ -19,7 +26,10 @@ import {
   RectangleVertical,
   Maximize2,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Loader2,
+  Cloud,
+  CloudOff
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -27,6 +37,8 @@ interface AdsManagerProps {
   config: SiteConfig;
   setConfig: React.Dispatch<React.SetStateAction<SiteConfig>>;
   onSave: () => void;
+  isSaving?: boolean;
+  saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
 // Google AdSense recommended banner sizes
@@ -180,9 +192,25 @@ const AD_SLOTS = [
   },
 ];
 
-export function AdsManager({ config, setConfig, onSave }: AdsManagerProps) {
+export function AdsManager({ config, setConfig, onSave, isSaving = false, saveStatus = 'idle' }: AdsManagerProps) {
   const { isRTL } = useLanguage();
   const [expandedSlot, setExpandedSlot] = useState<string | null>(null);
+
+  // Get selected size for a slot
+  const getSlotSize = (slotId: string): string => {
+    const slotData = (config.ads as any)[`${slotId}Ad`];
+    return slotData?.size || AD_SLOTS.find(s => s.id === slotId)?.recommendedSize || 'mediumRectangle';
+  };
+
+  // Update slot size
+  const updateSlotSize = (slotId: string, size: string) => {
+    setConfig(prev => {
+      const newAds = { ...prev.ads };
+      const key = `${slotId}Ad`;
+      (newAds as any)[key] = { ...(newAds as any)[key], size };
+      return { ...prev, ads: newAds };
+    });
+  };
 
   const getSlotConfig = (slotId: string) => {
     switch (slotId) {
@@ -263,9 +291,21 @@ export function AdsManager({ config, setConfig, onSave }: AdsManagerProps) {
               : 'Configure ad placements with Google recommended sizes'}
           </p>
         </div>
-        <Button onClick={onSave} className="gap-2">
-          <Save className="w-4 h-4" />
-          {isRTL ? 'حفظ جميع التغييرات' : 'Save All Changes'}
+        <Button onClick={onSave} disabled={isSaving} className="gap-2">
+          {isSaving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : saveStatus === 'saved' ? (
+            <Cloud className="w-4 h-4 text-green-500" />
+          ) : saveStatus === 'error' ? (
+            <CloudOff className="w-4 h-4 text-red-500" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
+          {isSaving 
+            ? (isRTL ? 'جاري الحفظ...' : 'Saving...') 
+            : saveStatus === 'saved'
+              ? (isRTL ? 'تم الحفظ للموقع كله ✓' : 'Saved to Cloud ✓')
+              : (isRTL ? 'حفظ للموقع كله' : 'Save to Cloud')}
         </Button>
       </div>
 
@@ -468,13 +508,40 @@ export function AdsManager({ config, setConfig, onSave }: AdsManagerProps) {
               {isExpanded && (
                 <div className="p-4 pt-0 border-t border-border">
                   <div className="mt-4 space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                      <span className="text-sm text-muted-foreground">
-                        {isRTL ? 'الحجم الموصى به:' : 'Recommended Size:'}
-                      </span>
-                      <span className="font-mono text-sm font-medium text-primary">
-                        {recommendedSize.width}x{recommendedSize.height} ({isRTL ? recommendedSize.nameAr : recommendedSize.name})
-                      </span>
+                    {/* Size Selector */}
+                    <div className="space-y-2">
+                      <Label>{isRTL ? 'اختر حجم الإعلان' : 'Select Ad Size'}</Label>
+                      <Select
+                        value={getSlotSize(slot.id)}
+                        onValueChange={(value) => updateSlotSize(slot.id, value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder={isRTL ? 'اختر الحجم' : 'Select size'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(AD_BANNER_SIZES).map(([key, size]) => (
+                            <SelectItem key={key} value={key}>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs text-primary">
+                                  {size.width}x{size.height}
+                                </span>
+                                <span>-</span>
+                                <span>{isRTL ? size.nameAr : size.name}</span>
+                                {key === slot.recommendedSize && (
+                                  <span className="text-xs text-green-500 ms-1">
+                                    ({isRTL ? 'موصى به' : 'Recommended'})
+                                  </span>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        {isRTL 
+                          ? `الحجم المحدد: ${AD_BANNER_SIZES[getSlotSize(slot.id) as keyof typeof AD_BANNER_SIZES]?.width || recommendedSize.width}x${AD_BANNER_SIZES[getSlotSize(slot.id) as keyof typeof AD_BANNER_SIZES]?.height || recommendedSize.height}`
+                          : `Selected size: ${AD_BANNER_SIZES[getSlotSize(slot.id) as keyof typeof AD_BANNER_SIZES]?.width || recommendedSize.width}x${AD_BANNER_SIZES[getSlotSize(slot.id) as keyof typeof AD_BANNER_SIZES]?.height || recommendedSize.height}`}
+                      </p>
                     </div>
                     
                     <div>
