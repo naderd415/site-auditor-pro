@@ -11,14 +11,20 @@ A comprehensive suite of browser-based tools for image editing, PDF manipulation
 
 ## ✨ Latest Updates (February 2026)
 
-### 📊 Google Analytics Integration (NEW!)
+### ☁️ Cloud-Based Settings (NEW!)
+- **Global Configuration**: All admin settings now saved to cloud database
+- **Real-time Sync**: Changes apply to the entire site immediately, not just your browser
+- **Backup System**: Automatic localStorage fallback if connection issues occur
+- **Live Updates**: Other browsers/devices see changes in real-time
+
+### 📊 Google Analytics Integration
 - **Automatic Injection**: Google Analytics script loads automatically when configured
 - **Page View Tracking**: All route changes tracked automatically via `PageViewTracker` component
 - **Custom Events**: Use `trackGAEvent()` for custom event tracking
 - **Validation**: GA ID format validated (G-XXXXXXXXXX, UA-XXXXXXXX-X, AW-XXXXXXXXXX)
 - **Configure in Admin**: Navigate to Admin → Integrations → Google Analytics
 
-### 📢 Advanced Ads Management System (February 2026)
+### 📢 Advanced Ads Management System
 Complete overhaul of the ad management system with professional controls:
 
 #### Google AdSense (Primary Provider)
@@ -35,8 +41,9 @@ Complete overhaul of the ad management system with professional controls:
 Each slot includes:
 - **Ad Name/Label** clearly displayed
 - **Enable/Disable Toggle** next to each slot
-- **Recommended Size** from Google's best practices
+- **Size Selector** - Choose from all Google-recommended sizes
 - **Code Textarea** for custom ad code
+- **Cloud Save** - Settings apply globally
 
 | Slot | Recommended Size | Placement |
 |------|------------------|-----------|
@@ -155,12 +162,14 @@ Built-in reference guide showing all Google-recommended sizes:
 │   │
 │   ├── hooks/
 │   │   ├── useSimpleAdminAuth.ts  # Password-only auth hook
+│   │   ├── useCloudConfig.ts      # Cloud-based config hook
 │   │   ├── use-mobile.tsx
 │   │   └── useScrollDirection.ts
 │   │
 │   ├── lib/
 │   │   ├── i18n/              # Internationalization (EN/AR/FR)
 │   │   ├── siteConfig.ts      # Site configuration + GA injection
+│   │   ├── cloudConfig.ts     # Cloud storage for global settings
 │   │   ├── adCodeValidator.ts # XSS protection for ads
 │   │   └── utils.ts
 │   │
