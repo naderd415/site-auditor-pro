@@ -1,5 +1,4 @@
 // Cloud Configuration System - Stores settings in Supabase for global access
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { SiteConfig, defaultConfig } from './siteConfig';
 
 const CONFIG_ID = 'main';
@@ -9,30 +8,34 @@ const FALLBACK_BACKEND_URL = "https://vqvjtyhzwynabivlgrvb.supabase.co";
 const FALLBACK_BACKEND_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxdmp0eWh6d3luYWJpdmxncnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1NzQ0MDAsImV4cCI6MjA4MjE1MDQwMH0.gicKNWV_x5tWlRe4ne9suIiySGoc9V-jreXkOES0eoQ";
 
-// Get Supabase client with fallback support
-function getCloudClient(): SupabaseClient | null {
+// Cache for config to avoid constant DB calls
+let configCache: SiteConfig | null = null;
+let lastFetch: number = 0;
+const CACHE_TTL = 5000; // 5 seconds
+
+// Lazy-loaded Supabase client to avoid initialization issues
+let supabaseClient: any = null;
+
+async function getClient() {
+  if (supabaseClient) return supabaseClient;
+  
   try {
-    const url = import.meta.env.VITE_SUPABASE_URL || FALLBACK_BACKEND_URL;
-    const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
-                import.meta.env.VITE_SUPABASE_ANON_KEY || 
-                FALLBACK_BACKEND_KEY;
+    const { createClient } = await import('@supabase/supabase-js');
+    const url = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL) || FALLBACK_BACKEND_URL;
+    const key = (typeof import.meta !== 'undefined' && (import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env?.VITE_SUPABASE_ANON_KEY)) || FALLBACK_BACKEND_KEY;
     
     if (!url || !key) {
       console.warn('[CloudConfig] No backend configuration available');
       return null;
     }
     
-    return createClient(url, key);
+    supabaseClient = createClient(url, key);
+    return supabaseClient;
   } catch (e) {
     console.error('[CloudConfig] Failed to create client:', e);
     return null;
   }
 }
-
-// Cache for config to avoid constant DB calls
-let configCache: SiteConfig | null = null;
-let lastFetch: number = 0;
-const CACHE_TTL = 5000; // 5 seconds
 
 // Fetch config from Supabase
 export const fetchCloudConfig = async (): Promise<SiteConfig> => {
@@ -41,7 +44,7 @@ export const fetchCloudConfig = async (): Promise<SiteConfig> => {
     return configCache;
   }
 
-  const client = getCloudClient();
+  const client = await getClient();
   if (!client) {
     console.warn('[CloudConfig] No client available, using local config');
     return getLocalConfig();
@@ -56,7 +59,6 @@ export const fetchCloudConfig = async (): Promise<SiteConfig> => {
 
     if (error) {
       console.warn('[CloudConfig] Error fetching config:', error.message);
-      // Fall back to localStorage
       return getLocalConfig();
     }
 
@@ -75,7 +77,7 @@ export const fetchCloudConfig = async (): Promise<SiteConfig> => {
 
 // Save config to Supabase (upsert)
 export const saveCloudConfig = async (config: SiteConfig): Promise<boolean> => {
-  const client = getCloudClient();
+  const client = await getClient();
   if (!client) {
     console.warn('[CloudConfig] No client available, saving locally only');
     saveLocalConfig(config);
@@ -97,7 +99,6 @@ export const saveCloudConfig = async (config: SiteConfig): Promise<boolean> => {
 
       if (insertError) {
         console.error('[CloudConfig] Save error:', insertError.message);
-        // Fall back to localStorage
         saveLocalConfig(config);
         return false;
       }
@@ -123,6 +124,7 @@ const CONFIG_KEY = 'bth_site_config';
 
 const getLocalConfig = (): SiteConfig => {
   try {
+    if (typeof window === 'undefined') return defaultConfig;
     const stored = localStorage.getItem(CONFIG_KEY);
     if (stored) {
       return { ...defaultConfig, ...JSON.parse(stored) };
@@ -135,6 +137,7 @@ const getLocalConfig = (): SiteConfig => {
 
 const saveLocalConfig = (config: SiteConfig): void => {
   try {
+    if (typeof window === 'undefined') return;
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
   } catch (e) {
     console.error('[CloudConfig] Error saving local config:', e);
@@ -149,34 +152,44 @@ export const clearConfigCache = (): void => {
 
 // Subscribe to config changes (real-time)
 export const subscribeToConfigChanges = (callback: (config: SiteConfig) => void) => {
-  const client = getCloudClient();
-  if (!client) {
-    console.warn('[CloudConfig] No client available for real-time subscription');
-    return () => {}; // Return empty cleanup function
-  }
-
-  const channel = client
-    .channel('site_config_changes')
-    .on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'site_config',
-        filter: `id=eq.${CONFIG_ID}`
-      },
-      (payload) => {
-        if (payload.new && (payload.new as any).config) {
-          const newConfig = { ...defaultConfig, ...(payload.new as any).config } as SiteConfig;
-          configCache = newConfig;
-          lastFetch = Date.now();
-          callback(newConfig);
+  let channel: any = null;
+  let clientRef: any = null;
+  
+  const setup = async () => {
+    const client = await getClient();
+    if (!client) {
+      console.warn('[CloudConfig] No client available for real-time subscription');
+      return;
+    }
+    
+    clientRef = client;
+    channel = client
+      .channel('site_config_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'site_config',
+          filter: `id=eq.${CONFIG_ID}`
+        },
+        (payload: any) => {
+          if (payload.new && payload.new.config) {
+            const newConfig = { ...defaultConfig, ...payload.new.config } as SiteConfig;
+            configCache = newConfig;
+            lastFetch = Date.now();
+            callback(newConfig);
+          }
         }
-      }
-    )
-    .subscribe();
+      )
+      .subscribe();
+  };
+  
+  setup();
 
   return () => {
-    client.removeChannel(channel);
+    if (channel && clientRef) {
+      clientRef.removeChannel(channel);
+    }
   };
 };

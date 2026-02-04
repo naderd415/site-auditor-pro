@@ -1,3 +1,4 @@
+// Vite configuration - Updated to fix React duplicate instance issue
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -17,9 +18,15 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Force single React instance for all imports
+      "react": path.resolve(__dirname, "node_modules/react"),
+      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
     },
-    // Prevent duplicate React instances
-    dedupe: ["react", "react-dom", "react/jsx-runtime"],
+    dedupe: ["react", "react-dom", "react/jsx-runtime", "@supabase/supabase-js"],
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom"],
+    force: true, // Force re-optimization
   },
   build: {
     outDir: "dist",
