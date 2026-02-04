@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+// Language Context - Updated to ensure proper React hook usage
+import * as React from 'react';
 import { Language, Translation, translations } from './translations';
 
 interface LanguageContextType {
@@ -12,10 +13,10 @@ interface LanguageContextType {
   toggleTheme: () => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = React.createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [language, setLanguageState] = React.useState<Language>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('language') as Language;
       if (saved && ['ar', 'en', 'fr'].includes(saved)) {
@@ -28,7 +29,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return 'ar';
   });
 
-  const [isDark, setIsDarkState] = useState<boolean>(() => {
+  const [isDark, setIsDarkState] = React.useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
       if (saved) return saved === 'dark';
@@ -54,12 +55,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const dir = language === 'ar' ? 'rtl' : 'ltr';
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.documentElement.setAttribute('dir', dir);
     document.documentElement.setAttribute('lang', language);
   }, [language, dir]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
@@ -86,7 +87,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext);
+  const context = React.useContext(LanguageContext);
   if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }

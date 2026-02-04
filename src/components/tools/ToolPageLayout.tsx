@@ -3,11 +3,9 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { AdsterraTop } from '@/components/ads/AdsterraTop';
-import { AdsterraSidebar } from '@/components/ads/AdsterraSidebar';
 import { FAQ } from '@/components/FAQ';
 import { useLanguage } from '@/lib/i18n';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Shield, Zap, Lock } from 'lucide-react';
 
 interface ToolPageLayoutProps {
   title: string;
@@ -142,9 +140,11 @@ export function ToolPageLayout({ title, description, article, keywords, children
             </div>
           </section>
 
-          {/* Top Ad */}
+          {/* Top Ad Placeholder */}
           <div className="container mx-auto px-4 mb-8">
-            <AdsterraTop />
+            <div id="ad-top" className="min-h-[90px] flex items-center justify-center">
+              {/* Google AdSense will be inserted here */}
+            </div>
           </div>
 
           {/* Tool Content */}
@@ -156,14 +156,55 @@ export function ToolPageLayout({ title, description, article, keywords, children
             </div>
           </section>
 
-          {/* Sidebar Ad - After Tool Output */}
+          {/* Trust Badges */}
+          <section className="py-8">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="glass-card p-4 rounded-xl text-center">
+                    <Shield className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                    <h3 className="font-bold text-foreground mb-1">
+                      {isRTL ? '100% آمن وخاص' : '100% Safe & Private'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {isRTL ? 'معالجة في المتصفح - لا رفع بيانات' : 'Browser-side processing - No data upload'}
+                    </p>
+                  </div>
+                  <div className="glass-card p-4 rounded-xl text-center">
+                    <Zap className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+                    <h3 className="font-bold text-foreground mb-1">
+                      {isRTL ? 'سريع ومجاني' : 'Fast & Free'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {isRTL ? 'بدون تسجيل - بدون قيود' : 'No registration - No limits'}
+                    </p>
+                  </div>
+                  <div className="glass-card p-4 rounded-xl text-center">
+                    <Lock className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                    <h3 className="font-bold text-foreground mb-1">
+                      {isRTL ? 'بدون علامات مائية' : 'No Watermarks'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {isRTL ? 'نتائج نظيفة واحترافية' : 'Clean, professional results'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Sidebar Ad Placeholder */}
           <div className="container mx-auto px-4 flex justify-center">
-            <AdsterraSidebar />
+            <div id="ad-sidebar" className="min-h-[250px]">
+              {/* Google AdSense will be inserted here */}
+            </div>
           </div>
 
-          {/* Bottom Top Ad */}
+          {/* Bottom Ad Placeholder */}
           <div className="container mx-auto px-4 my-8">
-            <AdsterraTop />
+            <div id="ad-bottom" className="min-h-[90px]">
+              {/* Google AdSense will be inserted here */}
+            </div>
           </div>
 
           {/* Article Section - SEO Content */}
@@ -171,7 +212,7 @@ export function ToolPageLayout({ title, description, article, keywords, children
             <div className="container mx-auto px-4">
               <div className="glass-card p-8 rounded-2xl max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold text-foreground mb-6">
-                  {isRTL ? 'عن هذه الأداة' : 'About This Tool'}
+                  {isRTL ? 'عن هذه الأداة' : language === 'fr' ? 'À Propos de Cet Outil' : 'About This Tool'}
                 </h2>
                 <div className="prose prose-lg max-w-none text-muted-foreground">
                   {article.split('\n\n').map((paragraph, index) => (
@@ -180,12 +221,39 @@ export function ToolPageLayout({ title, description, article, keywords, children
                     </p>
                   ))}
                 </div>
+                
+                {/* Additional SEO Content */}
+                <div className="mt-8 pt-8 border-t border-border">
+                  <h3 className="text-xl font-bold text-foreground mb-4">
+                    {isRTL ? 'لماذا تختار أداتنا؟' : language === 'fr' ? 'Pourquoi Choisir Notre Outil?' : 'Why Choose Our Tool?'}
+                  </h3>
+                  <ul className="space-y-3 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span>{isRTL ? 'معالجة 100% في المتصفح - بياناتك لا تغادر جهازك أبداً' : '100% browser-based processing - your data never leaves your device'}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span>{isRTL ? 'مجاني تماماً بدون إعلانات مزعجة أو قيود' : 'Completely free with no annoying ads or limitations'}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span>{isRTL ? 'لا حاجة للتسجيل أو تنزيل برامج' : 'No registration or software download required'}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span>{isRTL ? 'يعمل على جميع الأجهزة والمتصفحات' : 'Works on all devices and browsers'}</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </article>
 
           <div className="container mx-auto px-4 my-8">
-            <AdsterraTop />
+            <div id="ad-bottom-2" className="min-h-[90px]">
+              {/* Google AdSense will be inserted here */}
+            </div>
           </div>
 
           {/* FAQ Section */}
