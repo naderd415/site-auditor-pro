@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
+import { getConfig } from '@/lib/siteConfig';
 
 export function AdsterraSidebar({ className = '' }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scriptLoaded = useRef(false);
   const [shouldLoad, setShouldLoad] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
+
+  // Check if enabled from config
+  useEffect(() => {
+    const config = getConfig();
+    setIsEnabled(config.ads?.adsterraSidebarEnabled !== false);
+  }, []);
 
   // Delayed loading - wait 4 seconds or first scroll
   useEffect(() => {
+    if (!isEnabled) return;
+    
     const timer = setTimeout(() => setShouldLoad(true), 4000);
     
     const handleScroll = () => {
@@ -20,10 +30,10 @@ export function AdsterraSidebar({ className = '' }: { className?: string }) {
       clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isEnabled]);
 
   useEffect(() => {
-    if (!shouldLoad || scriptLoaded.current || !containerRef.current) return;
+    if (!shouldLoad || scriptLoaded.current || !containerRef.current || !isEnabled) return;
 
     const container = containerRef.current;
     
@@ -49,7 +59,10 @@ export function AdsterraSidebar({ className = '' }: { className?: string }) {
         container.innerHTML = '';
       }
     };
-  }, [shouldLoad]);
+  }, [shouldLoad, isEnabled]);
+
+  // Don't render if disabled
+  if (!isEnabled) return null;
 
   return (
     <div className={`flex justify-center min-h-[250px] min-w-[300px] ${className}`}>

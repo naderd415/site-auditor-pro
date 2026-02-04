@@ -5,7 +5,27 @@ export interface SiteIdentity {
   siteName: string;
 }
 
+export interface AdSlotConfig {
+  code: string;
+  enabled: boolean;
+}
+
 export interface AdsConfig {
+  // Google AdSense (Primary)
+  googleAdsenseEnabled: boolean;
+  googleAdsenseClientId: string; // ca-pub-XXXXXXXXXX
+  
+  // Adsterra Ads
+  adsterraTopEnabled: boolean;
+  adsterraSidebarEnabled: boolean;
+  
+  // Custom Dynamic Ad Slots
+  headerAd: AdSlotConfig;
+  sidebarAd: AdSlotConfig;
+  footerAd: AdSlotConfig;
+  inContentAd: AdSlotConfig;
+  
+  // Legacy fields (for backwards compatibility)
   headerAdCode: string;
   sidebarAdCode: string;
   footerAdCode: string;
@@ -100,6 +120,21 @@ export const defaultConfig: SiteConfig = {
     siteName: 'BestToolsHub'
   },
   ads: {
+    // Google AdSense (Primary)
+    googleAdsenseEnabled: false,
+    googleAdsenseClientId: 'ca-pub-8664475420161580',
+    
+    // Adsterra Ads
+    adsterraTopEnabled: true,
+    adsterraSidebarEnabled: true,
+    
+    // Custom Dynamic Ad Slots
+    headerAd: { code: '', enabled: false },
+    sidebarAd: { code: '', enabled: false },
+    footerAd: { code: '', enabled: false },
+    inContentAd: { code: '', enabled: false },
+    
+    // Legacy fields (for backwards compatibility)
     headerAdCode: '',
     sidebarAdCode: '',
     footerAdCode: '',
@@ -336,6 +371,34 @@ export const injectGoogleAnalytics = (gaId: string): void => {
     gtag('config', '${trimmedId}');
   `;
   document.head.appendChild(inlineScript);
+};
+
+// Validate Google AdSense Client ID format (ca-pub-XXXXXXXXXX)
+const ADSENSE_CLIENT_REGEX = /^ca-pub-\d{16}$/;
+
+export const isValidAdsenseClientId = (clientId: string): boolean => {
+  if (!clientId) return false;
+  return ADSENSE_CLIENT_REGEX.test(clientId.trim());
+};
+
+// Inject Google AdSense script
+export const injectGoogleAdsense = (clientId: string): void => {
+  if (!clientId || document.getElementById('adsense-script')) return;
+  
+  const trimmedId = clientId.trim();
+  if (!isValidAdsenseClientId(trimmedId)) {
+    console.error('[Security] Invalid Google AdSense Client ID format. Expected format: ca-pub-XXXXXXXXXXXXXXXX');
+    return;
+  }
+  
+  const script = document.createElement('script');
+  script.id = 'adsense-script';
+  script.async = true;
+  script.crossOrigin = 'anonymous';
+  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(trimmedId)}`;
+  document.head.appendChild(script);
+  
+  console.log('[Ads] Google AdSense script injected successfully');
 };
 
 // Inject favicon dynamically

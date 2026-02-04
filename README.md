@@ -26,11 +26,13 @@ A comprehensive financial calculator for freelancers, employees, and business ow
 - Last 20 errors stored for debugging purposes
 - Helps diagnose admin page issues without console access
 
-### 📢 Dynamic Ad Management
-- Admin Dashboard → Ads section allows pasting ad scripts
-- Four slots: Header Ad, Sidebar Ad, Footer Ad, In-Content Ad
-- Scripts are dynamically injected and rendered live on the site
-- Fixed container sizes prevent layout shift (CLS optimization)
+### 📢 Advanced Ad Management System (February 2026)
+- **Google AdSense Integration**: Primary ad provider with client ID validation (ca-pub-XXXXXXXXXXXXXXXX)
+- **Adsterra Ads**: Top banner and sidebar with individual enable/disable toggles
+- **Custom Ad Slots**: Header, Sidebar, Footer, In-Content - each with enable/disable switch
+- **Toggle Controls**: Every ad slot can be turned on/off from the Admin Dashboard
+- **Delayed Loading**: Ads load after 3-5 seconds or first scroll for better Core Web Vitals
+- **Fixed Dimensions**: All ad containers have fixed sizes to prevent CLS (Layout Shift)
 
 ### 🔍 SEO & AI Optimization (GEO)
 - JSON-LD Schema markup on all tool pages (WebApplication + BreadcrumbList)
@@ -87,6 +89,7 @@ A comprehensive financial calculator for freelancers, employees, and business ow
 | Auth Security | ✅ | Server-side RLS + Separate Roles |
 | GA ID Injection | ✅ | Regex Validation + Encoding |
 | Ad Code XSS | ✅ | Multi-layer Validation |
+| AdSense Client ID | ✅ | Regex Validation (ca-pub-XXXXXXXXXXXXXXXX) |
 
 ---
 
