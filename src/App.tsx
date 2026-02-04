@@ -3,12 +3,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "@/lib/i18n";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GoogleAdsenseLoader } from "@/components/ads/GoogleAdsenseLoader";
-import { getConfig, injectGoogleAdsense } from "@/lib/siteConfig";
+import { GoogleAnalyticsLoader, trackGAPageView } from "@/components/GoogleAnalyticsLoader";
+import { getConfig, trackVisit, trackUniqueVisitor } from "@/lib/siteConfig";
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (
@@ -88,15 +89,33 @@ const queryClient = new QueryClient({
   },
 });
 
+// Component to track page views
+function PageViewTracker() {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Track visit in local stats
+    trackVisit(location.pathname);
+    trackUniqueVisitor();
+    
+    // Track in Google Analytics
+    trackGAPageView(location.pathname, document.title);
+  }, [location]);
+  
+  return null;
+}
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
           <GoogleAdsenseLoader />
+          <GoogleAnalyticsLoader />
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <PageViewTracker />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
