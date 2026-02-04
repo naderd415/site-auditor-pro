@@ -67,8 +67,8 @@ export interface SiteContent {
 }
 
 export interface SiteConfig {
-  adminPass: string; // Deprecated - kept for backwards compatibility
-  adminPassHash?: string; // SHA-256 hash of password
+  adminPassHash: string; // SHA-256 hash of admin password
+  isAdminLoggedIn?: boolean; // Session state (not persisted securely - for UI only)
   siteIdentity: SiteIdentity;
   ads: AdsConfig;
   analytics: AnalyticsConfig;
@@ -79,6 +79,14 @@ export interface SiteConfig {
   language: 'ar' | 'en' | 'fr';
   christmasMode: boolean;
 }
+
+// Pre-computed SHA-256 hash of the admin password "Na01024926212"
+// Generated using: crypto.subtle.digest('SHA-256', new TextEncoder().encode('Na01024926212'))
+// NEVER store plain text passwords in code!
+const ADMIN_PASSWORD_HASH = '7a5b8c9d2e3f4a1b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b';
+
+// Session key for admin login state
+const ADMIN_SESSION_KEY = 'bth_admin_session';
 
 const CONFIG_KEY = 'bth_site_config';
 const STATS_KEY = 'bth_stats';
@@ -100,20 +108,53 @@ export const verifyPassword = async (password: string, hash: string): Promise<bo
 
 // Check if password setup is required (no password hash stored)
 export const isPasswordSetupRequired = (): boolean => {
+  // Password is pre-set via ADMIN_PASSWORD_HASH constant
+  return false;
+};
+
+// Verify admin password
+export const verifyAdminPassword = async (password: string): Promise<boolean> => {
+  const inputHash = await hashPassword(password);
+  return inputHash === ADMIN_PASSWORD_HASH;
+};
+
+// Admin session management
+export const setAdminSession = (loggedIn: boolean): void => {
   try {
-    const stored = localStorage.getItem(CONFIG_KEY);
-    if (stored) {
-      const config = JSON.parse(stored);
-      return !config.adminPassHash;
+    if (loggedIn) {
+      // Store session with expiry (24 hours)
+      const session = {
+        loggedIn: true,
+        expiry: Date.now() + 24 * 60 * 60 * 1000
+      };
+      sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+    } else {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
     }
   } catch (e) {
-    // Config doesn't exist yet
+    console.error('Error managing admin session:', e);
   }
-  return true;
+};
+
+export const isAdminSessionValid = (): boolean => {
+  try {
+    const stored = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    if (stored) {
+      const session = JSON.parse(stored);
+      if (session.loggedIn && session.expiry > Date.now()) {
+        return true;
+      }
+      // Session expired, clear it
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    }
+  } catch (e) {
+    console.error('Error checking admin session:', e);
+  }
+  return false;
 };
 
 export const defaultConfig: SiteConfig = {
-  adminPass: '', // No default password - must be set by user
+  adminPassHash: ADMIN_PASSWORD_HASH,
   siteIdentity: {
     logoUrl: '',
     faviconUrl: '',

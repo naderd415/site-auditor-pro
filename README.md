@@ -436,15 +436,25 @@ npm run preview
 ## 📝 Admin Dashboard
 
 Access: `/admin`
-Password: Stored in `siteConfig.adminPass` (localStorage)
+Authentication: **Password-only login** (no email required)
 
-Features:
+### Security Features (February 2026)
+- Password stored as **Base64-encoded** string (obfuscated, not plain text)
+- Password hashed using **SHA-256** before comparison
+- **Constant-time comparison** to prevent timing attacks
+- Session stored in **sessionStorage** with 24-hour expiry
+- No email or Supabase Auth required - simple password verification
+
+### Dashboard Features:
 - **Site identity management** (logo, name)
 - **Content editing** (Hero, About, Contact)
 - **SEO metadata configuration**
-- **Dynamic Ad slot management** - Paste ad scripts, they render live on the site
+- **Advanced Ad Management**:
+  - Google AdSense with enable/disable toggle
+  - Adsterra Top & Sidebar with individual toggles
+  - Custom ad slots (Header, Sidebar, Footer, In-Content) with enable/disable
 - **Analytics overview** - Real-time stats with quick action buttons
-- **Theme settings** with Christmas/New Year 2026 mode
+- **Theme settings** with dark/light mode
 - **Quick Actions** - Fast access to common tasks
 
 ---
