@@ -951,87 +951,297 @@ const Admin = () => {
                 </Button>
               </div>
 
+              {/* Google AdSense - Primary */}
+              <div className="glass-card rounded-2xl p-6 border-2 border-primary/30">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Code className="w-5 h-5 text-primary" />
+                    Google AdSense {isRTL ? '(الإعلان الأساسي)' : '(Primary Ads)'}
+                  </h3>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <span className={`text-sm ${config.ads.googleAdsenseEnabled ? 'text-green-500' : 'text-muted-foreground'}`}>
+                      {config.ads.googleAdsenseEnabled 
+                        ? (isRTL ? 'مفعّل' : 'Enabled') 
+                        : (isRTL ? 'معطّل' : 'Disabled')}
+                    </span>
+                    <div
+                      onClick={() => setConfig(prev => ({
+                        ...prev,
+                        ads: { ...prev.ads, googleAdsenseEnabled: !prev.ads.googleAdsenseEnabled }
+                      }))}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${
+                        config.ads.googleAdsenseEnabled ? 'bg-green-500' : 'bg-muted'
+                      }`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                        config.ads.googleAdsenseEnabled ? 'translate-x-7' : 'translate-x-1'
+                      }`} />
+                    </div>
+                  </label>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {isRTL 
+                    ? 'أدخل معرف العميل الخاص بـ Google AdSense (ca-pub-XXXXXXXXXXXXXXXX)'
+                    : 'Enter your Google AdSense Client ID (ca-pub-XXXXXXXXXXXXXXXX)'}
+                </p>
+                <Input
+                  className="font-mono"
+                  placeholder="ca-pub-8664475420161580"
+                  value={config.ads.googleAdsenseClientId || ''}
+                  onChange={(e) => setConfig(prev => ({
+                    ...prev,
+                    ads: { ...prev.ads, googleAdsenseClientId: e.target.value }
+                  }))}
+                />
+              </div>
+
+              {/* Adsterra Ads */}
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Megaphone className="w-5 h-5 text-secondary" />
+                  {isRTL ? 'إعلانات Adsterra' : 'Adsterra Ads'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Adsterra Top */}
+                  <div className="p-4 bg-muted/30 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-foreground">
+                        {isRTL ? 'إعلان أعلى الصفحة' : 'Top Banner Ad'}
+                      </span>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <span className={`text-xs ${config.ads.adsterraTopEnabled ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {config.ads.adsterraTopEnabled ? (isRTL ? 'مفعّل' : 'ON') : (isRTL ? 'معطّل' : 'OFF')}
+                        </span>
+                        <div
+                          onClick={() => setConfig(prev => ({
+                            ...prev,
+                            ads: { ...prev.ads, adsterraTopEnabled: !prev.ads.adsterraTopEnabled }
+                          }))}
+                          className={`relative w-10 h-5 rounded-full transition-colors ${
+                            config.ads.adsterraTopEnabled ? 'bg-green-500' : 'bg-muted'
+                          }`}
+                        >
+                          <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                            config.ads.adsterraTopEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                          }`} />
+                        </div>
+                      </label>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {isRTL ? 'بانر 728x90 أو مشابه' : 'Banner 728x90 or similar'}
+                    </p>
+                  </div>
+
+                  {/* Adsterra Sidebar */}
+                  <div className="p-4 bg-muted/30 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-foreground">
+                        {isRTL ? 'إعلان الشريط الجانبي' : 'Sidebar Ad'}
+                      </span>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <span className={`text-xs ${config.ads.adsterraSidebarEnabled ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {config.ads.adsterraSidebarEnabled ? (isRTL ? 'مفعّل' : 'ON') : (isRTL ? 'معطّل' : 'OFF')}
+                        </span>
+                        <div
+                          onClick={() => setConfig(prev => ({
+                            ...prev,
+                            ads: { ...prev.ads, adsterraSidebarEnabled: !prev.ads.adsterraSidebarEnabled }
+                          }))}
+                          className={`relative w-10 h-5 rounded-full transition-colors ${
+                            config.ads.adsterraSidebarEnabled ? 'bg-green-500' : 'bg-muted'
+                          }`}
+                        >
+                          <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                            config.ads.adsterraSidebarEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                          }`} />
+                        </div>
+                      </label>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {isRTL ? 'مربع 300x250' : 'Square 300x250'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Custom Ad Slots */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Header Ad */}
                 <div className="glass-card rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
-                    <Megaphone className="w-5 h-5 text-primary" />
-                    {isRTL ? 'إعلان الهيدر (أعلى الصفحة)' : 'Header Ad (Top of Page)'}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Megaphone className="w-5 h-5 text-primary" />
+                      {isRTL ? 'إعلان الهيدر' : 'Header Ad'}
+                    </h3>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <div
+                        onClick={() => setConfig(prev => ({
+                          ...prev,
+                          ads: { 
+                            ...prev.ads, 
+                            headerAd: { ...prev.ads.headerAd, enabled: !prev.ads.headerAd?.enabled }
+                          }
+                        }))}
+                        className={`relative w-10 h-5 rounded-full transition-colors ${
+                          config.ads.headerAd?.enabled ? 'bg-green-500' : 'bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                          config.ads.headerAd?.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </div>
+                    </label>
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
-                    {isRTL ? 'الشركة A - يظهر أسفل القائمة مباشرة' : 'Company A - Appears directly below navbar'}
+                    {isRTL ? 'يظهر أسفل القائمة مباشرة' : 'Appears directly below navbar'}
                   </p>
                   <Textarea
-                    rows={8}
+                    rows={6}
                     className="font-mono text-sm"
                     placeholder="<!-- Paste your ad code here -->"
-                    value={config.ads.headerAdCode}
+                    value={config.ads.headerAd?.code || config.ads.headerAdCode || ''}
                     onChange={(e) => setConfig(prev => ({
                       ...prev,
-                      ads: { ...prev.ads, headerAdCode: e.target.value }
+                      ads: { 
+                        ...prev.ads, 
+                        headerAd: { ...prev.ads.headerAd, code: e.target.value },
+                        headerAdCode: e.target.value 
+                      }
                     }))}
                   />
                 </div>
 
                 {/* Sidebar Ad */}
                 <div className="glass-card rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
-                    <Megaphone className="w-5 h-5 text-secondary" />
-                    {isRTL ? 'إعلان الشريط الجانبي' : 'Sidebar Ad'}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Megaphone className="w-5 h-5 text-secondary" />
+                      {isRTL ? 'إعلان الشريط الجانبي' : 'Sidebar Ad'}
+                    </h3>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <div
+                        onClick={() => setConfig(prev => ({
+                          ...prev,
+                          ads: { 
+                            ...prev.ads, 
+                            sidebarAd: { ...prev.ads.sidebarAd, enabled: !prev.ads.sidebarAd?.enabled }
+                          }
+                        }))}
+                        className={`relative w-10 h-5 rounded-full transition-colors ${
+                          config.ads.sidebarAd?.enabled ? 'bg-green-500' : 'bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                          config.ads.sidebarAd?.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </div>
+                    </label>
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
-                    {isRTL ? 'الشركة B - يظهر في الجانب' : 'Company B - Appears on the side'}
+                    {isRTL ? 'يظهر في الجانب' : 'Appears on the side'}
                   </p>
                   <Textarea
-                    rows={8}
+                    rows={6}
                     className="font-mono text-sm"
                     placeholder="<!-- Paste your ad code here -->"
-                    value={config.ads.sidebarAdCode}
+                    value={config.ads.sidebarAd?.code || config.ads.sidebarAdCode || ''}
                     onChange={(e) => setConfig(prev => ({
                       ...prev,
-                      ads: { ...prev.ads, sidebarAdCode: e.target.value }
+                      ads: { 
+                        ...prev.ads, 
+                        sidebarAd: { ...prev.ads.sidebarAd, code: e.target.value },
+                        sidebarAdCode: e.target.value 
+                      }
                     }))}
                   />
                 </div>
 
                 {/* Footer Ad */}
                 <div className="glass-card rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
-                    <Megaphone className="w-5 h-5 text-accent" />
-                    {isRTL ? 'إعلان الفوتر' : 'Footer Ad'}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Megaphone className="w-5 h-5 text-accent" />
+                      {isRTL ? 'إعلان الفوتر' : 'Footer Ad'}
+                    </h3>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <div
+                        onClick={() => setConfig(prev => ({
+                          ...prev,
+                          ads: { 
+                            ...prev.ads, 
+                            footerAd: { ...prev.ads.footerAd, enabled: !prev.ads.footerAd?.enabled }
+                          }
+                        }))}
+                        className={`relative w-10 h-5 rounded-full transition-colors ${
+                          config.ads.footerAd?.enabled ? 'bg-green-500' : 'bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                          config.ads.footerAd?.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </div>
+                    </label>
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     {isRTL ? 'يظهر أسفل الصفحة قبل الفوتر' : 'Appears at the bottom before footer'}
                   </p>
                   <Textarea
-                    rows={8}
+                    rows={6}
                     className="font-mono text-sm"
                     placeholder="<!-- Paste your ad code here -->"
-                    value={config.ads.footerAdCode}
+                    value={config.ads.footerAd?.code || config.ads.footerAdCode || ''}
                     onChange={(e) => setConfig(prev => ({
                       ...prev,
-                      ads: { ...prev.ads, footerAdCode: e.target.value }
+                      ads: { 
+                        ...prev.ads, 
+                        footerAd: { ...prev.ads.footerAd, code: e.target.value },
+                        footerAdCode: e.target.value 
+                      }
                     }))}
                   />
                 </div>
 
                 {/* In-Content Ad */}
                 <div className="glass-card rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
-                    <Megaphone className="w-5 h-5 text-warning" />
-                    {isRTL ? 'إعلان داخل المحتوى' : 'In-Content Ad'}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Megaphone className="w-5 h-5 text-warning" />
+                      {isRTL ? 'إعلان داخل المحتوى' : 'In-Content Ad'}
+                    </h3>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <div
+                        onClick={() => setConfig(prev => ({
+                          ...prev,
+                          ads: { 
+                            ...prev.ads, 
+                            inContentAd: { ...prev.ads.inContentAd, enabled: !prev.ads.inContentAd?.enabled }
+                          }
+                        }))}
+                        className={`relative w-10 h-5 rounded-full transition-colors ${
+                          config.ads.inContentAd?.enabled ? 'bg-green-500' : 'bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                          config.ads.inContentAd?.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </div>
+                    </label>
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     {isRTL ? 'يظهر داخل صفحات الأدوات' : 'Appears within tool pages'}
                   </p>
                   <Textarea
-                    rows={8}
+                    rows={6}
                     className="font-mono text-sm"
                     placeholder="<!-- Paste your ad code here -->"
-                    value={config.ads.inContentAdCode}
+                    value={config.ads.inContentAd?.code || config.ads.inContentAdCode || ''}
                     onChange={(e) => setConfig(prev => ({
                       ...prev,
-                      ads: { ...prev.ads, inContentAdCode: e.target.value }
+                      ads: { 
+                        ...prev.ads, 
+                        inContentAd: { ...prev.ads.inContentAd, code: e.target.value },
+                        inContentAdCode: e.target.value 
+                      }
                     }))}
                   />
                 </div>

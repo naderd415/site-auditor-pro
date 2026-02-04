@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider } from "@/lib/i18n";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { GoogleAdsenseLoader } from "@/components/ads/GoogleAdsenseLoader";
+import { getConfig, injectGoogleAdsense } from "@/lib/siteConfig";
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (
@@ -91,6 +93,7 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
+          <GoogleAdsenseLoader />
           <Toaster />
           <Sonner />
           <BrowserRouter>
