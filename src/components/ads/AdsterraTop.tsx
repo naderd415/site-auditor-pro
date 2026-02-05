@@ -10,7 +10,8 @@ export function AdsterraTop({ className = '' }: { className?: string }) {
   // Check if enabled from config
   useEffect(() => {
     const config = getConfig();
-    setIsEnabled(config.ads?.adsterraTopEnabled !== false);
+    // Default to FALSE - only show if explicitly enabled in admin
+    setIsEnabled(config.ads?.adsterraTopEnabled === true);
   }, []);
 
   // Delayed loading - wait 3 seconds or first scroll

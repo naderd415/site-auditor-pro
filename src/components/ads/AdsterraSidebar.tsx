@@ -10,7 +10,8 @@ export function AdsterraSidebar({ className = '' }: { className?: string }) {
   // Check if enabled from config
   useEffect(() => {
     const config = getConfig();
-    setIsEnabled(config.ads?.adsterraSidebarEnabled !== false);
+    // Default to FALSE - only show if explicitly enabled in admin
+    setIsEnabled(config.ads?.adsterraSidebarEnabled === true);
   }, []);
 
   // Delayed loading - wait 4 seconds or first scroll
