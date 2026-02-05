@@ -1,15 +1,41 @@
-# Netlify Configuration for Best Tools Hub
-# Optimized for SPA with SEO and Performance
-
-[build]
-  publish = "dist"
-  command = "npm run build"
-
-# SPA Redirect - All routes to index.html
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+ # Netlify Configuration for Best Tools Hub
+ # Optimized for SPA with SEO and Performance
+ 
+ [build]
+   publish = "dist"
+   command = "npm run build"
+ 
+ # Static files - serve directly (MUST come before SPA redirect)
+ [[redirects]]
+   from = "/ads.txt"
+   to = "/ads.txt"
+   status = 200
+ 
+ [[redirects]]
+   from = "/robots.txt"
+   to = "/robots.txt"
+   status = 200
+ 
+ [[redirects]]
+   from = "/sitemap.xml"
+   to = "/sitemap.xml"
+   status = 200
+ 
+ [[redirects]]
+   from = "/manifest.json"
+   to = "/manifest.json"
+   status = 200
+ 
+ [[redirects]]
+   from = "/favicon.ico"
+   to = "/favicon.ico"
+   status = 200
+ 
+ # SPA Redirect - All other routes to index.html
+ [[redirects]]
+   from = "/*"
+   to = "/index.html"
+   status = 200
 
 # Headers for SEO and Security
 [[headers]]
