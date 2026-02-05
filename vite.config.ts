@@ -1,4 +1,4 @@
-// Vite configuration - Updated to fix React duplicate instance issue
+// Vite configuration - CRITICAL FIX for React duplicate instance
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -18,15 +18,47 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Force single React instance for all imports
+      // CRITICAL: Force ALL React imports to use single instance
       "react": path.resolve(__dirname, "node_modules/react"),
       "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+      "react/jsx-runtime": path.resolve(__dirname, "node_modules/react/jsx-runtime"),
+      "react/jsx-dev-runtime": path.resolve(__dirname, "node_modules/react/jsx-dev-runtime"),
     },
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "@supabase/supabase-js"],
+    // CRITICAL: Dedupe ALL packages that use React internally
+    dedupe: [
+      "react", 
+      "react-dom", 
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "@tanstack/react-query",
+      "react-router-dom",
+      "react-helmet-async",
+      "@supabase/supabase-js",
+      "@radix-ui/react-tooltip",
+      "@radix-ui/react-toast",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-dropdown-menu",
+    ],
   },
   optimizeDeps: {
-    include: ["react", "react-dom"],
-    force: true, // Force re-optimization
+    // CRITICAL: Include react-query to force single React instance
+    include: [
+      "react", 
+      "react-dom", 
+      "react/jsx-runtime",
+      "@tanstack/react-query",
+      "react-router-dom",
+    ],
+    // Force complete re-optimization to clear cached bundles
+    force: true,
+    esbuildOptions: {
+      // Ensure consistent React resolution
+      define: {
+        global: 'globalThis'
+      }
+    }
   },
   build: {
     outDir: "dist",
@@ -36,6 +68,7 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
+          query: ["@tanstack/react-query"],
           pdf: ["pdf-lib"],
           ui: ["lucide-react", "sonner"]
         }
