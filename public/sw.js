@@ -1,10 +1,7 @@
-const CACHE_NAME = 'besttoolshub-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/assets/logo.png'
-];
+// Service Worker
+// NOTE: Keep caching conservative to avoid breaking app updates.
+const CACHE_NAME = 'besttoolshub-v2';
+const urlsToCache = ['/', '/index.html', '/manifest.json', '/assets/logo.png', '/favicon.ico'];
 
 // Install event
 self.addEventListener('install', (event) => {
@@ -20,25 +17,49 @@ self.addEventListener('install', (event) => {
 
 // Fetch event
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
+  // Only cache GET requests
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  // Never cache Vite dev / module graph files (prevents stale deps + duplicate React issues)
+  const path = url.pathname;
+  const isDevAsset =
+    path.startsWith('/@') ||
+    path.startsWith('/src/') ||
+    path.startsWith('/node_modules/') ||
+    path.includes('/node_modules/.vite/') ||
+    path.includes('/.vite/') ||
+    path.includes('/@id/') ||
+    path.includes('/@fs/');
+  if (isDevAsset) return;
+
+  // Network-first for navigation requests
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
           return response;
-        }
-        return fetch(event.request)
-          .then((response) => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
-          });
-      })
+        })
+        .catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  // Cache-first for static same-origin assets
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        if (!response || response.status !== 200) return response;
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      });
+    })
   );
 });
 
