@@ -152,9 +152,46 @@
     <script type="module" src="/src/main.tsx"></script>
     <!-- Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator) {
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+
+        const host = window.location.hostname;
+        const isPreviewOrDev =
+          host.includes('lovableproject.com') ||
+          host.includes('lovable.app') ||
+          host === 'localhost' ||
+          host === '127.0.0.1';
+
+        // CRITICAL: SW caching can serve stale Vite deps and re-trigger duplicate React errors.
+        // Disable + clean up SW on preview/dev domains.
+        if (isPreviewOrDev) {
+          window.addEventListener('load', async () => {
+            try {
+              const flagKey = '__sw_cleaned__';
+              if (sessionStorage.getItem(flagKey) === '1') return;
+              sessionStorage.setItem(flagKey, '1');
+
+              const regs = await navigator.serviceWorker.getRegistrations();
+              await Promise.all(regs.map((r) => r.unregister()));
+
+              if ('caches' in window) {
+                const keys = await caches.keys();
+                await Promise.all(keys.map((k) => caches.delete(k)));
+              }
+
+              console.log('Service Worker disabled for preview/dev (cache cleared).');
+              window.location.reload();
+            } catch (e) {
+              console.log('SW cleanup failed:', e);
+            }
+          });
+          return;
+        }
+
+        // Production registration
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker
+            .register('/sw.js')
             .then((registration) => {
               console.log('SW registered:', registration.scope);
             })
@@ -162,7 +199,7 @@
               console.log('SW registration failed:', error);
             });
         });
-      }
+      })();
     </script>
   </body>
 </html>
