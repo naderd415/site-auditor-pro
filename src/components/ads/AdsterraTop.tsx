@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { getConfig } from '@/lib/siteConfig';
+import { useCloudConfig } from '@/hooks/useCloudConfig';
 
 export function AdsterraTop({ className = '' }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scriptLoaded = useRef(false);
   const [shouldLoad, setShouldLoad] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const { config, isLoading } = useCloudConfig();
 
-  // Check if enabled from config
-  useEffect(() => {
-    const config = getConfig();
-    // Default to FALSE - only show if explicitly enabled in admin
-    setIsEnabled(config.ads?.adsterraTopEnabled === true);
-  }, []);
+  // Get enabled state from cloud config - default to FALSE
+  const isEnabled = config.ads?.adsterraTopEnabled === true;
 
   // Delayed loading - wait 3 seconds or first scroll
   useEffect(() => {
@@ -59,8 +55,8 @@ export function AdsterraTop({ className = '' }: { className?: string }) {
     };
   }, [shouldLoad, isEnabled]);
 
-  // Don't render if disabled
-  if (!isEnabled) return null;
+  // Don't render if disabled or still loading config
+  if (isLoading || !isEnabled) return null;
 
   return (
     <div className={`w-full flex justify-center min-h-[90px] ${className}`}>

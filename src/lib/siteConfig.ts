@@ -166,8 +166,8 @@ export const defaultConfig: SiteConfig = {
     googleAdsenseClientId: 'ca-pub-8664475420161580',
     
     // Adsterra Ads
-    adsterraTopEnabled: true,
-    adsterraSidebarEnabled: true,
+    adsterraTopEnabled: false,
+    adsterraSidebarEnabled: false,
     
     // Custom Dynamic Ad Slots
     headerAd: { code: '', enabled: false },
