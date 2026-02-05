@@ -78,7 +78,7 @@ const Privacy = () => {
   return (
     <>
       <Helmet>
-        <title>{isRTL ? 'سياسة الخصوصية - BestToolsHub' : 'Privacy Policy - BestToolsHub'}</title>
+        <title>{isRTL ? 'سياسة الخصوصية | BestToolsHub' : 'BestToolsHub Privacy Policy'}</title>
         <meta name="description" content={isRTL 
           ? 'سياسة الخصوصية لموقع BestToolsHub. تعرف على كيفية تعاملنا مع بياناتك وحماية خصوصيتك.'
           : 'Privacy Policy for BestToolsHub. Learn how we handle your data and protect your privacy.'
