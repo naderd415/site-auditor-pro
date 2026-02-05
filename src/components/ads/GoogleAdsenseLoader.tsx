@@ -1,17 +1,17 @@
-import { useEffect, useRef } from 'react';
-import { getConfig, injectGoogleAdsense, isValidAdsenseClientId } from '@/lib/siteConfig';
+import { useEffect, useRef, useState } from 'react';
+import { injectGoogleAdsense, isValidAdsenseClientId } from '@/lib/siteConfig';
+import { useCloudConfig } from '@/hooks/useCloudConfig';
 
 /**
  * GoogleAdsenseLoader - Loads Google AdSense script if enabled in config
- * This component should be placed once in the app (e.g., in App.tsx or main layout)
+ * This component uses Cloud config for real-time admin control
  */
 export function GoogleAdsenseLoader() {
-  const injected = useRef(false);
+  const { config, isLoading } = useCloudConfig();
+  const [injected, setInjected] = useState(false);
 
   useEffect(() => {
-    if (injected.current) return;
-    
-    const config = getConfig();
+    if (isLoading || injected) return;
     
     // Check if Google AdSense is enabled and has a valid client ID
     if (config.ads?.googleAdsenseEnabled && config.ads?.googleAdsenseClientId) {
@@ -19,13 +19,13 @@ export function GoogleAdsenseLoader() {
       
       if (isValidAdsenseClientId(clientId)) {
         injectGoogleAdsense(clientId);
-        injected.current = true;
+        setInjected(true);
         console.log('[GoogleAdsense] Script loaded with client:', clientId);
       } else {
         console.warn('[GoogleAdsense] Invalid client ID format:', clientId);
       }
     }
-  }, []);
+  }, [config.ads?.googleAdsenseEnabled, config.ads?.googleAdsenseClientId, isLoading, injected]);
 
   // This component doesn't render anything
   return null;
@@ -50,12 +50,11 @@ export function GoogleAdsenseAd({
 }: GoogleAdsenseAdProps) {
   const adRef = useRef<HTMLModElement>(null);
   const pushed = useRef(false);
+  const { config, isLoading } = useCloudConfig();
 
   useEffect(() => {
-    const config = getConfig();
-    
     // Only push ad if AdSense is enabled
-    if (!config.ads?.googleAdsenseEnabled || !config.ads?.googleAdsenseClientId) {
+    if (isLoading || !config.ads?.googleAdsenseEnabled || !config.ads?.googleAdsenseClientId) {
       return;
     }
 
@@ -68,12 +67,10 @@ export function GoogleAdsenseAd({
         console.error('[GoogleAdsense] Error pushing ad:', e);
       }
     }
-  }, []);
-
-  const config = getConfig();
+  }, [config.ads?.googleAdsenseEnabled, config.ads?.googleAdsenseClientId, isLoading]);
   
-  // Don't render if AdSense is disabled
-  if (!config.ads?.googleAdsenseEnabled || !config.ads?.googleAdsenseClientId) {
+  // Don't render if AdSense is disabled or still loading
+  if (isLoading || !config.ads?.googleAdsenseEnabled || !config.ads?.googleAdsenseClientId) {
     return null;
   }
 
