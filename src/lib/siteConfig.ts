@@ -162,7 +162,7 @@ export const defaultConfig: SiteConfig = {
   },
   ads: {
     // Google AdSense (Primary)
-    googleAdsenseEnabled: false,
+    googleAdsenseEnabled: true,
     googleAdsenseClientId: 'ca-pub-8664475420161580',
     
     // Adsterra Ads
